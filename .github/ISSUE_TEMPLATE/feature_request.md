@@ -1,20 +1,18 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
+name: Issue Template
+about: 프로젝트 이슈 템플릿입니다.
+title: "[작업 태그] 이슈 제목"
 labels: ''
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## 📝 작업 페이지 캡쳐
+|    페이지    |   캡쳐   |
+| :-------------: | :----------: |
+| 피그마 | <img src = "" width ="250"> 
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## 작업할 브랜치
+- `` 브랜치에서 작업합니다.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## ✔️ To-Do
+- [ ] 세부적으로 적어주세요
