@@ -19,7 +19,7 @@
 <img src="https://github.com/user-attachments/assets/e7e0253d-26bc-4fd3-9f4d-1ff8c24f00fe" width="100" />
 </a>
 
-## 아오스가 5계명
+## 아오스 5계명
 ```
 - 커밋(Commit) 수가 적을수록 코드에는 천재성이 드러난다. 커밋 수가 많다는 것은 그동안 생각도 안 해보고 코드를 짰다는 것이다. 
   코드를 수정할 때마다 git reset 명령어를 적절히 활용하여 master 브랜치에 강제 푸시한다. 커밋 이력에는 나만 남게 된다. 즉, 천재성을 독점할 수 있다.
