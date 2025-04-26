@@ -28,6 +28,8 @@
 - 내 설계 미만은 기술부채, 내 설계 이상은 오버엔지니어
 - 우리는 개발자다, 어떠한 이유에서든지 문서 작성은 금물. 누가 뭐라고 하면 "코드가 곧 문서".
 ```
+[ref](https://github.com/Lee-WonJun/JDD-Description)
+
 ## Contributors
 <table>
   <tr align="center">
