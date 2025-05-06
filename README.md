@@ -52,3 +52,12 @@
     </td>
   </tr>
 </table>
+
+<br>
+<br>
+<br>
+<div align="center">
+  <a href="https://hits.sh/github.com/mash-up-kr/NoWeekend-iOS/">
+    <img src="https://hits.sh/github.com/mash-up-kr/NoWeekend-iOS.svg" alt="Hits">
+  </a>
+</div>
