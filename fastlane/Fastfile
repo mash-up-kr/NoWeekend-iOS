@@ -23,9 +23,10 @@ platform :ios do
 
   desc "Check Build"
   lane :build do
+    sh("tuist generate")
     build_app(
       scheme: "App",
-      workspace: "NoWeekend.xcworkspace",
+      workspace: "Projects/App/NoWeekend.xcworkspace",
       skip_package_ipa: true
     )
   end
