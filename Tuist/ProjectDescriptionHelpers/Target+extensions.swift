@@ -1,15 +1,5 @@
 import ProjectDescription
 
-fileprivate let commonScripts: [TargetScript] = [
-    .pre(
-        script: #"""
-        ROOT_DIR=$(ProcessInfo.processInfo.environment["TUIST_ROOT_DIR"] ?? "")
-        ${ROOT_DIR}/swiftlint --config ${ROOT_DIR}/.swiftlint.yml
-        """#,
-        name: "SwiftLint",
-        basedOnDependencyAnalysis: false
-    )
-]
 
 extension Target {
     public static func make(
@@ -39,7 +29,7 @@ extension Target {
             infoPlist: infoPlist ?? defaultInfoPlist,
             sources: sources ?? defaultSources,
             resources: resources ?? defaultResources,
-            scripts: commonScripts + scripts,
+            scripts: scripts,
             dependencies: dependencies,
             settings: settings
         )
