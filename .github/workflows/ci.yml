@@ -1,0 +1,55 @@
+name: CI (Lint + Test)
+
+on:
+  pull_request:
+    branches: [main, develop, release/**]
+
+jobs:
+  ci:
+    runs-on: macos-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Lint
+        run: swiftlint lint --config .swiftlint.yml
+
+      - name: Build
+        run: bundle exec fastlane build
+
+      - name: Update PR Description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const newStatus = `
+### ✅ 자동 업데이트 정보
+- ✅ Lint: 완료
+`;
+
+            const updated = (pr.data.body || "") + "\n\n" + newStatus;
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: updated
+            }); 
