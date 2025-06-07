@@ -8,8 +8,6 @@
         "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
         "version" : "5.10.2"
       }
-<<<<<<< HEAD
-=======
     },
     {
       "identity" : "appauth-ios",
@@ -46,7 +44,6 @@
         "revision" : "5d7d66f647400952b1758b230e019b07c0b4b22a",
         "version" : "4.1.1"
       }
->>>>>>> 57aed42 ([Fix]] DescriptionHelers 추가 및 모듈 구조 수정)
     }
   ],
   "version" : 2
