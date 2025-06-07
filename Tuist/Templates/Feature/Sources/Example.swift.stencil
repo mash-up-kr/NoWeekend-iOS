@@ -1,0 +1,9 @@
+import Foundation
+
+public final class {{ name }} {
+    public init() {}
+
+    public func start() {
+        print("{{ name }} 모듈이 시작되었습니다.")
+    }
+}

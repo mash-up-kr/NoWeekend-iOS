@@ -1,0 +1,34 @@
+# 검사에서 제외할 디렉토리 지정
+excluded:
+  - Project.swift
+  - .build
+  - .git
+  - fastlane
+  - Pods
+  - Carthage
+  - Tuist/.build/checkouts
+
+# 추가로 활성화할 규칙들
+
+opt_in_rules:
+  - empty_count # count == 0 대신 isEmpty 사용 권장
+  - empty_string # "" 대신 String() 사용 권장
+  - fatal_error_message # fatalError 메시지 필수
+  - first_where # filter().first 대신 first(where:) 사용 권장
+  - force_unwrapping # 강제 언래핑(!) 사용 제한
+  - implicit_return # 암시적 return 사용 제한
+  - modifier_order # 수정자 순서 강제
+  - operator_usage_whitespace # 연산자 주변 공백
+  - sorted_imports # import 알파벳 순 정렬
+
+# 비활성화할 일반적인 규칙
+
+disabled_rules:
+  - trailing_whitespace
+  - todo
+  - trailing_newline
+  - multiple_closures_with_trailing_closure
+  - leading_whitespace
+
+analyzer_rules:
+  - unused_import # 사용하지 않는 import

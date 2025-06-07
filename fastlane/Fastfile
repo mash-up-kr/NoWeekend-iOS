@@ -1,0 +1,107 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Run lint tools"
+  lane :lint do
+    sh("swiftlint lint --config ../.swiftlint.yml ..")
+  end
+
+  desc "Check Build"
+  lane :build do
+    build_app(
+      scheme: "App",
+      workspace: "NoWeekend.xcworkspace",
+      skip_package_ipa: true
+    )
+  end
+
+  desc "Upload to TestFlight (beta)"
+  lane :beta do
+    tmp_dir = "build_output"
+    # 빌드 및 아카이브
+    update_and_build_app(
+      output_directory: tmp_dir,
+      output_name: "NoWeekend.ipa"
+    )
+    # TestFlight 업로드
+    upload_to_testflight(
+      app_identifier: "com.noweekend.app",
+      api_key_path: "fastlane/key.json",
+      skip_waiting_for_build_processing: true,
+      ipa: "#{tmp_dir}/NoWeekend.ipa"
+    )
+    # 빌드 산출물 삭제
+    sh("rm -rf #{tmp_dir}")
+    create_tag
+  end
+
+  desc "Release to App Store (prod)"
+  lane :prod do
+    tmp_dir = "build_output"
+    update_and_build_app(
+      output_directory: tmp_dir,
+      output_name: "NoWeekend.ipa"
+    )
+    deliver(
+      api_key_path: "fastlane/key.json",
+      force: true,
+      ipa: "#{tmp_dir}/NoWeekend.ipa"
+    )
+    sh("rm -rf #{tmp_dir}")
+    create_tag
+  end
+
+  desc "Manual dev build (수동만 실행)"
+  lane :dev do
+    tmp_dir = "build_output"
+    update_and_build_app(
+      output_directory: tmp_dir,
+      output_name: "NoWeekend.ipa"
+    )
+    upload_to_testflight(
+      app_identifier: "com.noweekend.app",
+      api_key_path: "fastlane/key.json",
+      skip_waiting_for_build_processing: true,
+      ipa: "#{tmp_dir}/NoWeekend.ipa"
+    )
+    sh("rm -rf #{tmp_dir}")
+    create_tag
+  end
+end
+
+# ===== 공통 함수 =====
+
+def create_tag
+  project_root = File.expand_path("..", __dir__) # 프로젝트 루트
+  project_swift_path = File.join(project_root, "Projects/App/Project.swift")
+  content = File.read(project_swift_path)
+  version = content[/CFBundleShortVersionString":\s*"([^"]+)"/, 1] || "1.0.0"
+  build = content[/CFBundleVersion":\s*"([^"]+)"/, 1] || "100"
+  tag = "#{version}-#{build}"
+  sh("git tag #{tag}")
+  sh("git push origin #{tag}")
+end
+
+def update_and_build_app(options = {})
+  match(type: "appstore", readonly: true)
+  build_app(
+    scheme: "App",
+    workspace: "NoWeekend.xcworkspace",
+    **options
+  )
+end 
