@@ -18,12 +18,7 @@ let project = Project(
                 .project(target: "Presentation", path: "../Presentation"),
                 .project(target: "Data", path: "../Data"),
                 .project(target: "Domain", path: "../Domain"),
-            ],
-            settings: .settings(
-                base: [
-                    "DEVELOPMENT_TEAM": "SQ5T25W9V5"
-                ]
-            )
+            ]
         )
     ],
     schemes: [

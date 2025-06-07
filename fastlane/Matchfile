@@ -1,4 +1,4 @@
-git_url("git@github.com:k-nh/NoWeekend-iOS-Certificates.git")
+git_url("https://github.com/k-nh/NoWeekend-iOS-Certificates.git")
 
 storage_mode("git")
 
