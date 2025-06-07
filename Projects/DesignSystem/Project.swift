@@ -1,20 +1,19 @@
-
 import ProjectDescription
 
 let project = Project(
-    name: "Domain",
+    name: "DesignSystem",
     targets: [
         .target(
-            name: "Domain",
+            name: "DesignSystem",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.domain",
+            bundleId: "com.noweekend.designsystem",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Sources/**"],
             resources: [],
             dependencies: [
-
+                
             ]
         )
     ]

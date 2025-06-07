@@ -68,3 +68,14 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+### Fastlane
+key.json
+.env
+
+# fastlane build output - *.ipa, *.dSYM.zip 파일
+build_output/
+
+# fastlane test output
+fastlane/test_output/
+fastlane/report.xml

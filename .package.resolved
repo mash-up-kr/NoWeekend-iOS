@@ -1,15 +1,14 @@
 {
+  "originHash" : "52580f73af90ace931e006ff785a3c6de4b06fe70aafe75670202b92a7c2b1fb",
   "pins" : [
     {
       "identity" : "alamofire",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Alamofire/Alamofire",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
         "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
         "version" : "5.10.2"
       }
-<<<<<<< HEAD
-=======
     },
     {
       "identity" : "appauth-ios",
@@ -23,7 +22,7 @@
     {
       "identity" : "googlesignin-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/google/GoogleSignIn-iOS",
+      "location" : "https://github.com/google/GoogleSignIn-iOS.git",
       "state" : {
         "revision" : "a7965d134c5d3567026c523e0a8a583f73b62b0d",
         "version" : "7.1.0"
@@ -46,8 +45,7 @@
         "revision" : "5d7d66f647400952b1758b230e019b07c0b4b22a",
         "version" : "4.1.1"
       }
->>>>>>> 57aed42 ([Fix]] DescriptionHelers 추가 및 모듈 구조 수정)
     }
   ],
-  "version" : 2
+  "version" : 3
 }

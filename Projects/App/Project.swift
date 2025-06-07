@@ -6,17 +6,16 @@ let project = Project(
         .target(
             name: "App",
             destinations: .iOS,
-            product: .framework,
+            product: .app,
             bundleId: "com.noweekend.app",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
-            resources: [],
+            resources: [
+                "Resources/**"
+            ],
             dependencies: [
-                .project(target: "Presentation", path: "../Presentation"),
-                .project(target: "Data", path: "../Data"),
-                .project(target: "Domain", path: "../Domain"),
-                
+                .project(target: "Feature", path: "../Feature")
             ]
         )
     ],

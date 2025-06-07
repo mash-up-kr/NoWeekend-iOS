@@ -1,19 +1,18 @@
 import ProjectDescription
 
 let project = Project(
-    name: "Presentation",
+    name: "{{ name }}",
     targets: [
         .target(
-            name: "Presentation",
+            name: "{{ name }}",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.presentation",
+            bundleId: "com.noweekend.{{ name }}",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Sources/**"],
             resources: [],
-            dependencies: [
-            ]
+            dependencies: []
         )
     ]
 )
