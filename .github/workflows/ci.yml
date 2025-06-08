@@ -43,13 +43,23 @@ jobs:
           tuist install
           tuist generate
 
+      - name: Create & Unlock Keychain
+        run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security default-keychain -s ci.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security set-keychain-settings -lut 21600 ci.keychain
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          
       - name: Install certificates & profiles
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
-          bundle exec fastlane match development --readonly
-          bundle exec fastlane match appstore --readonly
+          bundle exec fastlane match development --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
+          bundle exec fastlane match appstore --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
 
       - name: Lint
         run: swiftlint lint --config .swiftlint.yml
@@ -69,9 +79,9 @@ jobs:
             });
 
             const newStatus = `
-            ### ✅ 자동 업데이트 정보
-            - ✅ Lint: 완료
-            - ✅ Build: 완료
+            ### ✔️ CI Completed
+            - ✅ Lint: Completed
+            - ✅ Build: Completed
             `;
 
             const updated = (pr.data.body || "") + "\n\n" + newStatus;
