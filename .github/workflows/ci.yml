@@ -23,8 +23,14 @@ jobs:
       - name: Install SwiftLint
         run: brew install swiftlint
 
-      - name: Install tuist
-        run: curl -Ls https://install.tuist.io | bash
+      - name: Install mise
+        run: brew install mise
+
+      - name: Install tools with mise
+        run: mise install
+
+      - name: Check tuist version
+        run: tuist version
 
       - name: Generate Xcode Project
         run: tuist generate
