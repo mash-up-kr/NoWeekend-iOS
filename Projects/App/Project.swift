@@ -18,7 +18,31 @@ let project = Project(
                 .project(target: "Presentation", path: "../Presentation"),
                 .project(target: "Data", path: "../Data"),
                 .project(target: "Domain", path: "../Domain"),
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "CODE_SIGN_STYLE": "Manual",
+                    "DEVELOPMENT_TEAM": "SQ5T25W9V5"
+                ],
+                configurations: [
+                    .debug(
+                        name: .debug,
+                        settings: [
+                            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.noweekend.app",
+                            "CODE_SIGN_IDENTITY": "Apple Development"
+                        ],
+                        xcconfig: nil
+                    ),
+                    .release(
+                        name: .release,
+                        settings: [
+                            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.noweekend.app",
+                            "CODE_SIGN_IDENTITY": "Apple Distribution"
+                        ],
+                        xcconfig: nil
+                    )
+                ]
+            )
         )
     ],
     schemes: [
