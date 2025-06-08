@@ -26,14 +26,22 @@ jobs:
       - name: Install mise
         run: brew install mise
 
+      - name: Enable idiomatic version files for ruby
+        run: mise settings add idiomatic_version_file_enable_tools ruby
+
       - name: Install tools with mise
         run: mise install
 
       - name: Check tuist version
-        run: tuist version
+        run: |
+          eval "$(mise activate bash)"
+          tuist version
 
-      - name: Generate Xcode Project
-        run: tuist generate
+      - name: Tuist tasks (install + generate)
+        run: |
+          eval "$(mise activate bash)"
+          tuist install
+          tuist generate
 
       - name: Install certificates & profiles
         env:
