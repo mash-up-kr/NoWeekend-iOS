@@ -43,6 +43,7 @@ jobs:
             const newStatus = `
             ### ✅ 자동 업데이트 정보
             - ✅ Lint: 완료
+            - ✅ Build: 완료
             `;
 
             const updated = (pr.data.body || "") + "\n\n" + newStatus;
