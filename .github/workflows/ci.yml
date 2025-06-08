@@ -47,7 +47,9 @@ jobs:
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-        run: bundle exec fastlane match development --readonly
+        run: |
+          bundle exec fastlane match development --readonly
+          bundle exec fastlane match appstore --readonly
 
       - name: Lint
         run: swiftlint lint --config .swiftlint.yml
