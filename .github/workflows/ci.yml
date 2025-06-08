@@ -23,6 +23,18 @@ jobs:
       - name: Install SwiftLint
         run: brew install swiftlint
 
+      - name: Install tuist
+        run: curl -Ls https://install.tuist.io | bash
+
+      - name: Generate Xcode Project
+        run: tuist generate
+
+      - name: Install certificates & profiles
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        run: bundle exec fastlane match development --readonly
+
       - name: Lint
         run: swiftlint lint --config .swiftlint.yml
 
