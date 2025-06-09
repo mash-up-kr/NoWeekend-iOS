@@ -9,50 +9,20 @@ let project = Project(
             product: .app,
             bundleId: "com.noweekend.app",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
-            sources: ["Sources/**"],
-            resources: [
-                "Resources/**"
-            ],
-            dependencies: [
-                .project(target: "Presentation", path: "../Presentation"),
-                .project(target: "Data", path: "../Data"),
-                .project(target: "Domain", path: "../Domain"),
-            ],
-            settings: .settings(
-                base: [
-                    "CODE_SIGN_STYLE": "Manual",
-                    "DEVELOPMENT_TEAM": "SQ5T25W9V5"
-                ],
-                configurations: [
-                    .debug(
-                        name: .debug,
-                        settings: [
-                            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.noweekend.app",
-                            "CODE_SIGN_IDENTITY": "Apple Development"
-                        ],
-                        xcconfig: nil
-                    ),
-                    .release(
-                        name: .release,
-                        settings: [
-                            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.noweekend.app",
-                            "CODE_SIGN_IDENTITY": "Apple Distribution"
-                        ],
-                        xcconfig: nil
-                    )
+            infoPlist: .extendingDefault(
+                with: [
+                    "UILaunchScreen": [
+                        "UIColorName": "",
+                        "UIImageName": "",
+                    ],
                 ]
-            )
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "App",
-            shared: true,
-            buildAction: .buildAction(targets: ["App"]),
-            testAction: TestAction.targets([]),
-            runAction: .runAction(configuration: .debug),
-            archiveAction: .archiveAction(configuration: .release)
+            ),
+            sources: ["Sources/**"],
+            dependencies: [
+                .project(target: "OnBoarding", path: "../Features"),
+                .project(target: "TabBar", path: "../Features")
+                // Data 의존성 제거!
+            ]
         )
     ]
 )
