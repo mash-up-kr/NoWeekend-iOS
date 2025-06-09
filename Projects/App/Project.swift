@@ -6,28 +6,23 @@ let project = Project(
         .target(
             name: "App",
             destinations: .iOS,
-            product: .framework,
+            product: .app,
             bundleId: "com.noweekend.app",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            infoPlist: .extendingDefault(
+                with: [
+                    "UILaunchScreen": [
+                        "UIColorName": "",
+                        "UIImageName": "",
+                    ],
+                ]
+            ),
             sources: ["Sources/**"],
-            resources: [],
             dependencies: [
-                .project(target: "Presentation", path: "../Presentation"),
-                .project(target: "Data", path: "../Data"),
-                .project(target: "Domain", path: "../Domain"),
-                
+                .project(target: "OnBoarding", path: "../Features"),
+                .project(target: "TabBar", path: "../Features")
+                // Data 의존성 제거!
             ]
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "App",
-            shared: true,
-            buildAction: .buildAction(targets: ["App"]),
-            testAction: TestAction.targets([]),
-            runAction: .runAction(configuration: .debug),
-            archiveAction: .archiveAction(configuration: .release)
         )
     ]
 )
