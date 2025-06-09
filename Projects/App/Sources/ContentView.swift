@@ -1,7 +1,12 @@
 import SwiftUI
+import TabBar
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
+        TabBarView()
     }
+}
+
+#Preview {
+    ContentView()
 }
