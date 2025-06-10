@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Choose lane to run'
+        required: true
+        default: 'dev'
+      new_version_number:
+        required: false
+      new_build_number:
+        required: false
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    permissions:
+      contents: write  # Git tag 푸시용
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Decode App Store API Key
+        run: |
+          mkdir -p fastlane
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_JSON }}" | base64 --decode > fastlane/key.json
+
+      - name: Run fastlane (브랜치 기반 자동)
+        if: github.event_name == 'push'
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH" =~ ^release/ ]]; then
+            bundle exec fastlane beta
+          elif [[ "$BRANCH" == "main" ]]; then
+            bundle exec fastlane prod
+          fi
+
+      - name: Run fastlane (수동)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        run: |
+          bundle exec fastlane ${{ github.event.inputs.lane }} \
+            new_version_number:"${{ github.event.inputs.new_version_number }}" \
+            new_build_number:"${{ github.event.inputs.new_build_number }}" 

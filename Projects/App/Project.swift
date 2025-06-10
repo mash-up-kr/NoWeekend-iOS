@@ -6,18 +6,43 @@ let project = Project(
         .target(
             name: "App",
             destinations: .iOS,
-            product: .framework,
+            product: .app,
             bundleId: "com.noweekend.app",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
-            resources: [],
+            resources: [
+                "Resources/**"
+            ],
             dependencies: [
                 .project(target: "Presentation", path: "../Presentation"),
                 .project(target: "Data", path: "../Data"),
                 .project(target: "Domain", path: "../Domain"),
-                
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "CODE_SIGN_STYLE": "Manual",
+                    "DEVELOPMENT_TEAM": "SQ5T25W9V5"
+                ],
+                configurations: [
+                    .debug(
+                        name: .debug,
+                        settings: [
+                            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.noweekend.app",
+                            "CODE_SIGN_IDENTITY": "Apple Development"
+                        ],
+                        xcconfig: nil
+                    ),
+                    .release(
+                        name: .release,
+                        settings: [
+                            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.noweekend.app",
+                            "CODE_SIGN_IDENTITY": "Apple Distribution"
+                        ],
+                        xcconfig: nil
+                    )
+                ]
+            )
         )
     ],
     schemes: [
