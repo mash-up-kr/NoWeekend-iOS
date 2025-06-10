@@ -1,49 +1,30 @@
-//
-//  NetworkService.swift
-//  NoWeekend
-//
-//  Created by 이지훈 on 4/25/25.
-//
-
 import Foundation
 import Alamofire
+import NetworkInterface
+import Common
 
-enum NetworkError: Error {
-    case invalidURL
-    case noData
-    case decodingError
-    case serverError(String)
-}
-
-protocol NetworkServiceProtocol {
-    func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
-    func post<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
-    func put<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
-    func delete<T: Decodable>(endpoint: String) async throws -> T
-}
-
-class NetworkService: NetworkServiceProtocol {
+public class NetworkService: NetworkServiceProtocol {
     private let baseURL: String
     private let headers: HTTPHeaders
     
-    init(baseURL: String, headers: [String: String]) {
+    public init(baseURL: String, headers: [String: String]) {
         self.baseURL = baseURL
         self.headers = HTTPHeaders(headers)
     }
     
-    func get<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
+    public func get<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
         return try await request(endpoint: endpoint, method: .get, parameters: parameters)
     }
     
-    func post<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
+    public func post<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
         return try await request(endpoint: endpoint, method: .post, parameters: parameters)
     }
     
-    func put<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
+    public func put<T: Decodable>(endpoint: String, parameters: [String: Any]? = nil) async throws -> T {
         return try await request(endpoint: endpoint, method: .put, parameters: parameters)
     }
     
-    func delete<T: Decodable>(endpoint: String) async throws -> T {
+    public func delete<T: Decodable>(endpoint: String) async throws -> T {
         return try await request(endpoint: endpoint, method: .delete, parameters: nil)
     }
     
