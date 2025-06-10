@@ -1,4 +1,5 @@
 import Foundation
+import Domain
 
 // MARK: - User Repository Protocol
 public protocol UserRepositoryProtocol {
