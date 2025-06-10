@@ -1,7 +1,7 @@
 import SwiftUI
 import Domain
 
-public protocol HomeViewModelProtocol: ObservableObject {
+public protocol HomeProtocol: ObservableObject {
     var events: [Event] { get }
     var isLoading: Bool { get }
     

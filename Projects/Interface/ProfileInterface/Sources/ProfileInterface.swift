@@ -1,7 +1,7 @@
 import SwiftUI
 import Domain
 
-public protocol ProfileViewModelProtocol: ObservableObject {
+public protocol ProfileProtocol: ObservableObject {
     var user: User? { get }
     var isLoading: Bool { get }
     

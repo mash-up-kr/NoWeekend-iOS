@@ -1,7 +1,7 @@
 import SwiftUI
 import Domain
 
-public protocol CalendarViewModelProtocol: ObservableObject {
+public protocol CalendarProtocol: ObservableObject {
     var events: [Event] { get }
     var selectedDate: Date { get set }
     var isLoading: Bool { get }
