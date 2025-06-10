@@ -8,14 +8,7 @@ let project = Project(
             destinations: .iOS,
             product: .app,
             bundleId: "io.tuist.NoWeekend",
-            infoPlist: .extendingDefault(
-                with: [
-                    "UILaunchScreen": [
-                        "UIColorName": "",
-                        "UIImageName": "",
-                    ],
-                ]
-            ),
+            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["NoWeekend/Sources/**"],
             resources: ["NoWeekend/Resources/**"],
             dependencies: []
