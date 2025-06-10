@@ -3,82 +3,62 @@ import ProjectDescription
 let project = Project(
     name: "Core",
     targets: [
-        // Common 타겟
         .target(
-            name: "Common",
+            name: "UseCase",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.common",
+            bundleId: "com.noweekend.core.usecase",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
-            sources: ["Common/Sources/**"],
-            dependencies: []
-        ),
-        // Util 타겟
-        .target(
-            name: "Util",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.util",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["Util/Sources/**"],
+            sources: ["UseCase/Sources/**"],
             dependencies: [
-                .target(name: "Common")
+                .project(target: "Domain", path: "../Interface"),
+                .project(target: "RepositoryInterface", path: "../Interface"),
+                .project(target: "ServiceInterface", path: "../Interface")
             ]
         ),
-        // Domain 타겟
         .target(
-            name: "Domain",
+            name: "Repository",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.domain",
+            bundleId: "com.noweekend.core.repository",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
-            sources: ["Domain/Sources/**"],
-            dependencies: []
+            sources: ["Repository/Sources/**"],
+            dependencies: [
+                .project(target: "RepositoryInterface", path: "../Interface"),
+                .project(target: "Domain", path: "../Interface"),
+                .project(target: "NetworkInterface", path: "../Interface"),
+                .project(target: "StorageInterface", path: "../Interface"),
+                .project(target: "Common", path: "../Shared")
+            ]
         ),
-        // Network 타겟
         .target(
             name: "Network",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.network",
+            bundleId: "com.noweekend.core.network",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Network/Sources/**"],
             dependencies: [
-                .target(name: "Common"),
+                .project(target: "NetworkInterface", path: "../Interface"),
+                .project(target: "Common", path: "../Shared"),
                 .external(name: "Alamofire")
             ]
         ),
-        // Storage 타겟
         .target(
             name: "Storage",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.storage",
+            bundleId: "com.noweekend.core.storage",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Storage/Sources/**"],
             dependencies: [
-                .target(name: "Common")
-            ]
-        ),
-        // Data 타겟
-        .target(
-            name: "Data",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.data",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["Data/Sources/**"],
-            dependencies: [
-                .target(name: "Network"),
-                .target(name: "Storage"),
-                .target(name: "Domain"),
-                .target(name: "Util")
+                .project(target: "StorageInterface", path: "../Interface"),
+                .project(target: "Domain", path: "../Interface"),
+                .project(target: "Common", path: "../Shared")
             ]
         )
     ]
