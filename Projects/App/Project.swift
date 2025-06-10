@@ -11,16 +11,19 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
-            resources: [
-                "Resources/**"
-            ],
+            resources: ["Resources/**"],
             dependencies: [
-                .project(target: "Presentation", path: "../Presentation"),
-                .project(target: "Common", path: "../Core"),
-                .project(target: "Data", path: "../Core"),
-                .project(target: "Domain", path: "../Core"),
-                .project(target: "TabBar", path: "../Features"),
-                .project(target: "DesignSystem", path: "../UI"),
+                .project(target: "TabBar", path: "../Feature"),
+                .project(target: "Home", path: "../Feature"),
+                .project(target: "Profile", path: "../Feature"),
+                .project(target: "Calendar", path: "../Feature"),
+                .project(target: "Onboarding", path: "../Feature"),
+                .project(target: "UseCase", path: "../Core"),
+                .project(target: "Repository", path: "../Core"),
+                .project(target: "Network", path: "../Core"),
+                .project(target: "Storage", path: "../Core"),
+                .project(target: "DesignSystem", path: "../Shared"),
+                .project(target: "Common", path: "../Shared")
             ],
             settings: .settings(
                 base: [
@@ -33,29 +36,17 @@ let project = Project(
                         settings: [
                             "PROVISIONING_PROFILE_SPECIFIER": "match Development com.noweekend.app",
                             "CODE_SIGN_IDENTITY": "Apple Development"
-                        ],
-                        xcconfig: nil
+                        ]
                     ),
                     .release(
                         name: .release,
                         settings: [
                             "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.noweekend.app",
                             "CODE_SIGN_IDENTITY": "Apple Distribution"
-                        ],
-                        xcconfig: nil
+                        ]
                     )
                 ]
             )
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "App",
-            shared: true,
-            buildAction: .buildAction(targets: ["App"]),
-            testAction: TestAction.targets([]),
-            runAction: .runAction(configuration: .debug),
-            archiveAction: .archiveAction(configuration: .release)
         )
     ]
 )
