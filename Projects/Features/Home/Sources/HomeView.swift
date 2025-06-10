@@ -10,13 +10,9 @@ public struct HomeView: View {
     public var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Text("Welcome to \(AppConstants.appName)!")  // Common 사용
+                Text("Welcome to \(AppConstants.appName)!")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                
-                Text("Your weekend planning app")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
                 
                 // DesignSystem 컴포넌트 사용
                 PrimaryButton(title: "Get Started") {
@@ -25,7 +21,7 @@ public struct HomeView: View {
                 
                 Spacer()
             }
-            .padding(UIConstants.padding)  // Common 사용
+            .padding(UIConstants.padding)
             .navigationTitle("Home")
         }
     }
