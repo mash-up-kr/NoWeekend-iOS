@@ -1,0 +1,94 @@
+name: CI (Lint + Test)
+
+on:
+  pull_request:
+    branches: [main, develop, release/**]
+
+jobs:
+  ci:
+    runs-on: macos-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Install mise
+        run: brew install mise
+
+      - name: Enable idiomatic version files for ruby
+        run: mise settings add idiomatic_version_file_enable_tools ruby
+
+      - name: Install tools with mise
+        run: mise install
+
+      - name: Check tuist version
+        run: |
+          eval "$(mise activate bash)"
+          tuist version
+
+      - name: Tuist tasks (install + generate)
+        run: |
+          eval "$(mise activate bash)"
+          tuist install
+          tuist generate
+
+      - name: Create & Unlock Keychain
+        run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security default-keychain -s ci.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security set-keychain-settings -lut 21600 ci.keychain
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          
+      - name: Install certificates & profiles
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          bundle exec fastlane match development --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
+          bundle exec fastlane match appstore --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
+
+      - name: Lint
+        run: swiftlint lint --config .swiftlint.yml
+
+      - name: Build
+        run: bundle exec fastlane build
+
+      - name: Update PR Description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const newStatus = `
+            ### ✔️ CI Completed
+            - ✅ Lint: Completed
+            - ✅ Build: Completed
+            `;
+
+            const updated = (pr.data.body || "") + "\n\n" + newStatus;
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: updated
+            }); 
