@@ -14,16 +14,7 @@ let project = Project(
             resources: ["Resources/**"],
             dependencies: [
                 .project(target: "TabBar", path: "../Feature"),
-                .project(target: "Home", path: "../Feature"),
-                .project(target: "Profile", path: "../Feature"),
-                .project(target: "Calendar", path: "../Feature"),
-                .project(target: "Onboarding", path: "../Feature"),
-                .project(target: "UseCase", path: "../Core"),
-                .project(target: "Repository", path: "../Core"),
-                .project(target: "Network", path: "../Core"),
-                .project(target: "Storage", path: "../Core"),
-                .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "Onboarding", path: "../Feature")
             ],
             settings: .settings(
                 base: [
