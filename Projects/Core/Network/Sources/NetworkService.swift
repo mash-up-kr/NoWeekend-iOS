@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 import NetworkInterface
 
-public class NetworkService: NetworkServiceProtocol {
+public class NetworkService: NetworkServiceInterface {
     private let baseURL: String
     private let headers: HTTPHeaders
     
