@@ -1,7 +1,6 @@
 import Foundation
 import Alamofire
 import NetworkInterface
-import Common
 
 public class NetworkService: NetworkServiceProtocol {
     private let baseURL: String
