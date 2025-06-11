@@ -3,7 +3,7 @@ import Alamofire
 import NetworkInterface
 import Common
 
-public class NetworkService: NetworkServiceProtocol {
+public class NetworkService: NetworkServiceInterface {
     private let baseURL: String
     private let headers: HTTPHeaders
     

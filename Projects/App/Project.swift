@@ -18,10 +18,12 @@ let project = Project(
                 .project(target: "Profile", path: "../Feature"),
                 .project(target: "Calendar", path: "../Feature"),
                 .project(target: "Onboarding", path: "../Feature"),
+                .project(target: "Login", path: "../Feature"),
                 .project(target: "UseCase", path: "../Core"),
                 .project(target: "Repository", path: "../Core"),
                 .project(target: "Network", path: "../Core"),
                 .project(target: "Storage", path: "../Core"),
+                .project(target: "ThirdParty", path: "../Plugin"),
                 .project(target: "DesignSystem", path: "../Shared"),
                 .project(target: "Common", path: "../Shared")
             ],
