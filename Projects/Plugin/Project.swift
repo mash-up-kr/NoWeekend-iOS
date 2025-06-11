@@ -12,7 +12,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Analytics/Sources/**"],
             dependencies: [
-                .project(target: "Common", path: "../Shared")
+                .project(target: "ServiceInterface", path: "../Interface")
             ]
         ),
         .target(
@@ -24,7 +24,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Push/Sources/**"],
             dependencies: [
-                .project(target: "Common", path: "../Shared")
+                .project(target: "ServiceInterface", path: "../Interface")
             ]
         ),
         .target(
