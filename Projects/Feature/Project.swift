@@ -3,7 +3,6 @@ import ProjectDescription
 let project = Project(
     name: "Feature",
     targets: [
-        // TabBar
         .target(
             name: "TabBar",
             destinations: .iOS,
@@ -17,11 +16,8 @@ let project = Project(
                 .target(name: "Profile"),
                 .target(name: "Calendar"),
                 .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
             ]
         ),
-        
-        // Home Feature
         .target(
             name: "Home",
             destinations: .iOS,
@@ -33,12 +29,9 @@ let project = Project(
             dependencies: [
                 .project(target: "HomeInterface", path: "../Interface"),
                 .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "DesignSystem", path: "../Shared")
             ]
         ),
-        
-        // Calendar Feature
         .target(
             name: "Calendar",
             destinations: .iOS,
@@ -50,12 +43,9 @@ let project = Project(
             dependencies: [
                 .project(target: "CalendarInterface", path: "../Interface"),
                 .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "DesignSystem", path: "../Shared")
             ]
         ),
-        
-        // Profile Feature
         .target(
             name: "Profile",
             destinations: .iOS,
@@ -67,12 +57,9 @@ let project = Project(
             dependencies: [
                 .project(target: "ProfileInterface", path: "../Interface"),
                 .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "DesignSystem", path: "../Shared")
             ]
         ),
-        
-        // Onboarding Feature
         .target(
             name: "Onboarding",
             destinations: .iOS,
@@ -83,8 +70,7 @@ let project = Project(
             sources: ["Onboarding/Sources/**"],
             dependencies: [
                 .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "DesignSystem", path: "../Shared")
             ]
         )
     ]
