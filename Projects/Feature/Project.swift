@@ -86,6 +86,23 @@ let project = Project(
                 .project(target: "DesignSystem", path: "../Shared"),
                 .project(target: "Common", path: "../Shared")
             ]
+        ),
+        
+        // Login Feature
+        .target(
+            name: "Login",
+            destinations: .iOS,
+            product: .framework,
+            bundleId: "com.noweekend.feature.login",
+            deploymentTargets: .iOS("17.0"),
+            infoPlist: .default,
+            sources: ["Login/Sources/**"],
+            dependencies: [
+                .project(target: "Domain", path: "../Interface"),
+                .project(target: "DesignSystem", path: "../Shared"),
+                .project(target: "LoginInterface", path: "../Interface"),
+                .project(target: "Common", path: "../Shared")
+            ]
         )
     ]
 )
