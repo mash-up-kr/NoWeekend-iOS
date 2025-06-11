@@ -29,8 +29,7 @@ let project = Project(
                 .project(target: "RepositoryInterface", path: "../Interface"),
                 .project(target: "Domain", path: "../Interface"),
                 .project(target: "NetworkInterface", path: "../Interface"),
-                .project(target: "StorageInterface", path: "../Interface"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "StorageInterface", path: "../Interface")
             ]
         ),
         .target(
@@ -43,7 +42,6 @@ let project = Project(
             sources: ["Network/Sources/**"],
             dependencies: [
                 .project(target: "NetworkInterface", path: "../Interface"),
-                .project(target: "Common", path: "../Shared"),
                 .external(name: "Alamofire")
             ]
         ),
@@ -57,8 +55,7 @@ let project = Project(
             sources: ["Storage/Sources/**"],
             dependencies: [
                 .project(target: "StorageInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "Domain", path: "../Interface")
             ]
         )
     ]
