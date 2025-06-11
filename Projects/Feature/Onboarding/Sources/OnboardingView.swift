@@ -1,7 +1,6 @@
 import SwiftUI
 import Domain
 import DesignSystem
-import Common
 
 public struct OnboardingView: View {
     @State private var currentPage = 0

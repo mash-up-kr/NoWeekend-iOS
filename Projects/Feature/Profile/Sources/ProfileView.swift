@@ -2,7 +2,6 @@ import SwiftUI
 import ProfileInterface
 import Domain
 import DesignSystem
-import Common
 
 public struct ProfileView: View {
     public init() {}

@@ -2,7 +2,6 @@ import SwiftUI
 import HomeInterface
 import Domain
 import DesignSystem
-import Common
 
 public struct HomeView: View {
     public init() {}
