@@ -3,7 +3,6 @@ import Home
 import Profile
 import Calendar
 import DesignSystem
-import Common
 
 public struct TabBarView: View {
     @State private var selectedTab = 0
