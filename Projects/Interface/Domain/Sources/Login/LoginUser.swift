@@ -9,13 +9,11 @@ import Foundation
 
 public struct LoginUser {
     public let email: String
-    public let name: String?
     public let accessToken: String?
     public let isExistingUser: Bool?
     
-    public init(email: String, name: String?, accessToken: String?, isExistingUser: Bool?) {
+    public init(email: String, accessToken: String?, isExistingUser: Bool?) {
         self.email = email
-        self.name = name
         self.accessToken = accessToken
         self.isExistingUser = isExistingUser
     }

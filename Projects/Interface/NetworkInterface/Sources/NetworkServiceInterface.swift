@@ -7,7 +7,7 @@ public enum NetworkError: Error {
     case serverError(String)
 }
 
-public protocol NetworkServiceProtocol {
+public protocol NetworkServiceInterface {
     func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
     func post<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
     func put<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T

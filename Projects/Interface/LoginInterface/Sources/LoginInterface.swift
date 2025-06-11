@@ -3,5 +3,5 @@ import Domain
 
 
 public protocol LoginWithGoogleUseCaseInterface {
-    func execute(accessToken: String, name: String?) async throws -> LoginEntity
+    func execute(accessToken: String, name: String?) async throws -> LoginUser
 }
