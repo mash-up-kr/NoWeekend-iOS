@@ -1,7 +1,6 @@
 import Foundation
 import StorageInterface
 import Domain
-import Common
 
 public class UserDefaultsStorage: UserStorageProtocol, EventStorageProtocol {
     private let userDefaults = UserDefaults.standard

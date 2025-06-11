@@ -3,7 +3,6 @@ import RepositoryInterface
 import Domain
 import NetworkInterface
 import StorageInterface
-import Common
 
 public class EventRepository: EventRepositoryProtocol {
     private let networkService: NetworkServiceProtocol
