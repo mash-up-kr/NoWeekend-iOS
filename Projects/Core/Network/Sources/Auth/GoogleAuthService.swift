@@ -1,24 +1,25 @@
 //
 //  GoogleAuthService.swift
-//  Analytics
+//  Network
 //
-//  Created by SiJongKim on 6/11/25.
+//  Created by SiJongKim on 6/12/25.
 //
 
 import Foundation
 import GoogleSignIn
-import ServiceInterface
-import Common
+import Alamofire
 import UIKit
+import ServiceInterface
 
-public final class DefaultGoogleAuthService: GoogleAuthServiceInterface {
+
+public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {}
     
     public func signIn() async throws -> (accessToken: String, name: String?, email: String?) {
         guard let scene = await UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let root = await scene.windows.first?.rootViewController else {
             throw NSError(
-                domain: "",
+                domain: "GoogleAuthService",
                 code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "RootViewController를 찾을 수 없습니다."]
             )
@@ -31,11 +32,8 @@ public final class DefaultGoogleAuthService: GoogleAuthServiceInterface {
         )
         
         let user = result.user
-        
-        // 토큰 정보 출력
         let accessToken = user.accessToken.tokenString
 
-        // 토큰 검증 (원래 코드와 동일)
         await verifyGoogleToken(accessToken)
 
         return (
@@ -49,29 +47,24 @@ public final class DefaultGoogleAuthService: GoogleAuthServiceInterface {
         GIDSignIn.sharedInstance.signOut()
     }
     
-    // MARK: - Token Verification
+    // MARK: - Token Verification with Alamofire
     private func verifyGoogleToken(_ accessToken: String) async {
-        
         await checkTokenInfo(accessToken)
         await getUserInfo(accessToken)
     }
     
     private func checkTokenInfo(_ accessToken: String) async {
-        let url = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=\(accessToken)"
-        
-        guard let tokenInfoURL = URL(string: url) else {
-            print("[Token Verification] Invalid URL")
-            return
-        }
+        let url = "https://www.googleapis.com/oauth2/v1/tokeninfo"
+        let parameters: [String: String] = ["access_token": accessToken]
         
         do {
-            let (data, response) = try await URLSession.shared.data(from: tokenInfoURL)
+            let response = try await AF.request(
+                url,
+                method: .get,
+                parameters: parameters
+            ).serializingData().value
             
-            if let httpResponse = response as? HTTPURLResponse {
-                print("[Token Info] Status Code: \(httpResponse.statusCode)")
-            }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
+            if let jsonString = String(data: response, encoding: .utf8) {
                 print("[Token Info] Response: \(jsonString)")
             }
         } catch {
@@ -81,23 +74,18 @@ public final class DefaultGoogleAuthService: GoogleAuthServiceInterface {
     
     private func getUserInfo(_ accessToken: String) async {
         let url = "https://www.googleapis.com/oauth2/v2/userinfo"
-        
-        guard let userInfoURL = URL(string: url) else {
-            print("[User Info] Invalid URL")
-            return
-        }
-        
-        var request = URLRequest(url: userInfoURL)
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(accessToken)"
+        ]
         
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let response = try await AF.request(
+                url,
+                method: .get,
+                headers: headers
+            ).serializingData().value
             
-            if let httpResponse = response as? HTTPURLResponse {
-                print("[User Info] Status Code: \(httpResponse.statusCode)")
-            }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
+            if let jsonString = String(data: response, encoding: .utf8) {
                 print("[User Info] Response: \(jsonString)")
             }
         } catch {
@@ -105,3 +93,4 @@ public final class DefaultGoogleAuthService: GoogleAuthServiceInterface {
         }
     }
 }
+

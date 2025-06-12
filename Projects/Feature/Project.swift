@@ -87,7 +87,11 @@ let project = Project(
                 .project(target: "Domain", path: "../Interface"),
                 .project(target: "DesignSystem", path: "../Shared"),
                 .project(target: "LoginInterface", path: "../Interface"),
-                .project(target: "Common", path: "../Shared")
+                .project(target: "Common", path: "../Shared"),
+                
+                .project(target: "UseCase", path: "../Core"),
+                .project(target: "Repository", path: "../Core"),
+                .project(target: "Network", path: "../Core")
             ]
         )
     ]

@@ -12,7 +12,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Analytics/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "Common", path: "../Shared")
             ]
         ),
         .target(
@@ -24,7 +24,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Push/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "Common", path: "../Shared")
             ]
         ),
         .target(
@@ -36,9 +36,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["ThirdParty/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface"),
-                .project(target: "Common", path: "../Shared"),
-                .external(name: "GoogleSignIn")
+                .project(target: "Common", path: "../Shared")
             ]
         )
     ]

@@ -42,7 +42,9 @@ let project = Project(
             sources: ["Network/Sources/**"],
             dependencies: [
                 .project(target: "NetworkInterface", path: "../Interface"),
-                .external(name: "Alamofire")
+                .project(target: "ServiceInterface", path: "../Interface"),
+                .external(name: "Alamofire"),
+                .external(name: "GoogleSignIn")
             ]
         ),
         .target(

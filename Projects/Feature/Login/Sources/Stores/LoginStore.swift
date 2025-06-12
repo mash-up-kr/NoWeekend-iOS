@@ -89,7 +89,7 @@ public final class LoginStore: ObservableObject {
                 }
                 
             } catch {
-                print("❌ Google Sign-In failed: \(error)")
+                print("Google Sign-In failed: \(error)")
                 send(.signInFailed(error: error))
             }
         }

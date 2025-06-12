@@ -12,7 +12,6 @@ let project = Project(
             infoPlist: .default,
             sources: ["Common/Sources/**"],
             dependencies: [
-                .external(name: "GoogleSignIn")
             ]
         ),
         .target(
