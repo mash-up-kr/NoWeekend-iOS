@@ -29,7 +29,6 @@ extension GoogleLoginResponseDTO {
     func toDomain() -> LoginUser {
         return LoginUser(
             email: self.email,
-            name: nil,
             accessToken: self.accessToken,
             isExistingUser: self.exists
         )
