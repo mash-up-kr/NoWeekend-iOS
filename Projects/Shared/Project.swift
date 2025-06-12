@@ -11,7 +11,9 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Common/Sources/**"],
-            dependencies: []
+            dependencies: [
+                .external(name: "GoogleSignIn")
+            ]
         ),
         .target(
             name: "DesignSystem",
