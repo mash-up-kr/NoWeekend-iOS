@@ -22,8 +22,8 @@ public final class AppStore: ObservableObject {
     public func send(_ intent: AppIntent) {
         switch intent {
         case .checkAutoLogin:
-            // 자동 로그인 로직
-            
+            // 자동 로그인 로직 예정
+            break
         case .loginSucceeded(let user):
             currentUser = user
             
@@ -37,7 +37,9 @@ public final class AppStore: ObservableObject {
             currentState = .main
             
         case .logout:
-            // 로그아웃 로직
+            // 로그아웃 로직 예정
+            currentUser = nil
+            currentState = .login
         }
     }
 }
