@@ -14,7 +14,8 @@ let project = Project(
             dependencies: [
                 .project(target: "Domain", path: "../Interface"),
                 .project(target: "RepositoryInterface", path: "../Interface"),
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "ServiceInterface", path: "../Interface"),
+                .project(target: "LoginInterface", path: "../Interface")
             ]
         ),
         .target(
