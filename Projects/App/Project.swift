@@ -11,13 +11,10 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
-            resources: [
-                "Resources/**"
-            ],
+            resources: ["Resources/**"],
             dependencies: [
-                .project(target: "Presentation", path: "../Presentation"),
-                .project(target: "Data", path: "../Data"),
-                .project(target: "Domain", path: "../Domain"),
+                .project(target: "TabBar", path: "../Feature"),
+                .project(target: "Onboarding", path: "../Feature")
             ],
             settings: .settings(
                 base: [
@@ -30,29 +27,17 @@ let project = Project(
                         settings: [
                             "PROVISIONING_PROFILE_SPECIFIER": "match Development com.noweekend.app",
                             "CODE_SIGN_IDENTITY": "Apple Development"
-                        ],
-                        xcconfig: nil
+                        ]
                     ),
                     .release(
                         name: .release,
                         settings: [
                             "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.noweekend.app",
                             "CODE_SIGN_IDENTITY": "Apple Distribution"
-                        ],
-                        xcconfig: nil
+                        ]
                     )
                 ]
             )
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "App",
-            shared: true,
-            buildAction: .buildAction(targets: ["App"]),
-            testAction: TestAction.targets([]),
-            runAction: .runAction(configuration: .debug),
-            archiveAction: .archiveAction(configuration: .release)
         )
     ]
 )
