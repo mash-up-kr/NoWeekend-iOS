@@ -14,7 +14,8 @@ let project = Project(
             resources: ["Resources/**"],
             dependencies: [
                 .project(target: "TabBar", path: "../Feature"),
-                .project(target: "Onboarding", path: "../Feature")
+                .project(target: "Onboarding", path: "../Feature"),
+                .project(target: "Login", path: "../Feature")
             ],
             settings: .settings(
                 base: [

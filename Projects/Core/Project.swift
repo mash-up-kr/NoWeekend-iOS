@@ -14,7 +14,8 @@ let project = Project(
             dependencies: [
                 .project(target: "Domain", path: "../Interface"),
                 .project(target: "RepositoryInterface", path: "../Interface"),
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "ServiceInterface", path: "../Interface"),
+                .project(target: "LoginInterface", path: "../Interface")
             ]
         ),
         .target(
@@ -42,7 +43,9 @@ let project = Project(
             sources: ["Network/Sources/**"],
             dependencies: [
                 .project(target: "NetworkInterface", path: "../Interface"),
-                .external(name: "Alamofire")
+                .project(target: "ServiceInterface", path: "../Interface"),
+                .external(name: "Alamofire"),
+                .external(name: "GoogleSignIn")
             ]
         ),
         .target(

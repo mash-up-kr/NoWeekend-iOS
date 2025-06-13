@@ -52,6 +52,18 @@ let project = Project(
                 .target(name: "Domain")
             ]
         ),
+        .target(
+            name: "LoginInterface",
+            destinations: .iOS,
+            product: .framework,
+            bundleId: "com.noweekend.interface.login",
+            deploymentTargets: .iOS("17.0"),
+            infoPlist: .default,
+            sources: ["LoginInterface/Sources/**"],
+            dependencies: [
+                .target(name: "Domain")
+            ]
+        ),
         
         // 🔹 Service 인터페이스들
         .target(

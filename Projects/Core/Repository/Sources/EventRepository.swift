@@ -5,11 +5,11 @@ import NetworkInterface
 import StorageInterface
 
 public class EventRepository: EventRepositoryProtocol {
-    private let networkService: NetworkServiceProtocol
+    private let networkService: NetworkServiceInterface
     private let storage: EventStorageProtocol
     
     public init(
-        networkService: NetworkServiceProtocol,
+        networkService: NetworkServiceInterface,
         storage: EventStorageProtocol
     ) {
         self.networkService = networkService
