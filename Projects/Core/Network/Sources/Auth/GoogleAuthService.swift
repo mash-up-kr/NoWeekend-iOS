@@ -16,8 +16,15 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {}
     
     public func signIn() async throws -> (accessToken: String, name: String?, email: String?) {
-        guard let scene = await UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let root = await scene.windows.first?.rootViewController else {
+        let rootViewController: UIViewController? = await MainActor.run {
+            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let root = scene.windows.first?.rootViewController else {
+                return nil
+            }
+            return root
+        }
+        
+        guard let root = rootViewController else {
             throw NSError(
                 domain: "GoogleAuthService",
                 code: -1,
@@ -42,7 +49,7 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
             email: user.profile?.email
         )
     }
-    
+
     public func signOut() {
         GIDSignIn.sharedInstance.signOut()
     }

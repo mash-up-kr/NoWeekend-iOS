@@ -18,3 +18,4 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return LoginConfiguration.handleOpenURL(url)
     }
 }
+ 

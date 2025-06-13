@@ -1,12 +1,5 @@
 import Foundation
 
-public enum NetworkError: Error {
-    case invalidURL
-    case noData
-    case decodingError
-    case serverError(String)
-}
-
 public protocol NetworkServiceInterface {
     func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
     func post<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
