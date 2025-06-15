@@ -42,17 +42,6 @@ public struct OnboardingView: View {
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 
                 VStack(spacing: 0) {
-                    if currentPage == pages.count - 1 {
-                        PrimaryButton(title: "Get Started") {
-                            showMainApp = true
-                        }
-                    } else {
-                        PrimaryButton(title: "Next") {
-                            withAnimation {
-                                currentPage += 1
-                            }
-                        }
-                    }
                     
                     Button("Skip") {
                         showMainApp = true
