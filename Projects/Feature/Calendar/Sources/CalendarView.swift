@@ -9,7 +9,7 @@ public struct CalendarView: View {
     public var body: some View {
         VStack {
             Text("지훈")
-                .font(Typography.title)
+                .foregroundColor(DS.Colors.Text.gray700)
         }
     }
 }

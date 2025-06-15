@@ -1,5 +1,4 @@
 import SwiftUI
-import Common
 
 // MARK: - Primary Button
 public struct PrimaryButton: View {
@@ -14,12 +13,12 @@ public struct PrimaryButton: View {
     public var body: some View {
         Button(action: action) {
             Text(title)
-                .font(Typography.headline)
+//                .font(Font.body2.)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Colors.primary)
-                .cornerRadius(UIConstants.cornerRadius)
+//                .background(Colors.primary)
+//                .cornerRadius(UIConstants.cornerRadius)
         }
     }
 }
@@ -36,9 +35,9 @@ public struct CardView<Content: View>: View {
         VStack {
             content
         }
-        .padding(Spacing.md)
-        .background(Colors.background)
-        .cornerRadius(UIConstants.cornerRadius)
+//        .padding(Spacing.md)
+//        .background(Colors.background)
+//        .cornerRadius(UIConstants.cornerRadius)
         .shadow(radius: 2)
     }
 }

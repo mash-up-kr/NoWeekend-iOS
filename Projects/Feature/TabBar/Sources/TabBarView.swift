@@ -32,7 +32,7 @@ public struct TabBarView: View {
                 }
                 .tag(2)
         }
-        .accentColor(Colors.primary)
+        .accentColor(DS.Colors.TaskItem.green)
     }
 }
 

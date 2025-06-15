@@ -9,7 +9,7 @@ public struct ProfileView: View {
     public var body: some View {
         VStack {
             Text("시종")
-                .font(Typography.title)
+                .font(Font.heading4)
         }
     }
 }

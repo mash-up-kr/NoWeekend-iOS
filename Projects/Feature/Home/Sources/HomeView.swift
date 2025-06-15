@@ -8,8 +8,10 @@ public struct HomeView: View {
     
     public var body: some View {
         VStack {
+            DS.Images.imgCake
             Text("나희")
-                .font(Typography.title)
+                .font(Font.heading2)
+                .foregroundColor(DS.Colors.Text.gray900)
         }
     }
 }

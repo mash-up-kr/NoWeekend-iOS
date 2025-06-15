@@ -46,23 +46,48 @@ import SwiftUI
 public enum DS {
     {% for catalog in catalogs %}
     public enum {{catalog.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
-        {% call casesBlock catalog.assets %}
+        {% for asset in catalog.assets %}
+        {% if asset.type == "image" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{asset.value}}" ).image
+        {% endif %}
+        {% if asset.type == "color" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{asset.value}}" ).color
+        {% endif %}
+        {% if asset.items %}
+        public enum {{asset.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
+            {% for item in asset.items %}
+            {% if item.type == "color" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{item.value}}" ).color
+            {% endif %}
+            {% if item.type == "image" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{item.value}}" ).image
+            {% endif %}
+            {% endfor %}
+        }
+        {% endif %}
+        {% endfor %}
     }
     {% endfor %}
 }
 
 // MARK: - Implementation Details
-public struct ImageAsset {
-    public fileprivate(set) var name: String
+{{accessModifier}} struct ImageAsset {
+    {{accessModifier}} fileprivate(set) var name: String
 
     #if os(macOS)
-    public typealias Image = NSImage
+    {{accessModifier}} typealias Image = NSImage
     #elseif os(iOS) || os(tvOS) || os(watchOS)
-    public typealias Image = UIImage
+    {{accessModifier}} typealias Image = UIImage
     #endif
 
-    public var uiImage: Image {
-        let bundle = BundleToken.bundle
+    /// SwiftUI Image
+    {{accessModifier}} var image: SwiftUI.Image {
+        SwiftUI.Image(uiImage: uiImage)
+    }
+
+    /// UIKit UIImage
+    {{accessModifier}} var uiImage: Image {
+        let bundle = {{param.bundle|default:"BundleToken.bundle"}}
         #if os(iOS) || os(tvOS)
         let image = Image(named: name, in: bundle, compatibleWith: nil)
         #elseif os(macOS)
@@ -76,54 +101,25 @@ public struct ImageAsset {
         }
         return result
     }
-
-    public var image: SwiftUI.Image {
-        return SwiftUI.Image(uiImage: uiImage)
-    }
 }
 
-public struct ColorAsset {
-    public fileprivate(set) var name: String
+{{accessModifier}} struct ColorAsset {
+    {{accessModifier}} fileprivate(set) var name: String
 
-    public var uiColor: UIColor {
-        let bundle = BundleToken.bundle
+    /// SwiftUI Color
+    {{accessModifier}} var color: SwiftUI.Color {
+        SwiftUI.Color(uiColor: uiColor)
+    }
+
+    /// UIKit UIColor
+    {{accessModifier}} var uiColor: UIColor {
+        let bundle = {{param.bundle|default:"BundleToken.bundle"}}
         guard let color = UIColor(named: name, in: bundle, compatibleWith: nil) else {
             fatalError("Unable to load color asset named \(name).")
         }
         return color
     }
-
-    public var color: SwiftUI.Color {
-        return SwiftUI.Color(uiColor: uiColor)
-    }
 }
-
-public extension ImageAsset.Image {
-    @available(macOS, deprecated,
-        message: "This initializer is unsafe on macOS, please use the ImageAsset.image property")
-    convenience init?(asset: ImageAsset) {
-        #if os(iOS) || os(tvOS)
-        let bundle = BundleToken.bundle
-        self.init(named: asset.name, in: bundle, compatibleWith: nil)
-        #elseif os(macOS)
-        self.init(named: NSImage.Name(asset.name))
-        #elseif os(watchOS)
-        self.init(named: asset.name)
-        #endif
-    }
-}
-
-// swiftlint:disable convenience_type
-private final class BundleToken {
-    static let bundle: Bundle = {
-        #if SWIFT_PACKAGE
-        return Bundle.module
-        #else
-        return Bundle(for: BundleToken.self)
-        #endif
-    }()
-}
-// swiftlint:enable convenience_type
 
 {% if resourceCount.arresourcegroup > 0 %}
 {{accessModifier}} struct {{arResourceGroupType}} {
@@ -143,18 +139,19 @@ private final class BundleToken {
 @available(iOS 11.3, *)
 {{accessModifier}} extension ARReferenceImage {
   static func referenceImages(in asset: {{arResourceGroupType}}) -> Set<ARReferenceImage> {
-    let bundle = .bundle
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
     return referenceImages(inGroupNamed: asset.name, bundle: bundle) ?? Set()
   }
 }
 @available(iOS 12.0, *)
 {{accessModifier}} extension ARReferenceObject {
   static func referenceObjects(in asset: {{arResourceGroupType}}) -> Set<ARReferenceObject> {
-    let bundle = {{bundleToken}}.bundle
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
     return referenceObjects(inGroupNamed: asset.name, bundle: bundle) ?? Set()
   }
 }
 {% endif %}
+
 {% if resourceCount.data > 0 %}
 {{accessModifier}} struct {{dataType}} {
   {{accessModifier}} fileprivate(set) var name: String
@@ -162,7 +159,7 @@ private final class BundleToken {
   @available(iOS 9.0, macOS 10.11, *)
   {{accessModifier}} var data: NSDataAsset {
     guard let data = NSDataAsset(asset: self) else {
-      fatalError("Unable to load data asset named \\(name).")
+      fatalError("Unable to load data asset named \(name).")
     }
     return data
   }
@@ -172,7 +169,7 @@ private final class BundleToken {
 @available(iOS 9.0, macOS 10.11, *)
 {{accessModifier}} extension NSDataAsset {
   convenience init?(asset: {{dataType}}) {
-    let bundle = {{bundleToken}}.bundle
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
     #if os(iOS) || os(tvOS)
     self.init(name: asset.name, bundle: bundle)
     #elseif os(macOS)
@@ -183,54 +180,7 @@ private final class BundleToken {
 #endif
 {% endif %}
 
-{% if resourceCount.image > 0 %}
-{{accessModifier}} struct ImageAsset {
-  {{accessModifier}} fileprivate(set) var name: String
-
-  #if os(macOS)
-  {{accessModifier}} typealias Image = NSImage
-  #elseif os(iOS) || os(tvOS) || os(watchOS)
-  {{accessModifier}} typealias Image = UIImage
-  #endif
-
-  {{accessModifier}} var uiImage: Image {
-    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
-    #if os(iOS) || os(tvOS)
-    let image = Image(named: name, in: bundle, compatibleWith: nil)
-    #elseif os(macOS)
-    let name = NSImage.Name(self.name)
-    let image = (bundle == .main) ? NSImage(named: name) : bundle.image(forResource: name)
-    #elseif os(watchOS)
-    let image = Image(named: name)
-    #endif
-    guard let result = image else {
-      fatalError("Unable to load image asset named \(name).")
-    }
-    return result
-  }
-
-  {{accessModifier}} var image: SwiftUI.Image {
-    return SwiftUI.Image(uiImage: uiImage)
-  }
-}
-
-{{accessModifier}} extension ImageAsset.Image {
-  @available(macOS, deprecated,
-    message: "This initializer is unsafe on macOS, please use the ImageAsset.image property")
-  convenience init?(asset: ImageAsset) {
-    #if os(iOS) || os(tvOS)
-    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
-    self.init(named: asset.name, in: bundle, compatibleWith: nil)
-    #elseif os(macOS)
-    self.init(named: NSImage.Name(asset.name))
-    #elseif os(watchOS)
-    self.init(named: asset.name)
-    #endif
-  }
-}
-{% endif %}
 {% if not param.bundle %}
-
 // swiftlint:disable convenience_type
 private final class BundleToken {
   static let bundle: Bundle = {

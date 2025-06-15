@@ -18,10 +18,3 @@ public extension String {
         return formatter.date(from: self)
     }
 }
-
-// MARK: - Color Extensions
-public extension Color {
-    static let primary = Color("Primary")
-    static let secondary = Color("Secondary")
-    static let background = Color("Background")
-}

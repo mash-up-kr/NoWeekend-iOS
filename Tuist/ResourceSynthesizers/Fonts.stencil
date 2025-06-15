@@ -46,63 +46,63 @@ import SwiftUI
         guard let font = UIFont(font: self, size: 28) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 28")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _24: Font {
         guard let font = UIFont(font: self, size: 24) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 24")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _20: Font {
         guard let font = UIFont(font: self, size: 20) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 20")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _18: Font {
         guard let font = UIFont(font: self, size: 18) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 18")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _16: Font {
         guard let font = UIFont(font: self, size: 16) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 16")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _14: Font {
         guard let font = UIFont(font: self, size: 14) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 14")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _12: Font {
         guard let font = UIFont(font: self, size: 12) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 12")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} var _10: Font {
         guard let font = UIFont(font: self, size: 10) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 10")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} func font(size: CGFloat) -> Font {
         guard let font = UIFont(font: self, size: size) else {
             fatalError("Unable to initialize font name: '\(name)', family: \(family)")
         }
-        return Font(uiFont: font)
+        return Font(font)
     }
 
     {{accessModifier}} func register() {
@@ -128,42 +128,29 @@ import SwiftUI
     }
 }
 
-{{accessModifier}} extension SwiftUI.Font {
-    {% for family in families %}
-    static var heading2: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold._28
-    }
-    static var heading3: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold._24
-    }
-    static var heading4: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold._20
-    }
-    static var heading5: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold._18
-    }
-    static var heading6: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold._16
-    }
-    static var subtitle1: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.medium._14
-    }
-    static var subtitle2: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.medium._12
-    }
-    static var body1: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.medium._16
-    }
-    static var body2: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.regular._14
-    }
-    static var body3: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.regular._12
-    }
-    static var body4: Font {
-        {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.regular._10
-    }
-    {% endfor %}
+{{accessModifier}} extension Font {
+    /// 28px Bold, lineHeight: 48, letterSpacing: -0.4
+    static var heading2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._28 }
+    /// 24px Bold, lineHeight: 36, letterSpacing: -0.3
+    static var heading3: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._24 }
+    /// 20px Bold, lineHeight: 30, letterSpacing: -0.2
+    static var heading4: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._20 }
+    /// 18px Bold, lineHeight: 26, letterSpacing: -0.1
+    static var heading5: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._18 }
+    /// 16px Bold, lineHeight: 24, letterSpacing: -0.1
+    static var heading6: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._16 }
+    /// 14px Medium, lineHeight: 22, letterSpacing: -0.1
+    static var subtitle1: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._14 }
+    /// 12px Medium, lineHeight: 18, letterSpacing: 0
+    static var subtitle2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._12 }
+    /// 16px Medium, lineHeight: 24, letterSpacing: -0.1
+    static var body1: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._16 }
+    /// 14px Regular, lineHeight: 22, letterSpacing: -0.1
+    static var body2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._14 }
+    /// 12px Regular, lineHeight: 18, letterSpacing: -0.1
+    static var body3: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._12 }
+    /// 10px Regular, lineHeight: 14, letterSpacing: 0
+    static var body4: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._10 }
 }
 
 {% if not param.bundle and not param.lookupFunction %}

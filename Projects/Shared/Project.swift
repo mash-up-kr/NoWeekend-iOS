@@ -4,13 +4,13 @@ let project = Project(
     name: "Shared",
     targets: [
         .target(
-            name: "Common",
+            name: "Utils",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.noweekend.shared.common",
+            bundleId: "com.noweekend.shared.utils",
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
-            sources: ["Common/Sources/**"],
+            sources: ["Utils/Sources/**"],
             dependencies: []
         ),
         .target(
@@ -21,9 +21,22 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["DesignSystem/Sources/**"],
+            resources: ["DesignSystem/Resources/**"],
             dependencies: [
-                .target(name: "Common")
+                .external(name: "Lottie")
             ]
+        )
+    ],
+    resourceSynthesizers: [
+        .custom(
+            name: "Assets", 
+            parser: .assets, 
+            extensions: ["xcassets"]
+        ),
+        .custom(
+            name: "Fonts",
+            parser: .fonts,
+            extensions: ["ttf"]
         )
     ]
 )
