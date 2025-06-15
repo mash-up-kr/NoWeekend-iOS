@@ -37,6 +37,11 @@ let project = Project(
             name: "Fonts",
             parser: .fonts,
             extensions: ["ttf"]
+        ),
+        .custom(
+            name: "JSON",
+            parser: .json,
+            extensions: ["json"]
         )
     ]
 )
