@@ -1,104 +1,55 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
+
+let project = Project.make(
     name: "Interface",
     targets: [
-        // 🔹 Domain (공통 엔티티)
-        .target(
+        .framework(
             name: "Domain",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.domain",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["Domain/Sources/**"],
-            dependencies: []
+            bundleId: BundleID.Interface.domain,
+            sources: ["Domain/Sources/**"]
         ),
-        
-        // 🔹 Feature 인터페이스들
-        .target(
+        .framework(
             name: "HomeInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.home",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.home,
             sources: ["HomeInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         ),
-        .target(
+        .framework(
             name: "ProfileInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.profile",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.profile,
             sources: ["ProfileInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         ),
-        .target(
+        .framework(
             name: "CalendarInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.calendar",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.calendar,
             sources: ["CalendarInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         ),
-        
-        // 🔹 Service 인터페이스들
-        .target(
+        .framework(
             name: "RepositoryInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.repository",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.repository,
             sources: ["RepositoryInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         ),
-        .target(
+        .framework(
             name: "NetworkInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.network",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["NetworkInterface/Sources/**"],
-            dependencies: []
+            bundleId: BundleID.Interface.network,
+            sources: ["NetworkInterface/Sources/**"]
         ),
-        .target(
+        .framework(
             name: "StorageInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.storage",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.storage,
             sources: ["StorageInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         ),
-        .target(
+        .framework(
             name: "ServiceInterface",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.interface.service",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Interface.service,
             sources: ["ServiceInterface/Sources/**"],
-            dependencies: [
-                .target(name: "Domain")
-            ]
+            dependencies: [.target(name: "Domain")]
         )
     ]
 )

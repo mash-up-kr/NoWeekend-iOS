@@ -1,76 +1,58 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
+
+let project = Project.make(
     name: "Feature",
     targets: [
-        .target(
+        .framework(
             name: "TabBar",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.feature.tabbar",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Feature.tabBar,
             sources: ["TabBar/Sources/**"],
             dependencies: [
                 .target(name: "Home"),
                 .target(name: "Profile"),
                 .target(name: "Calendar"),
-                .project(target: "DesignSystem", path: "../Shared"),
+                .shared(.designSystem)
             ]
         ),
-        .target(
+        .framework(
             name: "Home",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.feature.home",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Feature.home,
             sources: ["Home/Sources/**"],
             dependencies: [
-                .project(target: "HomeInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared")
+                .interface(.homeInterface),
+                .interface(.domain),
+                .shared(.designSystem)
             ]
         ),
-        .target(
+        .framework(
             name: "Calendar",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.feature.calendar",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Feature.calendar,
             sources: ["Calendar/Sources/**"],
             dependencies: [
-                .project(target: "CalendarInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared")
+                .interface(.calendarInterface),
+                .interface(.domain),
+                .shared(.designSystem)
             ]
         ),
-        .target(
+        .framework(
             name: "Profile",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.feature.profile",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Feature.profile,
             sources: ["Profile/Sources/**"],
             dependencies: [
-                .project(target: "ProfileInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared")
+                .interface(.profileInterface),
+                .interface(.domain),
+                .shared(.designSystem)
             ]
         ),
-        .target(
+        .framework(
             name: "Onboarding",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.feature.onboarding",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Feature.onboarding,
             sources: ["Onboarding/Sources/**"],
             dependencies: [
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "DesignSystem", path: "../Shared")
+                .interface(.domain),
+                .shared(.designSystem)
             ]
         )
     ]
