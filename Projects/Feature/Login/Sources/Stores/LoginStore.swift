@@ -8,24 +8,22 @@
 import Foundation
 import Combine
 import LoginInterface
-import ServiceInterface
-import NetworkInterface
-import Common
+import Domain
 
 @MainActor
 public final class LoginStore: ObservableObject {
     @Published private(set) var state = LoginState()
     let effect = PassthroughSubject<LoginEffect, Never>()
     
-    private let loginUseCase: LoginWithGoogleUseCaseInterface
-    private let googleAuthService: GoogleAuthServiceInterface
+    private let loginWithGoogleUseCase: GoogleLoginUseCaseInterface
+    private let authUseCase: AuthUseCaseInterface
     
     public init(
-        loginUseCase: LoginWithGoogleUseCaseInterface,
-        googleAuthService: GoogleAuthServiceInterface
+        loginWithGoogleUseCase: GoogleLoginUseCaseInterface,
+        authUseCase: AuthUseCaseInterface
     ) {
-        self.loginUseCase = loginUseCase
-        self.googleAuthService = googleAuthService
+        self.loginWithGoogleUseCase = loginWithGoogleUseCase
+        self.authUseCase = authUseCase
     }
     
     public func send(_ intent: LoginIntent) {
@@ -35,63 +33,44 @@ public final class LoginStore: ObservableObject {
         case .signInWithApple:
             break
         case .signInSucceeded(let user):
-            state.isSignedIn = true
-            state.userEmail = user.email
-            state.isLoading = false
-            effect.send(.navigateToHome)
+            handleSignInSuccess(user)
         case .signInFailed(let error):
-            state.errorMessage = error.localizedDescription
-            state.isLoading = false
-            effect.send(.showError(message: error.localizedDescription))
+            handleSignInFailure(error)
         case .signOut:
-            googleAuthService.signOut()
-            state = LoginState()
+            handleSignOut()
         }
     }
     
+    // MARK: - Private Methods
     private func handleGoogleSignIn() {
         state.errorMessage = ""
         state.isLoading = true
         
         Task {
             do {
-                let signInResult = try await googleAuthService.signIn()
-                
-                do {
-                    let user = try await loginUseCase.execute(
-                        accessToken: signInResult.accessToken,
-                        name: nil
-                    )
-                    send(.signInSucceeded(user: user))
-                    
-                } catch {
-                    if let networkError = error as? NetworkError,
-                       case .serverError(let message) = networkError,
-                       message.contains("401") || message.contains("Unauthorized") {
-                        
-                        guard let profileName = signInResult.name,
-                              !profileName.isEmpty else {
-                            throw NSError(
-                                domain: "",
-                                code: -1,
-                                userInfo: [NSLocalizedDescriptionKey: "회원가입을 위한 이름을 가져올 수 없습니다."]
-                            )
-                        }
-                        
-                        let user = try await loginUseCase.execute(
-                            accessToken: signInResult.accessToken,
-                            name: profileName
-                        )
-                        send(.signInSucceeded(user: user))
-                    } else {
-                        send(.signInFailed(error: error))
-                    }
-                }
-                
+                let user = try await loginWithGoogleUseCase.execute()
+                send(.signInSucceeded(user: user))
             } catch {
-                print("Google Sign-In failed: \(error)")
                 send(.signInFailed(error: error))
             }
         }
+    }
+    
+    private func handleSignInSuccess(_ user: LoginUser) {
+        state.isSignedIn = true
+        state.userEmail = user.email
+        state.isLoading = false
+        effect.send(.navigateToHome)
+    }
+    
+    private func handleSignInFailure(_ error: Error) {
+        state.errorMessage = error.localizedDescription
+        state.isLoading = false
+        effect.send(.showError(message: error.localizedDescription))
+    }
+    
+    private func handleSignOut() {
+        authUseCase.signOut()
+        state = LoginState()
     }
 }

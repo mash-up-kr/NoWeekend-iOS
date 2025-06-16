@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import UIKit
 import Domain
 
 public protocol GoogleAuthServiceInterface {
-    func signIn() async throws -> (accessToken: String, name: String?, email: String?)
+    func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult
     func signOut()
 }
 

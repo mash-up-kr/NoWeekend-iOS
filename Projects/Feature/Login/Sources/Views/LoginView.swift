@@ -4,10 +4,10 @@ import DesignSystem
 import Common
 
 public struct LoginView: View {
-    @StateObject private var store: LoginStore
+    @ObservedObject private var store: LoginStore
     
     public init(store: LoginStore) {
-        self._store = StateObject(wrappedValue: store)
+        self.store = store
     }
     
     public var body: some View {
