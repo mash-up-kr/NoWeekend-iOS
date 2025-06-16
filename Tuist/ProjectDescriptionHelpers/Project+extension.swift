@@ -19,22 +19,29 @@ extension Project {
         additionalFiles: [FileElement] = [],
         resourceSynthesizers: [ResourceSynthesizer] = .default
     ) -> Project {
-        return Project(
-            name: name,
-            organizationName: organizationName,
-            options: .options(
-                automaticSchemesOptions: .disabled,
-                defaultKnownRegions: [Environment.defaultRegion],
-                developmentRegion: Environment.defaultRegion,
-                textSettings: .textSettings(usesTabs: false, indentWidth: 2, tabWidth: 2)
-            ),
-            packages: packages,
-            settings: settings,
-            targets: targets,
-            schemes: schemes ?? [],
-            fileHeaderTemplate: fileHeaderTemplate,
-            additionalFiles: additionalFiles,
-            resourceSynthesizers: resourceSynthesizers
-        )
+        if let schemes = schemes {
+            return Project(
+                name: name,
+                organizationName: organizationName,
+                packages: packages,
+                settings: settings,
+                targets: targets,
+                schemes: schemes,
+                fileHeaderTemplate: fileHeaderTemplate,
+                additionalFiles: additionalFiles,
+                resourceSynthesizers: resourceSynthesizers
+            )
+        } else {
+            return Project(
+                name: name,
+                organizationName: organizationName,
+                packages: packages,
+                settings: settings,
+                targets: targets,
+                fileHeaderTemplate: fileHeaderTemplate,
+                additionalFiles: additionalFiles,
+                resourceSynthesizers: resourceSynthesizers
+            )
+        }
     }
 }

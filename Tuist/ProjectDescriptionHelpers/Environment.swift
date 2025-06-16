@@ -69,7 +69,7 @@ public struct Environment {
     }
 }
 
-// MARK: - Module Categories (수정: path 프로퍼티 제거)
+// MARK: - Module Categories
 public enum ModuleCategory: String, CaseIterable {
     case app = "app"
     case core = "core"
@@ -77,12 +77,4 @@ public enum ModuleCategory: String, CaseIterable {
     case interface = "interface"
     case shared = "shared"
     case plugin = "plugin"
-}
-
-// MARK: - Deployment Targets
-public extension DeploymentTargets {
-    static let `default` = DeploymentTargets.iOS(Environment.deploymentTarget)
-    static let iOS16 = DeploymentTargets.iOS("16.0")
-    static let iOS15 = DeploymentTargets.iOS("15.0")
-    static let iOS14 = DeploymentTargets.iOS("14.0")
 }
