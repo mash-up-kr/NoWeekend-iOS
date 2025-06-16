@@ -14,7 +14,7 @@ extension Project {
         packages: [Package] = [],
         settings: Settings? = nil,
         targets: [Target] = [],
-        schemes: [Scheme] = [],
+        schemes: [Scheme]? = nil,
         fileHeaderTemplate: FileHeaderTemplate? = nil,
         additionalFiles: [FileElement] = [],
         resourceSynthesizers: [ResourceSynthesizer] = .default
@@ -31,7 +31,7 @@ extension Project {
             packages: packages,
             settings: settings,
             targets: targets,
-            schemes: schemes,
+            schemes: schemes ?? [],
             fileHeaderTemplate: fileHeaderTemplate,
             additionalFiles: additionalFiles,
             resourceSynthesizers: resourceSynthesizers
