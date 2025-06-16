@@ -12,7 +12,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Analytics/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "Common", path: "../Shared")
             ]
         ),
         .target(
@@ -24,7 +24,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Push/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .project(target: "Common", path: "../Shared")
             ]
         ),
         .target(
@@ -35,7 +35,9 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["ThirdParty/Sources/**"],
-            dependencies: []
+            dependencies: [
+                .project(target: "Common", path: "../Shared")
+            ]
         )
     ]
 )

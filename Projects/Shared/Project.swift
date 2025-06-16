@@ -11,7 +11,8 @@ let project = Project(
             deploymentTargets: .iOS("17.0"),
             infoPlist: .default,
             sources: ["Common/Sources/**"],
-            dependencies: []
+            dependencies: [
+            ]
         ),
         .target(
             name: "DesignSystem",

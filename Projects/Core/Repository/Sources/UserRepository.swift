@@ -5,11 +5,11 @@ import NetworkInterface
 import StorageInterface
 
 public class UserRepository: UserRepositoryProtocol {
-    private let networkService: NetworkServiceProtocol
+    private let networkService: NetworkServiceInterface
     private let storage: UserStorageProtocol
     
     public init(
-        networkService: NetworkServiceProtocol,
+        networkService: NetworkServiceInterface,
         storage: UserStorageProtocol
     ) {
         self.networkService = networkService
