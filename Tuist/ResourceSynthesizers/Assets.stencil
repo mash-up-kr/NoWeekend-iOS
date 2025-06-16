@@ -1,0 +1,201 @@
+// swiftlint:disable all
+// swift-format-ignore-file
+// swiftformat:disable all
+// Generated using tuist — https://github.com/tuist/tuist
+{% if catalogs %}
+{% set enumName %}{{param.name}}{% endset %}
+{% set arResourceGroupType %}{{param.name}}ARResourceGroup{% endset %}
+{% set colorType %}{{param.name}}Colors{% endset %}
+{% set dataType %}{{param.name}}Data{% endset %}
+{% set imageType %}{{param.name}}Images{% endset %}
+{% set forceNamespaces %}{{param.forceProvidesNamespaces|default:"false"}}{% endset %}
+{% set bundleToken %}{{param.name}}Resources{% endset %}
+{% set accessModifier %}{% if param.publicAccess %}public{% else %}internal{% endif %}{% endset %}
+
+{% if resourceCount.arresourcegroup > 0 %}
+  import ARKit
+{% endif %}
+import UIKit
+import SwiftUI
+
+// swiftlint:disable superfluous_disable_command file_length implicit_return
+// MARK: - Asset Catalogs
+{% macro casesBlock assets %}
+    {% for asset in assets %}
+    {% if asset.type == "image" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{asset.value}}")
+    {% endif %}
+    {% if asset.type == "color" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{asset.value}}")
+    {% endif %}
+    {% if asset.items %}
+        public enum {{asset.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
+            {% for item in asset.items %}
+            {% if item.type == "color" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{item.value}}")
+            {% endif %}
+            {% if item.type == "image" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{item.value}}")
+            {% endif %}
+            {% endfor %}
+        }
+    {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+public enum DS {
+    {% for catalog in catalogs %}
+    public enum {{catalog.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
+        {% for asset in catalog.assets %}
+        {% if asset.type == "image" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{asset.value}}" ).image
+        {% endif %}
+        {% if asset.type == "color" %}
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{asset.value}}" ).color
+        {% endif %}
+        {% if asset.items %}
+        public enum {{asset.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
+            {% for item in asset.items %}
+            {% if item.type == "color" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{item.value}}" ).color
+            {% endif %}
+            {% if item.type == "image" %}
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{item.value}}" ).image
+            {% endif %}
+            {% endfor %}
+        }
+        {% endif %}
+        {% endfor %}
+    }
+    {% endfor %}
+}
+
+// MARK: - Implementation Details
+{{accessModifier}} struct ImageAsset {
+    {{accessModifier}} fileprivate(set) var name: String
+
+    #if os(macOS)
+    {{accessModifier}} typealias Image = NSImage
+    #elseif os(iOS) || os(tvOS) || os(watchOS)
+    {{accessModifier}} typealias Image = UIImage
+    #endif
+
+    /// SwiftUI Image
+    {{accessModifier}} var image: SwiftUI.Image {
+        SwiftUI.Image(uiImage: uiImage)
+    }
+
+    /// UIKit UIImage
+    {{accessModifier}} var uiImage: Image {
+        let bundle = {{param.bundle|default:"BundleToken.bundle"}}
+        #if os(iOS) || os(tvOS)
+        let image = Image(named: name, in: bundle, compatibleWith: nil)
+        #elseif os(macOS)
+        let name = NSImage.Name(self.name)
+        let image = (bundle == .main) ? NSImage(named: name) : bundle.image(forResource: name)
+        #elseif os(watchOS)
+        let image = Image(named: name)
+        #endif
+        guard let result = image else {
+            fatalError("Unable to load image asset named \(name).")
+        }
+        return result
+    }
+}
+
+{{accessModifier}} struct ColorAsset {
+    {{accessModifier}} fileprivate(set) var name: String
+
+    /// SwiftUI Color
+    {{accessModifier}} var color: SwiftUI.Color {
+        SwiftUI.Color(uiColor: uiColor)
+    }
+
+    /// UIKit UIColor
+    {{accessModifier}} var uiColor: UIColor {
+        let bundle = {{param.bundle|default:"BundleToken.bundle"}}
+        guard let color = UIColor(named: name, in: bundle, compatibleWith: nil) else {
+            fatalError("Unable to load color asset named \(name).")
+        }
+        return color
+    }
+}
+
+{% if resourceCount.arresourcegroup > 0 %}
+{{accessModifier}} struct {{arResourceGroupType}} {
+  {{accessModifier}} fileprivate(set) var name: String
+  #if os(iOS)
+  @available(iOS 11.3, *)
+  {{accessModifier}} var referenceImages: Set<ARReferenceImage> {
+    return ARReferenceImage.referenceImages(in: self)
+  }
+  @available(iOS 12.0, *)
+  {{accessModifier}} var referenceObjects: Set<ARReferenceObject> {
+    return ARReferenceObject.referenceObjects(in: self)
+  }
+  #endif
+}
+#if os(iOS)
+@available(iOS 11.3, *)
+{{accessModifier}} extension ARReferenceImage {
+  static func referenceImages(in asset: {{arResourceGroupType}}) -> Set<ARReferenceImage> {
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
+    return referenceImages(inGroupNamed: asset.name, bundle: bundle) ?? Set()
+  }
+}
+@available(iOS 12.0, *)
+{{accessModifier}} extension ARReferenceObject {
+  static func referenceObjects(in asset: {{arResourceGroupType}}) -> Set<ARReferenceObject> {
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
+    return referenceObjects(inGroupNamed: asset.name, bundle: bundle) ?? Set()
+  }
+}
+{% endif %}
+
+{% if resourceCount.data > 0 %}
+{{accessModifier}} struct {{dataType}} {
+  {{accessModifier}} fileprivate(set) var name: String
+  #if os(iOS) || os(tvOS) || os(macOS)
+  @available(iOS 9.0, macOS 10.11, *)
+  {{accessModifier}} var data: NSDataAsset {
+    guard let data = NSDataAsset(asset: self) else {
+      fatalError("Unable to load data asset named \(name).")
+    }
+    return data
+  }
+  #endif
+}
+#if os(iOS) || os(tvOS) || os(macOS)
+@available(iOS 9.0, macOS 10.11, *)
+{{accessModifier}} extension NSDataAsset {
+  convenience init?(asset: {{dataType}}) {
+    let bundle = {{param.bundle|default:"BundleToken.bundle"}}
+    #if os(iOS) || os(tvOS)
+    self.init(name: asset.name, bundle: bundle)
+    #elseif os(macOS)
+    self.init(name: NSDataAsset.Name(asset.name), bundle: bundle)
+    #endif
+  }
+}
+#endif
+{% endif %}
+
+{% if not param.bundle %}
+// swiftlint:disable convenience_type
+private final class BundleToken {
+  static let bundle: Bundle = {
+    #if SWIFT_PACKAGE
+    return Bundle.module
+    #else
+    return Bundle(for: BundleToken.self)
+    #endif
+  }()
+}
+// swiftlint:enable convenience_type
+{% endif %}
+
+{% else %}
+// No assets found
+{% endif %}
+// swiftlint:enable all
+// swiftformat:enable all

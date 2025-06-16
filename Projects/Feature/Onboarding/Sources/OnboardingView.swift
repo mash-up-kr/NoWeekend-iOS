@@ -41,24 +41,12 @@ public struct OnboardingView: View {
                 .tabViewStyle(PageTabViewStyle())
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 
-                VStack(spacing: Spacing.md) {
-                    if currentPage == pages.count - 1 {
-                        PrimaryButton(title: "Get Started") {
-                            showMainApp = true
-                        }
-                    } else {
-                        PrimaryButton(title: "Next") {
-                            withAnimation {
-                                currentPage += 1
-                            }
-                        }
-                    }
+                VStack(spacing: 0) {
                     
                     Button("Skip") {
                         showMainApp = true
                     }
                 }
-                .padding(Spacing.lg)
             }
         }
     }
@@ -74,16 +62,16 @@ struct OnboardingPageView: View {
     let page: OnboardingPage
     
     var body: some View {
-        VStack(spacing: Spacing.xl) {
+        VStack(spacing: 0) {
             Spacer()
             
             Image(systemName: page.imageName)
                 .font(.system(size: 80))
-                .foregroundColor(Colors.primary)
+//                .foregroundColor(Colors.primary)
             
-            VStack(spacing: Spacing.md) {
+            VStack(spacing: 0) {
                 Text(page.title)
-                    .font(Typography.title)
+//                    .font(Typography.title)
                     .multilineTextAlignment(.center)
                 
                

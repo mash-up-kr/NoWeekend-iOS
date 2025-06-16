@@ -15,6 +15,7 @@ import PackageDescription
 let package = Package(
     name: "NoWeekend",
     dependencies: [
-         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.10.2")
+         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.10.2"),
+         .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.0.0")
     ]
 )

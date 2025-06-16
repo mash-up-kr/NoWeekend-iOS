@@ -1,0 +1,170 @@
+// swiftlint:disable all
+// swift-format-ignore-file
+// swiftformat:disable all
+// Generated using tuist — https://github.com/tuist/tuist
+{% if families %}
+{% set accessModifier %}{% if param.publicAccess %}public{% else %}internal{% endif %}{% endset %}
+{% set fontType %}{{param.name}}FontConvertible{% endset %}
+
+import UIKit.UIFont
+import SwiftUI
+
+// swiftlint:disable superfluous_disable_command
+// swiftlint:disable file_length
+// MARK: - Fonts
+// swiftlint:disable identifier_name line_length type_body_length
+{% macro transformPath path %}{% filter removeNewlines %}
+    {% if param.preservePath %}
+    {{path}}
+    {% else %}
+    {{path|basename}}
+    {% endif %}
+{% endfilter %}{% endmacro %}
+
+{{accessModifier}} enum {{param.name}}FontFamily {
+    {% for family in families %}
+    {{accessModifier}} enum {{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
+        {% for font in family.fonts %}
+        {{accessModifier}} static let {{font.style|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = {{fontType}}(name: "{{font.name}}", family: "{{family.name}}", path: "{% call transformPath font.path %}")
+        {% endfor %}
+        {{accessModifier}} static let all: [{{fontType}}] = [{% for font in family.fonts %}{{font.style|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}}{{ ", " if not forloop.last }}{% endfor %}]
+    }
+    {% endfor %}
+    {{accessModifier}} static let allCustomFonts: [{{fontType}}] = [{% for family in families %}{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.all{{ ", " if not forloop.last }}{% endfor %}].flatMap { $0 }
+    {{accessModifier}} static func registerAllCustomFonts() {
+        allCustomFonts.forEach { $0.register() }
+    }
+}
+
+// MARK: - Implementation Details
+{{accessModifier}} struct {{fontType}} {
+    {{accessModifier}} let name: String
+    {{accessModifier}} let family: String
+    {{accessModifier}} let path: String
+
+    {{accessModifier}} var _28: Font {
+        guard let font = UIFont(font: self, size: 28) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 28")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _24: Font {
+        guard let font = UIFont(font: self, size: 24) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 24")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _20: Font {
+        guard let font = UIFont(font: self, size: 20) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 20")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _18: Font {
+        guard let font = UIFont(font: self, size: 18) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 18")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _16: Font {
+        guard let font = UIFont(font: self, size: 16) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 16")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _14: Font {
+        guard let font = UIFont(font: self, size: 14) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 14")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _12: Font {
+        guard let font = UIFont(font: self, size: 12) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 12")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} var _10: Font {
+        guard let font = UIFont(font: self, size: 10) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family), size: 10")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} func font(size: CGFloat) -> Font {
+        guard let font = UIFont(font: self, size: size) else {
+            fatalError("Unable to initialize font name: '\(name)', family: \(family)")
+        }
+        return Font(font)
+    }
+
+    {{accessModifier}} func register() {
+        guard let url = url else { return }
+        CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+    }
+
+    fileprivate var url: URL? {
+        {% if param.lookupFunction %}
+        return {{param.lookupFunction}}(name, family, path)
+        {% else %}
+        return {{param.bundle|default:"BundleToken.bundle"}}.url(forResource: path, withExtension: nil)
+        {% endif %}
+    }
+}
+
+{{accessModifier}} extension UIFont {
+    convenience init?(font: {{fontType}}, size: CGFloat) {
+        if !UIFont.fontNames(forFamilyName: font.family).contains(font.name) {
+            font.register()
+        }
+        self.init(name: font.name, size: size)
+    }
+}
+
+{{accessModifier}} extension Font {
+    /// 28px Bold, lineHeight: 48, letterSpacing: -0.4
+    static var heading2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._28 }
+    /// 24px Bold, lineHeight: 36, letterSpacing: -0.3
+    static var heading3: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._24 }
+    /// 20px Bold, lineHeight: 30, letterSpacing: -0.2
+    static var heading4: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._20 }
+    /// 18px Bold, lineHeight: 26, letterSpacing: -0.1
+    static var heading5: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._18 }
+    /// 16px Bold, lineHeight: 24, letterSpacing: -0.1
+    static var heading6: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.bold._16 }
+    /// 14px Medium, lineHeight: 22, letterSpacing: -0.1
+    static var subtitle1: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._14 }
+    /// 12px Medium, lineHeight: 18, letterSpacing: 0
+    static var subtitle2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._12 }
+    /// 16px Medium, lineHeight: 24, letterSpacing: -0.1
+    static var body1: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.medium._16 }
+    /// 14px Regular, lineHeight: 22, letterSpacing: -0.1
+    static var body2: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._14 }
+    /// 12px Regular, lineHeight: 18, letterSpacing: -0.1
+    static var body3: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._12 }
+    /// 10px Regular, lineHeight: 14, letterSpacing: 0
+    static var body4: Font { {{param.name}}FontFamily.{{families.0.name|swiftIdentifier:"pretty"}}.regular._10 }
+}
+
+{% if not param.bundle and not param.lookupFunction %}
+// swiftlint:disable convenience_type
+private final class BundleToken {
+    static let bundle: Bundle = {
+        Bundle(for: BundleToken.self)
+    }()
+}
+// swiftlint:enable convenience_type
+{% endif %}
+
+{% else %}
+// No assets found
+{% endif %}
+// swiftlint:enable all
+// swiftformat:enable all

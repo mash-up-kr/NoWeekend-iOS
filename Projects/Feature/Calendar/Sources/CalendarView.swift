@@ -8,8 +8,9 @@ public struct CalendarView: View {
     
     public var body: some View {
         VStack {
+            LottieView(type: JSONFiles.Fire.self)
+                .frame(width: 100, height: 100)            
             Text("지훈")
-                .font(Typography.title)
         }
     }
 }
