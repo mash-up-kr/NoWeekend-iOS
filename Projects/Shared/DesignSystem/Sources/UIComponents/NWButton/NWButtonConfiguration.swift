@@ -14,25 +14,17 @@ public enum NWButtonSize {
     
     public var height: CGFloat {
         switch self {
-        case .xl:
-            return 60
-        case .md:
-            return 40
+        case .xl: return 60
+        case .md: return 40
         }
     }
     
     var filledButtonFont: Font {
-        switch self {
-        case .xl: return .heading6
-        case .md: return .subtitle1
-        }
+        return .heading6
     }
     
     var outlineButtonFont: Font {
-        switch self {
-        case .xl: return .body1
-        case .md: return .body1
-        }
+        return .body1
     }
 }
 
@@ -56,18 +48,18 @@ public struct NWButtonConfiguration {
     ) -> NWButtonConfiguration {
         switch variant {
         case .primary:
-            return primaryConfiguration(size: size, isEnabled: isEnabled)
+            return primaryConfiguration(size: size)
         case .black:
             return blackConfiguration(size: size, isEnabled: isEnabled)
         case .outline:
-            return outlineConfiguration(size: size, isEnabled: isEnabled)
+            return outlineConfiguration(size: size)
         }
     }
     
-    private static func primaryConfiguration(size: NWButtonSize, isEnabled: Bool) -> NWButtonConfiguration {
+    private static func primaryConfiguration(size: NWButtonSize) -> NWButtonConfiguration {
         NWButtonConfiguration(
-            backgroundColor: isEnabled ? DS.Colors.TaskItem.orange : DS.Colors.Neutral._300,
-            foregroundColor: isEnabled ? DS.Colors.Neutral.white : DS.Colors.Neutral._500,
+            backgroundColor: DS.Colors.TaskItem.orange,
+            foregroundColor: DS.Colors.Neutral.white,
             borderColor: .clear,
             borderWidth: 0,
             font: size.filledButtonFont
@@ -76,19 +68,19 @@ public struct NWButtonConfiguration {
     
     private static func blackConfiguration(size: NWButtonSize, isEnabled: Bool) -> NWButtonConfiguration {
         NWButtonConfiguration(
-            backgroundColor: isEnabled ? DS.Colors.Neutral.black : DS.Colors.Neutral._300,
-            foregroundColor: isEnabled ? DS.Colors.Neutral.white : DS.Colors.Neutral._500,
+            backgroundColor: isEnabled ? DS.Colors.Neutral.black : DS.Colors.Neutral._700,
+            foregroundColor: DS.Colors.Neutral.white,
             borderColor: .clear,
             borderWidth: 0,
             font: size.filledButtonFont
         )
     }
     
-    private static func outlineConfiguration(size: NWButtonSize, isEnabled: Bool) -> NWButtonConfiguration {
+    private static func outlineConfiguration(size: NWButtonSize) -> NWButtonConfiguration {
         NWButtonConfiguration(
             backgroundColor: DS.Colors.Background.white,
-            foregroundColor: isEnabled ? DS.Colors.Neutral.black : DS.Colors.Neutral._400,
-            borderColor: isEnabled ? DS.Colors.Border.gray300 : DS.Colors.Border.gray200,
+            foregroundColor: DS.Colors.Neutral.black,
+            borderColor: DS.Colors.Border.gray300,
             borderWidth: 1,
             font: size.outlineButtonFont
         )
