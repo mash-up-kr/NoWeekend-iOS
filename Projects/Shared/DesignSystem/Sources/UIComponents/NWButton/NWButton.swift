@@ -51,7 +51,6 @@ public struct NWButton: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .buttonStyle(PlainButtonStyle())
         .allowsHitTesting(isEnabled)
     }
 }
