@@ -1,61 +1,47 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
+
+let project = Project.make(
     name: "Core",
     targets: [
-        .target(
+        .framework(
             name: "UseCase",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.core.usecase",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Core.useCase,
             sources: ["UseCase/Sources/**"],
             dependencies: [
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "RepositoryInterface", path: "../Interface"),
-                .project(target: "ServiceInterface", path: "../Interface")
+                .interface(.domain),
+                .interface(.repositoryInterface),
+                .interface(.serviceInterface)
             ]
         ),
-        .target(
+        .framework(
             name: "Repository",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.core.repository",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Core.repository,
             sources: ["Repository/Sources/**"],
             dependencies: [
-                .project(target: "RepositoryInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface"),
-                .project(target: "NetworkInterface", path: "../Interface"),
-                .project(target: "StorageInterface", path: "../Interface")
+                .interface(.repositoryInterface),
+                .interface(.domain),
+                .interface(.networkInterface),
+                .interface(.storageInterface)
             ]
         ),
-        .target(
+        .framework(
             name: "Network",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.core.network",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Core.network,
             sources: ["Network/Sources/**"],
             dependencies: [
-                .project(target: "NetworkInterface", path: "../Interface"),
-                .external(name: "Alamofire")
+                .interface(.networkInterface),
+                .external(.alamofire)
             ]
         ),
-        .target(
+        .framework(
             name: "Storage",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.core.storage",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Core.storage,
             sources: ["Storage/Sources/**"],
             dependencies: [
-                .project(target: "StorageInterface", path: "../Interface"),
-                .project(target: "Domain", path: "../Interface")
+                .interface(.storageInterface),
+                .interface(.domain)
             ]
         )
     ]

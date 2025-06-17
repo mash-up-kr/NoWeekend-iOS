@@ -1,36 +1,29 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
+
+let project = Project.make(
     name: "Shared",
     targets: [
-        .target(
+        .framework(
             name: "Utils",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.shared.utils",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["Utils/Sources/**"],
-            dependencies: []
+            bundleId: BundleID.Shared.utils,
+            sources: ["Utils/Sources/**"]
         ),
-        .target(
+        .framework(
             name: "DesignSystem",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.shared.designsystem",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Shared.designSystem,
             sources: ["DesignSystem/Sources/**"],
             resources: ["DesignSystem/Resources/**"],
             dependencies: [
-                .external(name: "Lottie")
+                .external(.lottie)
             ]
         )
     ],
     resourceSynthesizers: [
         .custom(
-            name: "Assets", 
-            parser: .assets, 
+            name: "Assets",
+            parser: .assets,
             extensions: ["xcassets"]
         ),
         .custom(

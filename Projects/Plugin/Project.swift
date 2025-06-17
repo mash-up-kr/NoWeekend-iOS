@@ -1,41 +1,30 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
+
+let project = Project.make(
     name: "Plugin",
     targets: [
-        .target(
+        .framework(
             name: "Analytics",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.plugin.analytics",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Plugin.analytics,
             sources: ["Analytics/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .interface(.serviceInterface)
             ]
         ),
-        .target(
+        .framework(
             name: "Push",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.plugin.push",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            bundleId: BundleID.Plugin.push,
             sources: ["Push/Sources/**"],
             dependencies: [
-                .project(target: "ServiceInterface", path: "../Interface")
+                .interface(.serviceInterface)
             ]
         ),
-        .target(
+        .framework(
             name: "ThirdParty",
-            destinations: .iOS,
-            product: .framework,
-            bundleId: "com.noweekend.plugin.thirdparty",
-            deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
-            sources: ["ThirdParty/Sources/**"],
-            dependencies: []
+            bundleId: BundleID.Plugin.thirdParty,
+            sources: ["ThirdParty/Sources/**"]
         )
     ]
 )
