@@ -8,20 +8,33 @@
 import SwiftUI
 
 public struct NWButtonStyle: ButtonStyle {
-    private let configuration: NWButtonConfiguration
+    private let variant: NWButtonVariant
     private let size: NWButtonSize
     private let isEnabled: Bool
     
-    public init(
-        variant: NWButtonVariant,
-        size: NWButtonSize,
-        isEnabled: Bool
-    ) {
-        self.configuration = NWButtonConfiguration.configuration(
+    private var configuration: NWButtonConfiguration {
+        NWButtonConfiguration.configuration(
             for: variant,
             size: size,
             isEnabled: isEnabled
         )
+    }
+    
+    public init(
+        variant: NWButtonVariant,
+        size: NWButtonSize = .xl
+    ) {
+        self.variant = variant
+        self.size = size
+        self.isEnabled = true
+    }
+    
+    public init(
+        variant: NWButtonVariant,
+        size: NWButtonSize = .xl,
+        isEnabled: Bool
+    ) {
+        self.variant = variant
         self.size = size
         self.isEnabled = isEnabled
     }
