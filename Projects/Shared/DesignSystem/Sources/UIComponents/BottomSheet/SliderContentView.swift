@@ -140,45 +140,60 @@ struct MonthPickerOnlyContentView: View {
 
 // MARK: - 할 일 수정 컨텐츠 뷰
 struct TaskEditContentView: View {
+    let onEditAction: () -> Void
     let onTomorrowAction: () -> Void
     let onDeleteAction: () -> Void
+    @Binding var isPresented: Bool
     
     var body: some View {
-        VStack(spacing: 20) {
-            Button(action: onTomorrowAction) {
-                HStack(spacing: 12) {
-                    Image(systemName: "arrow.right")
-                        .foregroundColor(.black)
-                        .font(.system(size: 16, weight: .medium))
+        VStack(spacing: 0) {
+            Button(action: {
+                onEditAction()
+                isPresented = false
+            }) {
+                HStack(spacing: 8) {
+                    Image(.icnEdit)
                     
-                    Text("내일 또 하기")
-                        .foregroundColor(.black)
-                        .font(.system(size: 16, weight: .medium))
+                    Text(" 할 일 수정")
+                        .font(.body1)
+                        .foregroundColor(DS.Colors.Text.gray900)
                     
                     Spacer()
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(Color(.systemGray6))
-                .cornerRadius(16)
+                .frame(height: 56)
             }
             
-            Button(action: onDeleteAction) {
-                HStack(spacing: 12) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
-                        .font(.system(size: 16, weight: .medium))
+            // 내일 또 하기
+            Button(action: {
+                onTomorrowAction()
+                isPresented = false
+            }) {
+                HStack(spacing: 8) {
+                    Image(.icnArrowForward)
                     
-                    Text("삭제")
-                        .foregroundColor(.red)
-                        .font(.system(size: 16, weight: .medium))
+                    Text("내일 또 하기")
+                        .font(.body1)
+                        .foregroundColor(DS.Colors.Text.gray900)
                     
                     Spacer()
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(Color(.systemGray6))
-                .cornerRadius(16)
+                .frame(height: 56)
+            }
+            
+            Button(action: {
+                onDeleteAction()
+                isPresented = false
+            }) {
+                HStack(spacing: 8) {
+                    Image(.icnDelete)
+                    
+                    Text("삭제하기")
+                        .font(.body1)
+                        .foregroundColor(DS.Colors.Text.gray900)
+                    
+                    Spacer()
+                }
+                .frame(height: 56)
             }
         }
         .padding(.horizontal, 20)
@@ -304,19 +319,25 @@ struct DatePickerOnlyBottomSheetView: View {
 }
 
 struct TaskEditBottomSheetView: View {
+    let onEditAction: () -> Void
     let onTomorrowAction: () -> Void
     let onDeleteAction: () -> Void
+    @Binding var isPresented: Bool
     
     var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             
             TaskEditContentView(
+                onEditAction: onEditAction,
                 onTomorrowAction: onTomorrowAction,
-                onDeleteAction: onDeleteAction
+                onDeleteAction: onDeleteAction,
+                isPresented: $isPresented
             )
+            
+            Spacer()
         }
-        .presentationDetents([.height(200)])
+        .presentationDetents([.height(192)])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(16)
     }
