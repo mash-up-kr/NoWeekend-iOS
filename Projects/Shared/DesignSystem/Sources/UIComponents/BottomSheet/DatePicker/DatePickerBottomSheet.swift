@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-/// 레이블이 없는 그냥  날짜 선택 바텀시트
-struct DatePickerBottomSheet: View {
-    @Binding var selectedDate: Date
+/// 레이블이 없는 그냥 날짜 선택 바텀시트
+public struct DatePickerBottomSheet: View {
+    @Binding public var selectedDate: Date
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     
@@ -27,7 +27,11 @@ struct DatePickerBottomSheet: View {
         Array((currentYear - 50)...(currentYear + 50))
     }
     
-    var body: some View {
+    public init(selectedDate: Binding<Date>) {
+        self._selectedDate = selectedDate
+    }
+    
+    public var body: some View {
         HStack(spacing: 0) {
             Picker("Month", selection: $selectedMonth) {
                 ForEach(1...12, id: \.self) { month in

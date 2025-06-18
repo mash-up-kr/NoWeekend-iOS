@@ -1,6 +1,6 @@
 //
-//  DatePickerBottomSheets.swift
-//  Shared
+//  DatePickerWithLabelBottomSheet.swift
+//  DesignSystem
 //
 //  Created by 이지훈 on 6/18/25.
 //  Copyright © 2025 com.noweekend. All rights reserved.
@@ -9,10 +9,14 @@
 import SwiftUI
 
 /// 레이블이 있는 날짜 선택 바텀시트
-struct DatePickerWithLabelBottomSheet: View {
-    @Binding var selectedDate: Date
+public struct DatePickerWithLabelBottomSheet: View {
+    @Binding public var selectedDate: Date
     
-    var body: some View {
+    public init(selectedDate: Binding<Date>) {
+        self._selectedDate = selectedDate
+    }
+    
+    public var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             
@@ -32,23 +36,6 @@ struct DatePickerWithLabelBottomSheet: View {
             .padding(.horizontal, 20)
         }
         .presentationDetents([.height(400)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
-    }
-}
-
-/// 레이블이 없는 날짜 선택 바텀시트
-struct DatePickerOnlyBottomSheet: View {
-    @Binding var selectedDate: Date
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
-            DatePickerBottomSheet(selectedDate: $selectedDate)
-                .padding(.horizontal, 20)
-        }
-        .presentationDetents([.height(300)])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(16)
     }

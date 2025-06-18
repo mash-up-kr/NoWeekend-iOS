@@ -9,10 +9,10 @@
 import SwiftUI
 
 /// 커스텀 슬라이더 뷰
-struct CustomSlider: View {
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    let labels: [String]
+public struct CustomSlider: View {
+    @Binding public var value: Double
+    public let range: ClosedRange<Double>
+    public let labels: [String]
     
     @State private var isDragging: Bool = false
     
@@ -21,7 +21,17 @@ struct CustomSlider: View {
     private let activeTrackHeight: CGFloat = 8
     private let horizontalPadding: CGFloat = 12
     
-    var body: some View {
+    public init(
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        labels: [String]
+    ) {
+        self._value = value
+        self.range = range
+        self.labels = labels
+    }
+    
+    public var body: some View {
         VStack(spacing: 16) {
             sliderTrack
             sliderLabels
@@ -48,8 +58,8 @@ struct CustomSlider: View {
             ZStack {
                 ForEach(Array(labels.enumerated()), id: \.offset) { index, label in
                     Text(label)
-                        .font(.subtitle2)
-                        .foregroundColor(DS.Colors.Neutral._900)
+                        .font(.caption)
+                        .foregroundColor(.primary)
                         .position(x: calculateLabelPosition(index: index, trackWidth: trackWidth), y: 9)
                 }
             }
@@ -59,14 +69,14 @@ struct CustomSlider: View {
     
     private var backgroundTrack: some View {
         RoundedRectangle(cornerRadius: 4)
-            .fill(DS.Colors.Toast._500) // TODO: 색상수정
+            .fill(Color.gray.opacity(0.3)) // TODO: 색상수정
             .frame(height: trackHeight)
             .padding(.horizontal, horizontalPadding)
     }
     
     private func activeTrack(width: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 3)
-            .fill(DS.Colors.Toast._500) // TODO: 색상수정
+            .fill(Color.blue) // TODO: 색상수정
             .frame(width: width, height: activeTrackHeight)
             .padding(.leading, horizontalPadding)
     }

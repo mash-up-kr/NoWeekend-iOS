@@ -1,6 +1,6 @@
 //
 //  SliderBottomSheet.swift
-//  Shared
+//  DesignSystem
 //
 //  Created by 이지훈 on 6/18/25.
 //  Copyright © 2025 com.noweekend. All rights reserved.
@@ -9,20 +9,32 @@
 import SwiftUI
 
 /// 슬라이더 바텀시트
-struct SliderBottomSheet: View {
-    let title: String
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    let unit: String
+public struct SliderBottomSheet: View {
+    public let title: String
+    @Binding public var value: Double
+    public let range: ClosedRange<Double>
+    public let unit: String
     
-    var body: some View {
+    public init(
+        title: String,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        unit: String
+    ) {
+        self.title = title
+        self._value = value
+        self.range = range
+        self.unit = unit
+    }
+    
+    public var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             
             VStack(spacing: 40) {
                 Text("평소 휴가는 며칠정도 \n 사용하시나요?")
-                    .font(.heading4)
-                    .foregroundColor(DS.Colors.Neutral._900) // TODO: 색상수정
+                    .font(.title3) // TODO: 폰트수정
+                    .foregroundColor(.primary) // TODO: 색상수정
                     .multilineTextAlignment(.center)
                     .padding(.top, 24)
                 

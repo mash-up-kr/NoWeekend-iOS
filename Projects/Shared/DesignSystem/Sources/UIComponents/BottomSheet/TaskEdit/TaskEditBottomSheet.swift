@@ -9,13 +9,25 @@
 import SwiftUI
 
 /// 할 일 수정 바텀시트
-struct TaskEditBottomSheet: View {
-    let onEditAction: () -> Void
-    let onTomorrowAction: () -> Void
-    let onDeleteAction: () -> Void
-    @Binding var isPresented: Bool
+public struct TaskEditBottomSheet: View {
+    public let onEditAction: () -> Void
+    public let onTomorrowAction: () -> Void
+    public let onDeleteAction: () -> Void
+    @Binding public var isPresented: Bool
     
-    var body: some View {
+    public init(
+        onEditAction: @escaping () -> Void,
+        onTomorrowAction: @escaping () -> Void,
+        onDeleteAction: @escaping () -> Void,
+        isPresented: Binding<Bool>
+    ) {
+        self.onEditAction = onEditAction
+        self.onTomorrowAction = onTomorrowAction
+        self.onDeleteAction = onDeleteAction
+        self._isPresented = isPresented
+    }
+    
+    public var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             

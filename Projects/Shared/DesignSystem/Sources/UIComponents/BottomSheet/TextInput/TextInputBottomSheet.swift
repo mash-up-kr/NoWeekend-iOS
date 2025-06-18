@@ -9,12 +9,22 @@
 import SwiftUI
 
 /// 텍스트 입력 바텀시트
-struct TextInputBottomSheet: View {
-    let subtitle: String
-    let placeholder: String
-    @Binding var text: String
+public struct TextInputBottomSheet: View {
+    public let subtitle: String
+    public let placeholder: String
+    @Binding public var text: String
     
-    var body: some View {
+    public init(
+        subtitle: String,
+        placeholder: String,
+        text: Binding<String>
+    ) {
+        self.subtitle = subtitle
+        self.placeholder = placeholder
+        self._text = text
+    }
+    
+    public var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             

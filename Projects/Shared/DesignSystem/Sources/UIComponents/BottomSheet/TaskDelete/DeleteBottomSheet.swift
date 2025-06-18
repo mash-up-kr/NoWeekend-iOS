@@ -9,12 +9,22 @@
 import SwiftUI
 
 /// 삭제 확인 바텀시트
-struct DeleteBottomSheet: View {
-    let message: String
-    let onDeleteAction: () -> Void
-    @Binding var isPresented: Bool
+public struct DeleteBottomSheet: View {
+    public let message: String
+    public let onDeleteAction: () -> Void
+    @Binding public var isPresented: Bool
     
-    var body: some View {
+    public init(
+        message: String,
+        onDeleteAction: @escaping () -> Void,
+        isPresented: Binding<Bool>
+    ) {
+        self.message = message
+        self.onDeleteAction = onDeleteAction
+        self._isPresented = isPresented
+    }
+    
+    public var body: some View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             
@@ -24,11 +34,11 @@ struct DeleteBottomSheet: View {
                     isPresented = false
                 }) {
                     HStack(spacing: 8) {
-                        Image(.icnEdit)
+                        Image(systemName: "pencil") // TODO: 아이콘 수정
                         
                         Text("할일 수정")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Text.gray900)
+                            .font(.body)
+                            .foregroundColor(.primary) // TODO: 색상수정
                         
                         Spacer()
                     }
@@ -41,11 +51,11 @@ struct DeleteBottomSheet: View {
                     isPresented = false
                 }) {
                     HStack(spacing: 8) {
-                        Image(.icnDelete)
+                        Image(systemName: "trash") // TODO: 아이콘 수정
                         
                         Text("삭제")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Text.gray900)
+                            .font(.body)
+                            .foregroundColor(.primary) // TODO: 색상수정
                         
                         Spacer()
                     }

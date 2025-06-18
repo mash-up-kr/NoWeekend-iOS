@@ -8,8 +8,10 @@
 
 import SwiftUI
 
-struct CustomDragIndicator: View {
-    var body: some View {
+public struct CustomDragIndicator: View {
+    public init() {}
+    
+    public var body: some View {
         RoundedRectangle(cornerRadius: 4)
             .fill(Color.gray.opacity(0.4))
             .frame(width: 34, height: 5)
