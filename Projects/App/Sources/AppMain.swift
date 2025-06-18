@@ -5,7 +5,7 @@ import TabBar
 struct AppMain: App {
     var body: some Scene {
         WindowGroup {
-            TabBarView()
+            ContentView()
         }
     }
 }
