@@ -15,43 +15,15 @@ public struct NWButton: View {
     private let isEnabled: Bool
     private let action: () -> Void
     
-    private var configuration: NWButtonConfiguration {
-        NWButtonConfiguration.configuration(
-            for: variant,
-            size: size,
-            isEnabled: isEnabled
-        )
-    }
-    
-    public init(
-        title: String,
-        variant: NWButtonVariant = .primary,
-        size: NWButtonSize = .xl,
-        isEnabled: Bool = true,
-        action: @escaping () -> Void
-    ) {
-        self.title = title
-        self.variant = variant
-        self.size = size
-        self.isEnabled = isEnabled
-        self.action = action
-    }
-    
     public var body: some View {
         Button(action: action) {
             Text(title)
-                .font(configuration.font)
-                .foregroundColor(configuration.foregroundColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: size.height)
-                .background(configuration.backgroundColor)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(configuration.borderColor, lineWidth: configuration.borderWidth)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .allowsHitTesting(isEnabled)
+        .buttonStyle(NWButtonStyle(
+            variant: variant,
+            size: size,
+            isEnabled: isEnabled
+        ))
     }
 }
 
