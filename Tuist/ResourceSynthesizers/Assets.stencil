@@ -48,19 +48,19 @@ public enum DS {
     public enum {{catalog.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
         {% for asset in catalog.assets %}
         {% if asset.type == "image" %}
-        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{asset.value}}" ).image
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{asset.path|default:asset.value}}" ).image
         {% endif %}
         {% if asset.type == "color" %}
-        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{asset.value}}" ).color
+        public static let {{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{asset.path|default:asset.value}}" ).color
         {% endif %}
         {% if asset.items %}
         public enum {{asset.name|swiftIdentifier:"pretty"|escapeReservedKeywords}} {
             {% for item in asset.items %}
             {% if item.type == "color" %}
-            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{item.value}}" ).color
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ColorAsset(name: "{{item.path|default:item.value}}" ).color
             {% endif %}
             {% if item.type == "image" %}
-            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{item.value}}" ).image
+            public static let {{item.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} = ImageAsset(name: "{{item.path|default:item.value}}" ).image
             {% endif %}
             {% endfor %}
         }
