@@ -49,7 +49,7 @@ struct BottomSheetExampleView: View {
                         showDatePickerOnlySheet = true
                     }
                     
-                    // 5. 할 일 수정 바텀시트
+                    // 5. 할 일 수정 바텀시트 (3개 옵션)
                     Button("할 일 수정 바텀시트") {
                         showTaskEditSheet = true
                     }
@@ -67,7 +67,7 @@ struct BottomSheetExampleView: View {
         }
         // 바텀시트들
         .sheet(isPresented: $showSliderSheet) {
-            SliderBottomSheetView(
+            SliderBottomSheet(
                 title: "며칠 동안 휴가를 가고 싶나요?",
                 value: $sliderValue,
                 range: 1...7,
@@ -75,32 +75,38 @@ struct BottomSheetExampleView: View {
             )
         }
         .sheet(isPresented: $showTextInputSheet) {
-            TextInputBottomSheetView(
+            TextInputBottomSheet(
                 subtitle: "연차 제목을 작성하면\n할 일에 추가돼요",
                 placeholder: "연차 제목을 입력하세요",
                 text: $textInput
             )
         }
         .sheet(isPresented: $showDatePickerWithLabelSheet) {
-            DatePickerWithLabelBottomSheetView(selectedDate: $selectedDate)
+            DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
         .sheet(isPresented: $showDatePickerOnlySheet) {
-            DatePickerOnlyBottomSheetView(selectedDate: $selectedDate)
+            DatePickerOnlyBottomSheet(selectedDate: $selectedDate)
         }
         .sheet(isPresented: $showTaskEditSheet) {
-            TaskEditBottomSheetView(
+            TaskEditBottomSheet(
+                onEditAction: {
+                    print("할일 수정 선택됨")
+                    // 할일 수정 화면으로 이동하는 로직
+                },
                 onTomorrowAction: {
-                    showTaskEditSheet = false
                     print("내일 또 하기 선택됨")
+                    // 내일 또 하기 로직
                 },
                 onDeleteAction: {
-                    showTaskEditSheet = false
+                    print("삭제하기 선택됨")
+                    // 삭제 확인 바텀시트 표시
                     showDeleteSheet = true
-                }
+                },
+                isPresented: $showTaskEditSheet
             )
         }
         .sheet(isPresented: $showDeleteSheet) {
-            DeleteBottomSheetView(
+            DeleteBottomSheet(
                 message: "정말 삭제하시겠습니까?",
                 onDeleteAction: {
                     showDeleteSheet = false
