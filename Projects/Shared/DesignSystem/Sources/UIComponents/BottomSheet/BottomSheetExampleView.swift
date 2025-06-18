@@ -84,9 +84,6 @@ struct BottomSheetExampleView: View {
         .sheet(isPresented: $showDatePickerWithLabelSheet) {
             DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
-        .sheet(isPresented: $showDatePickerOnlySheet) {
-            DatePickerOnlyBottomSheet(selectedDate: $selectedDate)
-        }
         .sheet(isPresented: $showTaskEditSheet) {
             TaskEditBottomSheet(
                 onEditAction: {
