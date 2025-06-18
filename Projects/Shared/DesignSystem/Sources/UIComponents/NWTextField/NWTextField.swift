@@ -27,7 +27,7 @@ public struct NWTextField: View {
     }
     
     private var shouldShowFloatingPlaceholder: Bool {
-        return false // 플레이스홀더는 아예 표시하지 않음
+        return false
     }
     
     // MARK: - Initializer
@@ -44,23 +44,20 @@ public struct NWTextField: View {
     // MARK: - Body
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Text Field Container
             VStack(alignment: .leading, spacing: 0) {
                 Spacer()
                 
-                // Text Field (하단에서 12px 위)
                 HStack {
                     TextField("", text: $text, prompt: inlinePromptText)
-                        .font(.body1) // 16px Medium
+                        .font(.body1)
                         .foregroundColor(DS.Colors.Text.gray900)
                         .focused($isFocused)
                     
-                    // Clear Button (텍스트가 있고 편집 중일 때만)
                     if !text.isEmpty && isEditing {
                         Button(action: {
                             text = ""
                         }) {
-                            Image(systemName: "xmark.circle.fill")
+                            DS.Images.icnPlus
                                 .foregroundColor(DS.Colors.Neutral._400)
                                 .font(.system(size: 16))
                         }
@@ -68,7 +65,7 @@ public struct NWTextField: View {
                     }
                 }
                 .padding(.bottom, 12)
-                .padding(.horizontal, 0) // 좌우 패딩 제거
+                .padding(.horizontal, 0)
             }
             .frame(height: 36)
             .background(Color.clear)
@@ -87,10 +84,9 @@ public struct NWTextField: View {
                 }
             }
             
-            // Error Message
             if let errorMessage = errorMessage, !errorMessage.isEmpty {
                 Text(errorMessage)
-                    .font(.body3) // 12px Regular
+                    .font(.body2)
                     .foregroundColor(.red)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
@@ -99,7 +95,6 @@ public struct NWTextField: View {
     
     // MARK: - Helper
     private var inlinePromptText: Text? {
-        // 텍스트가 없고 편집 중이 아닐 때만 placeholder 표시
         if text.isEmpty && !isEditing {
             return Text(placeholder)
                 .foregroundColor(DS.Colors.Neutral._400)
