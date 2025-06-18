@@ -98,42 +98,98 @@ struct TextInputContentView: View {
     }
 }
 
-// MARK: - 레이블 있는 연월 피커 컨텐츠 뷰
-struct MonthPickerWithLabelContentView: View {
-    @Binding var selectedMonth: Date
+// MARK: - 커스텀 월/연도 피커 컨텐츠 뷰
+struct CustomDatePickerContentView: View {
+    @Binding var selectedDate: Date
+    @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    
+    private let months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    
+    private var currentYear: Int {
+        Calendar.current.component(.year, from: Date())
+    }
+    
+    private var years: [Int] {
+        Array((currentYear - 50)...(currentYear + 50))
+    }
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            // 월 피커
+            Picker("Month", selection: $selectedMonth) {
+                ForEach(1...12, id: \.self) { month in
+                    Text(months[month - 1])
+                        .tag(month)
+                }
+            }
+            .pickerStyle(.wheel)
+            .frame(maxWidth: .infinity)
+            .clipped()
+            
+            // 연도 피커
+            Picker("Year", selection: $selectedYear) {
+                ForEach(years, id: \.self) { year in
+                    Text(String(year))
+                        .tag(year)
+                }
+            }
+            .pickerStyle(.wheel)
+            .frame(maxWidth: .infinity)
+            .clipped()
+        }
+        .onChange(of: selectedMonth) { _, newMonth in
+            updateSelectedDate()
+        }
+        .onChange(of: selectedYear) { _, newYear in
+            updateSelectedDate()
+        }
+        .onAppear {
+            selectedMonth = Calendar.current.component(.month, from: selectedDate)
+            selectedYear = Calendar.current.component(.year, from: selectedDate)
+        }
+    }
+    
+    private func updateSelectedDate() {
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = selectedMonth
+        components.day = 1
+        
+        if let newDate = Calendar.current.date(from: components) {
+            selectedDate = newDate
+        }
+    }
+}
+
+// MARK: - 레이블 있는 커스텀 월/연도 피커 컨텐츠 뷰
+struct CustomDatePickerWithLabelContentView: View {
+    @Binding var selectedDate: Date
     
     var body: some View {
         VStack(spacing: 20) {
             VStack(spacing: 4) {
-                Text("확인하고 싶은")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("휴가 날짜를 선택해주세요")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                Text("확인하고 싶은\n 휴가 날짜를 선택해주세요")
+                    .font(.heading4)
+                    .foregroundColor(DS.Colors.Neutral._900)
             }
             .multilineTextAlignment(.center)
             
-            DatePicker("", selection: $selectedMonth, displayedComponents: [.date])
-                .datePickerStyle(.wheel)
-                .labelsHidden()
-                .environment(\.locale, Locale(identifier: "en_US"))
-                .environment(\.calendar, Calendar(identifier: .gregorian))
+            CustomDatePickerContentView(selectedDate: $selectedDate)
         }
         .padding(.horizontal, 20)
     }
 }
 
-// MARK: - 레이블 없는 연월 피커 컨텐츠 뷰
-struct MonthPickerOnlyContentView: View {
-    @Binding var selectedMonth: Date
+// MARK: - 레이블 없는 커스텀 월/연도 피커 컨텐츠 뷰
+struct CustomDatePickerOnlyContentView: View {
+    @Binding var selectedDate: Date
     
     var body: some View {
-        DatePicker("", selection: $selectedMonth, displayedComponents: [.date])
-            .datePickerStyle(.wheel)
-            .labelsHidden()
-            .environment(\.locale, Locale(identifier: "en_US"))
-            .environment(\.calendar, Calendar(identifier: .gregorian))
+        CustomDatePickerContentView(selectedDate: $selectedDate)
             .padding(.horizontal, 20)
     }
 }
@@ -292,12 +348,13 @@ struct DatePickerWithLabelBottomSheetView: View {
     @Binding var selectedDate: Date
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 20) {
             CustomDragIndicator()
             
-            MonthPickerWithLabelContentView(selectedMonth: $selectedDate)
+            CustomDatePickerWithLabelContentView(selectedDate: $selectedDate)
+            Spacer()
         }
-        .presentationDetents([.height(400)])
+        .presentationDetents([.height(353)])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(16)
     }
@@ -310,7 +367,8 @@ struct DatePickerOnlyBottomSheetView: View {
         VStack(spacing: 0) {
             CustomDragIndicator()
             
-            MonthPickerOnlyContentView(selectedMonth: $selectedDate)
+            CustomDatePickerOnlyContentView(selectedDate: $selectedDate)
+            Spacer()
         }
         .presentationDetents([.height(300)])
         .presentationDragIndicator(.hidden)
