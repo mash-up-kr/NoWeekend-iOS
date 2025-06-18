@@ -1,0 +1,109 @@
+//
+//  NWTextField.swift
+//  DesignSystem
+//
+//  Created by SiJongKim on 6/18/25.
+//
+
+import SwiftUI
+
+public struct NWTextField: View {
+    // MARK: - Properties
+    @Binding private var text: String
+    private let placeholder: String
+    private let errorMessage: String?
+    @State private var isEditing: Bool = false
+    @FocusState private var isFocused: Bool
+    
+    // MARK: - Computed Properties
+    private var currentState: NWTextFieldState {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return .typingError
+        } else if isEditing {
+            return .typing
+        } else {
+            return .normal
+        }
+    }
+    
+    private var shouldShowFloatingPlaceholder: Bool {
+        return false // 플레이스홀더는 아예 표시하지 않음
+    }
+    
+    // MARK: - Initializer
+    public init(
+        text: Binding<String>,
+        placeholder: String = "",
+        errorMessage: String? = nil
+    ) {
+        self._text = text
+        self.placeholder = placeholder
+        self.errorMessage = errorMessage
+    }
+    
+    // MARK: - Body
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Text Field Container
+            VStack(alignment: .leading, spacing: 0) {
+                Spacer()
+                
+                // Text Field (하단에서 12px 위)
+                HStack {
+                    TextField("", text: $text, prompt: inlinePromptText)
+                        .font(.body1) // 16px Medium
+                        .foregroundColor(DS.Colors.Text.gray900)
+                        .focused($isFocused)
+                    
+                    // Clear Button (텍스트가 있고 편집 중일 때만)
+                    if !text.isEmpty && isEditing {
+                        Button(action: {
+                            text = ""
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(DS.Colors.Neutral._400)
+                                .font(.system(size: 16))
+                        }
+                        .transition(.opacity.combined(with: .scale))
+                    }
+                }
+                .padding(.bottom, 12)
+                .padding(.horizontal, 0) // 좌우 패딩 제거
+            }
+            .frame(height: 36)
+            .background(Color.clear)
+            .overlay(
+                Rectangle()
+                    .frame(height: currentState.borderWidth)
+                    .foregroundColor(currentState.borderColor),
+                alignment: .bottom
+            )
+            .animation(.easeInOut(duration: 0.2), value: shouldShowFloatingPlaceholder)
+            .animation(.easeInOut(duration: 0.2), value: currentState.borderColor)
+            .animation(.easeInOut(duration: 0.2), value: currentState.borderWidth)
+            .onChange(of: isFocused) { newValue, oldValue in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isEditing = newValue
+                }
+            }
+            
+            // Error Message
+            if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                Text(errorMessage)
+                    .font(.body3) // 12px Regular
+                    .foregroundColor(.red)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+    
+    // MARK: - Helper
+    private var inlinePromptText: Text? {
+        // 텍스트가 없고 편집 중이 아닐 때만 placeholder 표시
+        if text.isEmpty && !isEditing {
+            return Text(placeholder)
+                .foregroundColor(DS.Colors.Neutral._400)
+        }
+        return nil
+    }
+}
