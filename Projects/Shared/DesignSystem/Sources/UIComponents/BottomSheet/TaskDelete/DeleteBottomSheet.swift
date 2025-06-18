@@ -6,15 +6,6 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-
-//
-//  DeleteBottomSheet.swift
-//  Shared
-//
-//  Created by 이지훈 on 6/18/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
-//
-
 import SwiftUI
 
 /// 삭제 확인 바텀시트

@@ -6,15 +6,6 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-
-//
-//  TextInputBottomSheet.swift
-//  Shared
-//
-//  Created by 이지훈 on 6/18/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
-//
-
 import SwiftUI
 
 /// 텍스트 입력 바텀시트
