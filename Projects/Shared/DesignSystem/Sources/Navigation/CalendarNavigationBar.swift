@@ -16,8 +16,8 @@ public struct CalendarNavigationBar: View {
         case month = "월"
     }
     
-    let onDateTapped: (() -> Void)?
-    let onToggleChanged: ((ToggleOption) -> Void)?
+    public let onDateTapped: (() -> Void)?
+    public let onToggleChanged: ((ToggleOption) -> Void)?
     
     public init(
         onDateTapped: (() -> Void)? = nil,
@@ -67,9 +67,16 @@ public struct CalendarNavigationBar: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .frame(height: 56)
-        .background(Color(.systemBackground))
+        .calendarNavigationBarStyle()
+    }
+}
+
+private extension View {
+    func calendarNavigationBarStyle() -> some View {
+        self
+            .padding(.horizontal, 16)
+            .frame(height: 56)
+            .background(Color(.systemBackground))
     }
 }
 
