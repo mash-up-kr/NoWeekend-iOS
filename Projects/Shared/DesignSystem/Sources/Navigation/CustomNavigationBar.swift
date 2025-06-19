@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-// MARK: - Custom Navigation Component
 public struct CustomNavigationBar: View {
     public enum NavigationType {
         case backOnly
@@ -17,10 +16,10 @@ public struct CustomNavigationBar: View {
         case cancelWithLabelAndSave(String)
     }
     
-    let type: NavigationType
-    let onBackTapped: (() -> Void)?
-    let onCancelTapped: (() -> Void)?
-    let onSaveTapped: (() -> Void)?
+    public let type: NavigationType
+    public let onBackTapped: (() -> Void)?
+    public let onCancelTapped: (() -> Void)?
+    public let onSaveTapped: (() -> Void)?
     
     public init(
         type: NavigationType,
@@ -36,38 +35,31 @@ public struct CustomNavigationBar: View {
     
     public var body: some View {
         ZStack {
-            HStack {
-                leftButton
-                
-                Spacer()
-                
-                rightButton
-            }
-            
+            navigationContent
             centerLabel
         }
-        .padding(.horizontal, 16)
-        .frame(height: 56)
-        .background(Color(.systemBackground))
+        .customNavigationBarStyle()
     }
 }
 
-// MARK: - Private Views
 private extension CustomNavigationBar {
+    var navigationContent: some View {
+        HStack {
+            leftButtonContent
+            Spacer()
+            rightButtonContent
+        }
+    }
+    
     @ViewBuilder
-    var leftButton: some View {
+    var leftButtonContent: some View {
         switch type {
         case .backOnly, .backWithLabel, .backWithLabelAndSave:
-            Button(action: {
-                onBackTapped?()
-            }) {
+            Button(action: { onBackTapped?() }) {
                 Image(.icnChevronLeft)
             }
-            
         case .cancelWithLabelAndSave:
-            Button(action: {
-                onCancelTapped?()
-            }) {
+            Button(action: { onCancelTapped?() }) {
                 Text("취소")
                     .font(.heading6)
                     .foregroundColor(DS.Colors.Text.gray700)
@@ -80,79 +72,85 @@ private extension CustomNavigationBar {
         switch type {
         case .backOnly:
             EmptyView()
-            
         case .backWithLabel(let title),
              .backWithLabelAndSave(let title),
              .cancelWithLabelAndSave(let title):
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.primary)
+                .navigationTitleStyle()
         }
     }
     
     @ViewBuilder
-    var rightButton: some View {
+    var rightButtonContent: some View {
         switch type {
         case .backOnly, .backWithLabel:
             Color.clear
                 .frame(width: 60, height: 32)
-            
         case .backWithLabelAndSave, .cancelWithLabelAndSave:
-            Button(action: {
-                onSaveTapped?()
-            }) {
+            Button(action: { onSaveTapped?() }) {
                 Text("저장")
                     .font(.heading6)
-                        .foregroundColor(DS.Colors.Toast._500)
+                    .foregroundColor(DS.Colors.Toast._500)
             }
         }
+    }
+}
+
+private extension View {
+    func customNavigationBarStyle() -> some View {
+        self
+            .padding(.horizontal, 16)
+            .frame(height: 56)
+            .background(Color(.systemBackground))
+    }
+    
+    func navigationTitleStyle() -> some View {
+        self
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundColor(.primary)
+    }
+    
+    func previewContainerStyle() -> some View {
+        self.background(Color.gray.opacity(0.1))
+    }
+    
+    func previewNavigationBarBackground() -> some View {
+        self.background(Color.white)
     }
 }
 
 // MARK: - Preview
 #Preview {
     VStack(spacing: 1) {
-        // 1. 뒤로가기만 있는 버전
+        // Back Only
         CustomNavigationBar(
             type: .backOnly,
-            onBackTapped: {
-                print("뒤로가기 tapped")
-            }
+            onBackTapped: { print("뒤로가기 tapped") }
         )
-        .background(Color.white)
+        .previewNavigationBarBackground()
         
-        // 2. 뒤로가기 + 가운데 레이블
+        // Back with Label
         CustomNavigationBar(
             type: .backWithLabel("세부사항"),
-            onBackTapped: {
-                print("뒤로가기 tapped")
-            }
+            onBackTapped: { print("뒤로가기 tapped") }
         )
-        .background(Color.white)
+        .previewNavigationBarBackground()
         
-        // 3. 뒤로가기 + 가운데 레이블 + 저장하기 버튼
+        // Back with Label and Save
         CustomNavigationBar(
             type: .backWithLabelAndSave("프로필 편집"),
-            onBackTapped: {
-                print("뒤로가기 tapped")
-            },
-            onSaveTapped: {
-                print("저장하기 tapped")
-            }
+            onBackTapped: { print("뒤로가기 tapped") },
+            onSaveTapped: { print("저장하기 tapped") }
         )
-        .background(Color.white)
+        .previewNavigationBarBackground()
         
-        // 4. 취소 + 가운데 레이블 + 저장하기 버튼
+        // Cancel with Label and Save
         CustomNavigationBar(
             type: .cancelWithLabelAndSave("새 게시물"),
-            onCancelTapped: {
-                print("취소 tapped")
-            },
-            onSaveTapped: {
-                print("저장하기 tapped")
-            }
+            onCancelTapped: { print("취소 tapped") },
+            onSaveTapped: { print("저장하기 tapped") }
         )
-        .background(Color.white)
+        .previewNavigationBarBackground()
     }
-    .background(Color.gray.opacity(0.1))
+    .previewContainerStyle()
 }
