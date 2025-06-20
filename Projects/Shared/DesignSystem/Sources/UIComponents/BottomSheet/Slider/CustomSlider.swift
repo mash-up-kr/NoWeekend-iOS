@@ -69,7 +69,7 @@ public struct CustomSlider: View {
     
     private var backgroundTrack: some View {
         RoundedRectangle(cornerRadius: 4)
-            .fill(Color.gray.opacity(0.3)) // TODO: 색상수정
+            .fill(DS.Colors.Toast._500) // TODO: 색상수정
             .frame(height: trackHeight)
             .padding(.horizontal, horizontalPadding)
     }
@@ -96,16 +96,14 @@ public struct CustomSlider: View {
 // MARK: - 계산 로직
 extension CustomSlider {
     
-    // 슬라이더 정보를 계산하는 구조체
     struct SliderInfo {
         let thumbPosition: CGFloat
         let activeTrackWidth: CGFloat
     }
     
-    // 슬라이더 관련 계산을 한 곳에 모음
     private func calculateSliderInfo(geometry: GeometryProxy) -> SliderInfo {
         let trackWidth = geometry.size.width - (horizontalPadding * 2)
-        let progress = calculateProgress() // 0.0 ~ 1.0
+        let progress = calculateProgress()
         let thumbOffset = trackWidth * progress
         let thumbPosition = horizontalPadding + thumbOffset
         let activeTrackWidth = thumbOffset + horizontalPadding
@@ -141,14 +139,12 @@ extension CustomSlider {
         // 진행률 계산 (0.0 ~ 1.0)
         let progress = (clampedPosition - horizontalPadding) / trackWidth
         
-        // 새로운 값 계산
         let newValue = range.lowerBound + progress * (range.upperBound - range.lowerBound)
         value = max(range.lowerBound, min(range.upperBound, newValue))
     }
     
-    // 드래그 종료 처리
     private func handleDragEnd() {
         isDragging = false
-        value = round(value) // 정수값으로 반올림
+        value = round(value)
     }
 }
