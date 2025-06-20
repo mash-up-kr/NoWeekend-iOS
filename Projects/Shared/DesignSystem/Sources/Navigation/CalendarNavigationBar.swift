@@ -16,22 +16,32 @@ public struct CalendarNavigationBar: View {
         case month = "월"
     }
     
+    public let dateText: String
     public let onDateTapped: (() -> Void)?
     public let onToggleChanged: ((ToggleOption) -> Void)?
     
     public init(
+        dateText: String? = nil,
         onDateTapped: (() -> Void)? = nil,
         onToggleChanged: ((ToggleOption) -> Void)? = nil
     ) {
+        self.dateText = dateText ?? Self.currentDateText
         self.onDateTapped = onDateTapped
         self.onToggleChanged = onToggleChanged
+    }
+    
+    private static var currentDateText: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 M월"
+        return formatter.string(from: Date())
     }
     
     public var body: some View {
         HStack {
             Button(action: { onDateTapped?() }) {
                 HStack(spacing: 4) {
-                    Text("2025년 5월")
+                    Text(dateText)
                         .font(.heading4)
                         .foregroundColor(.black)
                     Image(.icnCaretDown)
