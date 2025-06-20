@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 레이블이 있는 날짜 선택 바텀시트
 public struct DatePickerWithLabelBottomSheet: View {
     @Binding public var selectedDate: Date
     
@@ -17,26 +16,15 @@ public struct DatePickerWithLabelBottomSheet: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
+        BottomSheetContainer(height: 400) {
             VStack(spacing: 20) {
-                VStack(spacing: 4) {
-                    Text("확인하고 싶은")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    Text("휴가 날짜를 선택해주세요")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-                .multilineTextAlignment(.center)
+                BottomSheetHeader(
+                    title: "확인하고 싶은",
+                    subtitle: "휴가 날짜를 선택해주세요"
+                )
                 
                 DatePickerBottomSheet(selectedDate: $selectedDate)
             }
-            .padding(.horizontal, 20)
         }
-        .presentationDetents([.height(400)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
     }
 }

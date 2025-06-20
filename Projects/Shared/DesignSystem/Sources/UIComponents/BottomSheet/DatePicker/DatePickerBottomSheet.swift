@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 레이블이 없는 그냥 날짜 선택 바텀시트
 public struct DatePickerBottomSheet: View {
     @Binding public var selectedDate: Date
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
