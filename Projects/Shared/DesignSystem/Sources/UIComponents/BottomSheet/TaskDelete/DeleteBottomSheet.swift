@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 삭제 확인 바텀시트
 public struct DeleteBottomSheet: View {
     public let message: String
     public let onDeleteAction: () -> Void
@@ -25,48 +24,24 @@ public struct DeleteBottomSheet: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
-            VStack(spacing: 0) {
-                // 할일 수정
-                Button(action: {
-                    isPresented = false
-                }) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "pencil") // TODO: 아이콘 수정
-                        
-                        Text("할일 수정")
-                            .font(.body)
-                            .foregroundColor(.primary) // TODO: 색상수정
-                        
-                        Spacer()
-                    }
-                    .frame(height: 56)
-                }
-                
-                // 삭제
-                Button(action: {
-                    onDeleteAction()
-                    isPresented = false
-                }) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "trash") // TODO: 아이콘 수정
-                        
-                        Text("삭제")
-                            .font(.body)
-                            .foregroundColor(.primary) // TODO: 색상수정
-                        
-                        Spacer()
-                    }
-                    .frame(height: 56)
-                }
-            }
-            .padding(.horizontal, 20)
-            Spacer()
+        BottomSheetContainer(height: 136) {
+            ActionList(
+                items: [
+                    ActionItem(
+                        image: Image(.icnEdit),
+                        title: "할일 수정",
+                        action: {
+                            isPresented = false
+                        }
+                    ),
+                    ActionItem(
+                        image: Image(.icnDelete),
+                        title: "삭제",
+                        action: onDeleteAction
+                    )
+                ],
+                isPresented: $isPresented
+            )
         }
-        .presentationDetents([.height(136)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
     }
 }
