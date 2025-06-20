@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 텍스트 입력 바텀시트
 public struct TextInputBottomSheet: View {
     public let subtitle: String
     public let placeholder: String
@@ -25,9 +24,7 @@ public struct TextInputBottomSheet: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
+        BottomSheetContainer(height: 200) {
             VStack(spacing: 24) {
                 Text("연차 제목을 작성하면\n할 일에 추가돼요")
                     .font(.heading4)
@@ -35,25 +32,11 @@ public struct TextInputBottomSheet: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 24)
                 
-                TextField(placeholder, text: $text)
-                    .font(.body1)
-                    .foregroundStyle(DS.Colors.Neutral._700)
-                    .padding(.top, 24)
-                    .padding(.bottom, 12)
-                    .background(
-                        VStack {
-                            Spacer()
-                            Rectangle()
-                                .frame(height: 1)
-                                .foregroundColor(DS.Colors.Border.gray200)
-                        }
-                    )
+                UnderlineTextField(
+                    placeholder: placeholder,
+                    text: $text
+                )
             }
-            .padding(.horizontal, 20)
-            Spacer()
         }
-        .presentationDetents([.height(200)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
     }
 }
