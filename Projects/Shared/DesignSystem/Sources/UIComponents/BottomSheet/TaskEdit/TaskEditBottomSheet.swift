@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 할 일 수정 바텀시트
 public struct TaskEditBottomSheet: View {
     public let onEditAction: () -> Void
     public let onTomorrowAction: () -> Void
@@ -28,64 +27,30 @@ public struct TaskEditBottomSheet: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
-            VStack(spacing: 0) {
-                Button(action: {
-                    onEditAction()
-                    isPresented = false
-                }) {
-                    HStack(spacing: 8) {
-                        Image(.icnEdit)
-                        
-                        Text(" 할 일 수정")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Text.gray900)
-                        
-                        Spacer()
-                    }
-                    .frame(height: 56)
-                }
-                
-                Button(action: {
-                    onTomorrowAction()
-                    isPresented = false
-                }) {
-                    HStack(spacing: 8) {
-                        Image(.icnArrowForward)
-                        
-                        Text("내일 또 하기")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Text.gray900)
-                        
-                        Spacer()
-                    }
-                    .frame(height: 56)
-                }
-                
-                Button(action: {
-                    onDeleteAction()
-                    isPresented = false
-                }) {
-                    HStack(spacing: 8) {
-                        Image(.icnDelete)
-                        
-                        Text("삭제하기")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Text.gray900)
-                        
-                        Spacer()
-                    }
-                    .frame(height: 56)
-                }
-            }
-            .padding(.horizontal, 20)
-            
-            Spacer()
+        BottomSheetContainer(height: 192) {
+            ActionList(
+                items: [
+                    ActionItem(
+                        image: Image(.icnEdit),
+                        title: " 할 일 수정",
+                        textColor: DS.Colors.Text.gray900,
+                        action: onEditAction
+                    ),
+                    ActionItem(
+                        image: Image(.icnArrowForward),
+                        title: "내일 또 하기",
+                        textColor: DS.Colors.Text.gray900,
+                        action: onTomorrowAction
+                    ),
+                    ActionItem(
+                        image: Image(.icnDelete),
+                        title: "삭제하기",
+                        textColor: DS.Colors.Text.gray900,
+                        action: onDeleteAction
+                    )
+                ],
+                isPresented: $isPresented
+            )
         }
-        .presentationDetents([.height(192)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
     }
 }
