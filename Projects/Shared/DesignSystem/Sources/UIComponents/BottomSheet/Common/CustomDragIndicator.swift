@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-public struct CustomDragIndicator: View {
+internal struct CustomDragIndicator: View {
     public init() {}
     
     public var body: some View {
