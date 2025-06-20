@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// 슬라이더 바텀시트
 public struct SliderBottomSheet: View {
     public let title: String
     @Binding public var value: Double
@@ -28,15 +27,12 @@ public struct SliderBottomSheet: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            CustomDragIndicator()
-            
+        BottomSheetContainer(height: 283) {
             VStack(spacing: 40) {
-                Text("평소 휴가는 며칠정도 \n 사용하시나요?")
-                    .font(.title3) // TODO: 폰트수정
-                    .foregroundColor(.primary) // TODO: 색상수정
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 24)
+                BottomSheetHeader(
+                    title: "평소 휴가는 며칠정도 \n 사용하시나요?",
+                    topPadding: 24
+                )
                 
                 VStack(spacing: 32) {
                     CustomSlider(
@@ -46,11 +42,6 @@ public struct SliderBottomSheet: View {
                     )
                 }
             }
-            .padding(.horizontal, 20)
-            Spacer()
         }
-        .presentationDetents([.height(283)])
-        .presentationDragIndicator(.hidden)
-        .presentationCornerRadius(16)
     }
 }
