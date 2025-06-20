@@ -19,6 +19,7 @@ struct BottomSheetExampleView: View {
     @State private var showDatePickerOnlySheet = false
     @State private var showTaskEditSheet = false
     @State private var showDeleteSheet = false
+    @State private var showCustomSheet = false
     
     var body: some View {
         NavigationView {
@@ -29,32 +30,26 @@ struct BottomSheetExampleView: View {
                     .padding(.top, 40)
                 
                 VStack(spacing: 16) {
-                    // 1. 슬라이더 바텀시트
                     Button("슬라이더 바텀시트") {
                         showSliderSheet = true
                     }
                     
-                    // 2. 텍스트 입력 바텀시트
                     Button("텍스트 입력 바텀시트") {
                         showTextInputSheet = true
                     }
                     
-                    // 3. 날짜 선택 (레이블 포함) 바텀시트
                     Button("날짜 선택 (레이블 포함) 바텀시트") {
                         showDatePickerWithLabelSheet = true
                     }
                     
-                    // 4. 날짜 선택 (레이블 없음) 바텀시트
                     Button("날짜 선택 (레이블 없음) 바텀시트") {
                         showDatePickerOnlySheet = true
                     }
                     
-                    // 5. 할 일 수정 바텀시트 (3개 옵션)
                     Button("할 일 수정 바텀시트") {
                         showTaskEditSheet = true
                     }
                     
-                    // 6. 삭제 확인 바텀시트
                     Button("삭제 확인 바텀시트") {
                         showDeleteSheet = true
                     }
@@ -65,7 +60,6 @@ struct BottomSheetExampleView: View {
             }
             .navigationBarHidden(true)
         }
-        // 바텀시트들
         .sheet(isPresented: $showSliderSheet) {
             SliderBottomSheet(
                 title: "며칠 동안 휴가를 가고 싶나요?",
@@ -84,19 +78,21 @@ struct BottomSheetExampleView: View {
         .sheet(isPresented: $showDatePickerWithLabelSheet) {
             DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
+        .sheet(isPresented: $showDatePickerOnlySheet) {
+            BottomSheetContainer(height: 350) {
+                DatePickerBottomSheet(selectedDate: $selectedDate)
+            }
+        }
         .sheet(isPresented: $showTaskEditSheet) {
             TaskEditBottomSheet(
                 onEditAction: {
                     print("할일 수정 선택됨")
-                    // 할일 수정 화면으로 이동하는 로직
                 },
                 onTomorrowAction: {
                     print("내일 또 하기 선택됨")
-                    // 내일 또 하기 로직
                 },
                 onDeleteAction: {
                     print("삭제하기 선택됨")
-                    // 삭제 확인 바텀시트 표시
                     showDeleteSheet = true
                 },
                 isPresented: $showTaskEditSheet
