@@ -14,6 +14,7 @@ public struct NWTextField: View {
     private let placeholder: String
     @Binding private var errorMessage: String?
     @State private var isEditing: Bool = false
+    private let style: NWTextFieldStyle
     
     // MARK: - Computed Properties
     private var currentState: NWTextFieldState {
@@ -34,11 +35,13 @@ public struct NWTextField: View {
     public init(
         text: Binding<String>,
         placeholder: String = "",
-        errorMessage: Binding<String?> = .constant(nil)
+        errorMessage: Binding<String?> = .constant(nil),
+        style: NWTextFieldStyle = .todoMultiLine
     ) {
         self._text = text
         self.placeholder = placeholder
         self._errorMessage = errorMessage
+        self.style = style
     }
     
     // MARK: - Body
@@ -51,17 +54,29 @@ public struct NWTextField: View {
     
     // MARK: - Private Views
     private var inputFieldView: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             textViewRepresentable
             
-            if !text.isEmpty {
-                clearButton
-            }
+            rightContentView
         }
         .background(Color.clear)
         .overlay(borderView, alignment: .bottom)
         .animation(.easeInOut(duration: 0.2), value: currentState.borderColor)
         .animation(.easeInOut(duration: 0.2), value: currentState.borderWidth)
+    }
+    
+    @ViewBuilder
+    private var rightContentView: some View {
+        switch style {
+        case .todoMultiLine:
+            if !text.isEmpty {
+                clearButton
+            }
+        case .userInputTextField(let suffixText):
+            Text(suffixText)
+                .font(.body1)
+                .foregroundColor(DS.Colors.Neutral.black)
+        }
     }
     
     private var textLineCount: Int {
@@ -87,7 +102,7 @@ public struct NWTextField: View {
             Button(action: clearText) {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(DS.Colors.Neutral._400)
-                    .font(.system(size: 22))
+                    .font(.system(size: 20))
             }
         }
     }
@@ -112,26 +127,73 @@ public struct NWTextField: View {
     private func clearText() {
         text = ""
         errorMessage = nil
-        // 즉시 UI 업데이트를 위해 강제로 상태 변경
-        DispatchQueue.main.async {
-            // 빈 문자열 설정이 바로 반영되도록 함
-        }
     }
 }
 
 // MARK: - Extensions
 public extension NWTextField {
     func errorMessage(_ message: String?) -> NWTextField {
-        var copy = self
-        copy._errorMessage = .constant(message)
-        return copy
+        return NWTextField(
+            text: self._text,
+            placeholder: self.placeholder,
+            errorMessage: .constant(message),
+            style: self.style
+        )
     }
     
     func placeholder(_ text: String) -> NWTextField {
-        NWTextField(
+        return NWTextField(
             text: self._text,
             placeholder: text,
-            errorMessage: self._errorMessage
+            errorMessage: self._errorMessage,
+            style: self.style
+        )
+    }
+    
+    func style(_ style: NWTextFieldStyle) -> NWTextField {
+        return NWTextField(
+            text: self._text,
+            placeholder: self.placeholder,
+            errorMessage: self._errorMessage,
+            style: style
+        )
+    }
+    
+    func suffix(_ text: String) -> NWTextField {
+        return NWTextField(
+            text: self._text,
+            placeholder: self.placeholder,
+            errorMessage: self._errorMessage,
+            style: .userInputTextField(text)
+        )
+    }
+}
+
+public extension NWTextField {
+    static func todoMultiLine(
+        text: Binding<String>,
+        placeholder: String = "",
+        errorMessage: Binding<String?> = .constant(nil)
+    ) -> NWTextField {
+        return NWTextField(
+            text: text,
+            placeholder: placeholder,
+            errorMessage: errorMessage,
+            style: .todoMultiLine
+        )
+    }
+    
+    static func userInputTextField(
+        text: Binding<String>,
+        suffixText: String,
+        placeholder: String = "",
+        errorMessage: Binding<String?> = .constant(nil)
+    ) -> NWTextField {
+        return NWTextField(
+            text: text,
+            placeholder: placeholder,
+            errorMessage: errorMessage,
+            style: .userInputTextField(suffixText)
         )
     }
 }

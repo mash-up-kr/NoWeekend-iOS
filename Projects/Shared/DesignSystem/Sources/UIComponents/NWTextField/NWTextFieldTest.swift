@@ -8,64 +8,82 @@
 import SwiftUI
 
 public struct NWTextFieldTest: View {
-    @State private var normalText = ""
+    @State private var standardText = ""
+    @State private var dayText = ""
+    @State private var timeText = ""
     @State private var errorText = "입력된 텍스트"
-    @State private var longText = "이것은 매우 긴 텍스트입니다. 여러 줄로 표시될 정도로 긴 텍스트를 입력해서 멀티라인 상태에서의 X 버튼 위치와 전체적인 레이아웃을 확인할 수 있도록 작성했습니다."
     
-    @State private var normalError: String? = nil
+    @State private var standardError: String? = nil
+    @State private var dayError: String? = nil
+    @State private var timeError: String? = nil
     @State private var withError: String? = "에러 메시지가 표시됩니다"
-    @State private var longError: String? = nil
     
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                // 1. 일반 상태 (비어있음)
+                // 1. Standard 스타일 (X 버튼)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("일반 상태 (Normal)")
+                    Text("Standard 스타일 (X 버튼)")
                         .font(.body1)
                         .foregroundColor(DS.Colors.Text.gray900)
                     
-                    NWTextField(
-                        text: $normalText,
+                    NWTextField.todoMultiLine(
+                        text: $standardText,
                         placeholder: "텍스트를 입력하세요",
-                        errorMessage: $normalError
+                        errorMessage: $standardError
                     )
                 }
                 
                 Spacer()
                 
-                // 2. 에러 상태
+                // 2. Suffix 스타일 - 일
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("에러 상태 (Error)")
+                    Text("Suffix 스타일 - 일")
                         .font(.body1)
                         .foregroundColor(DS.Colors.Text.gray900)
                     
-                    NWTextField(
-                        text: $errorText,
-                        placeholder: "텍스트를 입력하세요",
-                        errorMessage: $withError
+                    NWTextField.userInputTextField(
+                        text: $dayText,
+                        suffixText: "일",
+                        placeholder: "0",
+                        errorMessage: $dayError
                     )
                 }
                 
                 Spacer()
                 
-                // 3. 멀티라인 상태
+                // 3. Suffix 스타일 - 시간
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("멀티라인 상태 (Multi-line)")
+                    Text("Suffix 스타일 - 시간")
                         .font(.body1)
                         .foregroundColor(DS.Colors.Text.gray900)
                     
-                    NWTextField(
-                        text: $longText,
-                        placeholder: "긴 텍스트를 입력하세요",
-                        errorMessage: $longError
+                    NWTextField.userInputTextField(
+                        text: $timeText,
+                        suffixText: "시간",
+                        placeholder: "0",
+                        errorMessage: $timeError
                     )
                 }
                 
                 Spacer()
                 
-                // 4. 테스트 버튼들
+                // 4. 체이닝 방식 사용 예시
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("체이닝 방식 (에러 상태)")
+                        .font(.body1)
+                        .foregroundColor(DS.Colors.Text.gray900)
+                    
+                    NWTextField(text: $errorText)
+                        .placeholder("텍스트를 입력하세요")
+                        .suffix("분")
+                        .errorMessage(withError)
+                }
+                
+                Spacer()
+                
+                // 5. 테스트 버튼들
                 VStack(alignment: .leading, spacing: 12) {
                     Text("테스트 액션")
                         .font(.body1)
@@ -86,9 +104,10 @@ public struct NWTextFieldTest: View {
                         .cornerRadius(8)
                         
                         Button("텍스트 초기화") {
-                            normalText = ""
+                            standardText = ""
+                            dayText = ""
+                            timeText = ""
                             errorText = ""
-                            longText = ""
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -98,10 +117,11 @@ public struct NWTextFieldTest: View {
                     }
                     
                     HStack(spacing: 12) {
-                        Button("샘플 텍스트 추가") {
-                            normalText = "일반 텍스트"
-                            errorText = "에러가 있는 텍스트"
-                            longText = "이것은 매우 긴 텍스트입니다. 여러 줄로 표시될 정도로 긴 텍스트를 입력해서 멀티라인 상태를 테스트할 수 있습니다."
+                        Button("샘플 데이터 입력") {
+                            standardText = "일반 텍스트"
+                            dayText = "15"
+                            timeText = "8"
+                            errorText = "30"
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
