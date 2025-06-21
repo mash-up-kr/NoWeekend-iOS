@@ -7,137 +7,155 @@
 
 import SwiftUI
 
-public struct NWTextFieldTest: View {
-    @State private var standardText = ""
-    @State private var dayText = ""
-    @State private var timeText = ""
-    @State private var errorText = "입력된 텍스트"
+public struct NWTextFieldExample: View {
     
-    @State private var standardError: String? = nil
-    @State private var dayError: String? = nil
-    @State private var timeError: String? = nil
-    @State private var withError: String? = "에러 메시지가 표시됩니다"
+    // MARK: - State Properties
+    @State private var todoText = ""
+    @State private var daysText = ""
+    @State private var hoursText = ""
+    @State private var minutesText = ""
     
+    @State private var todoError: String? = nil
+    @State private var daysError: String? = nil
+    
+    public init() {}
+    
+    // MARK: - Body
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 32) {
+                basicUsageSection
                 
-                // 1. Standard 스타일 (X 버튼)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Standard 스타일 (X 버튼)")
-                        .font(.body1)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                    
-                    NWTextField.todoMultiLine(
-                        text: $standardText,
-                        placeholder: "텍스트를 입력하세요",
-                        errorMessage: $standardError
-                    )
-                }
+                suffixStyleSection
                 
-                Spacer()
+                errorStateSection
                 
-                // 2. Suffix 스타일 - 일
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Suffix 스타일 - 일")
-                        .font(.body1)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                    
-                    NWTextField.userInputTextField(
-                        text: $dayText,
-                        suffixText: "일",
-                        placeholder: "0",
-                        errorMessage: $dayError
-                    )
-                }
-                
-                Spacer()
-                
-                // 3. Suffix 스타일 - 시간
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Suffix 스타일 - 시간")
-                        .font(.body1)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                    
-                    NWTextField.userInputTextField(
-                        text: $timeText,
-                        suffixText: "시간",
-                        placeholder: "0",
-                        errorMessage: $timeError
-                    )
-                }
-                
-                Spacer()
-                
-                // 4. 체이닝 방식 사용 예시
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("체이닝 방식 (에러 상태)")
-                        .font(.body1)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                    
-                    NWTextField(text: $errorText)
-                        .placeholder("텍스트를 입력하세요")
-                        .suffix("분")
-                        .errorMessage(withError)
-                }
-                
-                Spacer()
-                
-                // 5. 테스트 버튼들
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("테스트 액션")
-                        .font(.body1)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                    
-                    HStack(spacing: 12) {
-                        Button("에러 토글") {
-                            if withError != nil {
-                                withError = nil
-                            } else {
-                                withError = "에러 메시지가 표시됩니다"
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(DS.Colors.Neutral._100)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                        .cornerRadius(8)
-                        
-                        Button("텍스트 초기화") {
-                            standardText = ""
-                            dayText = ""
-                            timeText = ""
-                            errorText = ""
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(DS.Colors.Neutral._100)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                        .cornerRadius(8)
-                    }
-                    
-                    HStack(spacing: 12) {
-                        Button("샘플 데이터 입력") {
-                            standardText = "일반 텍스트"
-                            dayText = "15"
-                            timeText = "8"
-                            errorText = "30"
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(DS.Colors.Neutral._100)
-                        .foregroundColor(DS.Colors.Text.gray900)
-                        .cornerRadius(8)
-                    }
-                }
-                
-                Spacer(minLength: 100)
+                chainingSyntaxSection
             }
             .padding(20)
+        }
+        .navigationTitle("NWTextField")
+        .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private var basicUsageSection: some View {
+        ExampleSection(title: "기본 사용법", description: "멀티라인 텍스트 입력이 가능한 기본 스타일") {
+            NWTextField.todoMultiLine(
+                text: $todoText,
+                placeholder: "할 일을 입력하세요",
+                errorMessage: $todoError
+            )
+        }
+    }
+    
+    private var suffixStyleSection: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            
+            
+            VStack(alignment: .leading, spacing: 16) {
+                ExampleSubSection(label: "일 단위 입력") {
+                    NWTextField.userInputTextField(
+                        text: $daysText,
+                        suffixText: "일",
+                        placeholder: "0",
+                        errorMessage: $daysError
+                    )
+                }
+                
+                ExampleSubSection(label: "시간 단위 입력") {
+                    NWTextField.userInputTextField(
+                        text: $hoursText,
+                        suffixText: "시간",
+                        placeholder: "0"
+                    )
+                }
+            }
+        }
+    }
+    
+    private var errorStateSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            
+            VStack(alignment: .leading, spacing: 12) {
+                NWTextField.userInputTextField(
+                    text: .constant("잘못된 값"),
+                    suffixText: "일",
+                    placeholder: "0",
+                    errorMessage: .constant("1일 이상 입력해주세요")
+                )
+                
+                Text("에러가 있을 때 border 색상과 두께가 변경됩니다.")
+                    .font(.caption)
+                    .foregroundColor(DS.Colors.Text.gray700)
+            }
+        }
+    }
+    
+    private var chainingSyntaxSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                NWTextField(text: $minutesText)
+                    .placeholder("분 단위를 입력하세요")
+                    .suffix("분")
+                
+            }
         }
     }
 }
 
+// MARK: - Supporting Views
+private struct ExampleSection<Content: View>: View {
+    let title: String
+    let description: String
+    let content: Content
+    
+    init(title: String, description: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.description = description
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(DS.Colors.Text.gray900)
+                
+                Text(description)
+                    .font(.body2)
+                    .foregroundColor(DS.Colors.Text.gray700)
+            }
+            
+            content
+        }
+    }
+}
+
+private struct ExampleSubSection<Content: View>: View {
+    let label: String
+    let content: Content
+    
+    init(label: String, @ViewBuilder content: () -> Content) {
+        self.label = label
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label)
+                .font(.body2)
+                .fontWeight(.medium)
+                .foregroundColor(DS.Colors.Text.gray700)
+            
+            content
+        }
+    }
+}
+
+// MARK: - Preview
 #Preview {
-    NWTextFieldTest()
+    NavigationView {
+        NWTextFieldExample()
+    }
 }
