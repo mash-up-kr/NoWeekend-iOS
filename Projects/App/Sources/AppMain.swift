@@ -1,4 +1,5 @@
 import SwiftUI
+import TabBar
 
 @main
 struct AppMain: App {
