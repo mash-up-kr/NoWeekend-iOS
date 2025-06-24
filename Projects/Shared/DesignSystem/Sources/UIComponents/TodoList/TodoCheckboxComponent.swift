@@ -8,46 +8,72 @@
 
 import SwiftUI
 
+struct TodoCategory {
+    let name: String
+    let color: Color
+}
+
 struct TodoCheckboxComponent: View {
     let isCompleted: Bool
     let title: String
-    let category: String?
-    let categoryColor: Color?
+    let category: TodoCategory?
     let time: String?
+    let date: String?
     let onToggle: () -> Void
+    
+    init(
+        isCompleted: Bool,
+        title: String,
+        category: TodoCategory? = TodoCategory(name: "개인", color: DS.Colors.TaskItem.orange),
+        time: String? = nil,
+        onToggle: @escaping () -> Void
+    ) {
+        self.isCompleted = isCompleted
+        self.title = title
+        self.category = category
+        self.time = time
+        self.date = nil
+        self.onToggle = onToggle
+    }
+    
+    private var timeOrDate: String {
+        if let time = time {
+            return time
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "M월 d일"
+            return formatter.string(from: Date())
+        }
+    }
     
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onToggle) {
-                if isCompleted {
-                    DS.Images.icnCheckbox
-                        .resizable()
-                        .frame(width: 18, height: 18)
-                } else {
-                    DS.Images.icTodo
-                        .resizable()
-                        .frame(width: 18, height: 18)
-                }
-            }
-            .animation(.easeInOut(duration: 0.2), value: isCompleted)
+                         (isCompleted ? DS.Images.icnCheckbox : DS.Images.icTodo)
+                             .resizable()
+                             .frame(width: 18, height: 18)
+                     }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.body2)
                     .foregroundColor(DS.Colors.Neutral._900)
-                    .animation(.easeInOut(duration: 0.2), value: isCompleted)
-                
-                if let category = category, let time = time {
+                    .lineLimit(1)
+                if category != nil {
                     HStack(spacing: 8) {
-                        Text(category)
-                            .font(.subtitle1)
-                            .foregroundColor(categoryColor ?? DS.Colors.TaskItem.etc)
+                        if let category = category {
+                            Text(category.name)
+                                .font(.subtitle1)
+                                .foregroundColor(category.color)
+                        }
                         
-                        Rectangle()
-                            .fill(DS.Colors.Border.gray300)
-                            .frame(width: 2, height: 12)
+                        if category != nil {
+                            Rectangle()
+                                .fill(DS.Colors.Border.gray300)
+                                .frame(width: 2, height: 12)
+                        }
                         
-                        Text(time)
+                        Text(timeOrDate)
                             .font(.body2)
                             .foregroundColor(DS.Colors.Text.gray800)
                     }
@@ -68,30 +94,37 @@ struct TodoCheckboxComponent_Previews: PreviewProvider {
         VStack(spacing: 16) {
             TodoCheckboxComponent(
                 isCompleted: false,
-                title: "할 일 제목이 들어갑니다.",
-                category: "회사",
-                categoryColor: DS.Colors.TaskItem.purple,
-                time: "오전 10:00",
-                onToggle: { }
-            )
-            
-            TodoCheckboxComponent(
-                isCompleted: true,
-                title: "완료된 할 일입니다.",
-                category: "개인",
-                categoryColor: DS.Colors.TaskItem.orange,
-                time: "오후 2:00",
+                title: "기본 개인 할일",
                 onToggle: { }
             )
             
             TodoCheckboxComponent(
                 isCompleted: false,
-                title: "간단한 할 일",
-                category: nil,
-                categoryColor: nil,
-                time: nil,
+                title: "시간이 있는 할일ㅏㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅘㅓㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏ",
+                time: "오전 10:00",
+                onToggle: { }
+            )
+            
+            TodoCheckboxComponent(
+                isCompleted: false,
+                title: "시간 없는 할일",
+                onToggle: { }
+            )
+            
+            TodoCheckboxComponent(
+                isCompleted: false,
+                title: "회사 업무",
+                category: TodoCategory(name: "회사", color: DS.Colors.TaskItem.purple),
+                time: "오후 2:00",
+                onToggle: { }
+            )
+            
+            TodoCheckboxComponent(
+                isCompleted: true,
+                title: "완료된 할일",
+                time: "오전 9:00",
                 onToggle: { }
             )
         }
-    }
+       }
 }
