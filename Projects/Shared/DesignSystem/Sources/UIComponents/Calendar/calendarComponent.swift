@@ -9,7 +9,7 @@
 import SwiftUI
 
 public struct WeekCalendarView<Content: View>: View {
-    let week: Date
+    let baseDate: Date
     let onDateTap: ((Date) -> Void)?
     let cellContent: (Date) -> Content
     
@@ -18,11 +18,11 @@ public struct WeekCalendarView<Content: View>: View {
     @State private var datesInWeek: [Date] = []
     
     public init(
-        week: Date = Date(),
+        baseDate: Date = Date(),
         onDateTap: ((Date) -> Void)? = nil,
         @ViewBuilder cellContent: @escaping (Date) -> Content
     ) {
-        self.week = week
+        self.baseDate = baseDate
         self.onDateTap = onDateTap
         self.cellContent = cellContent
     }
@@ -38,7 +38,7 @@ public struct WeekCalendarView<Content: View>: View {
                 calculateDatesInWeek()
             }
         }
-        .onChange(of: week) { _, _ in
+        .onChange(of: baseDate) { _, _ in
             calculateDatesInWeek()
         }
     }
@@ -88,7 +88,7 @@ public struct WeekCalendarView<Content: View>: View {
     }
     
     private func calculateDatesInWeek() {
-        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: week) else {
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
             datesInWeek = []
             return
         }
