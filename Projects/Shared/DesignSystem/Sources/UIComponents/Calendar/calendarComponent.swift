@@ -15,7 +15,21 @@ public struct WeekCalendarView<Content: View>: View {
     
     private let calendar = Calendar.current
     
-    @State private var datesInWeek: [Date] = []
+    private var datesInWeek: [Date] {
+            guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
+                return []
+            }
+            
+            var dates: [Date] = []
+            var date = weekInterval.start
+            
+            for _ in 0..<7 {
+                dates.append(date)
+                date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
+            }
+            
+            return dates
+        }
     
     public init(
         baseDate: Date = Date(),
@@ -33,14 +47,7 @@ public struct WeekCalendarView<Content: View>: View {
             weekGrid
         }
         .padding(.horizontal, 20)
-        .onAppear {
-            if datesInWeek.isEmpty {
-                calculateDatesInWeek()
-            }
-        }
-        .onChange(of: baseDate) { _, _ in
-            calculateDatesInWeek()
-        }
+
     }
     
     private var weekdayHeader: some View {
@@ -85,23 +92,6 @@ public struct WeekCalendarView<Content: View>: View {
     
     private var weekdaySymbols: [String] {
         return ["월", "화", "수", "목", "금", "토", "일"]
-    }
-    
-    private func calculateDatesInWeek() {
-        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
-            datesInWeek = []
-            return
-        }
-        
-        var dates: [Date] = []
-        var date = weekInterval.start
-        
-        for _ in 0..<7 {
-            dates.append(date)
-            date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
-        }
-        
-        datesInWeek = dates
     }
 }
 
