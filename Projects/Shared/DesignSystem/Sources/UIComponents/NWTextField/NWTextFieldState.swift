@@ -19,7 +19,7 @@ public enum NWTextFieldState {
         case .typing:
             return DS.Colors.Neutral.black
         case .typingError:
-            return DS.Colors.TaskItem.orange // 수정되어야함 토스트 700
+            return DS.Colors.Toast._700
         }
     }
     

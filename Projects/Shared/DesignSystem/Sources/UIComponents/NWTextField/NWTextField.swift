@@ -118,7 +118,7 @@ public struct NWTextField: View {
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
             Text(errorMessage)
                 .font(.body2)
-                .foregroundColor(DS.Colors.TaskItem.orange) // 추후 색상 수정 예정
+                .foregroundColor(DS.Colors.Toast._500)
                 .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }

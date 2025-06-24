@@ -58,7 +58,7 @@ public struct NWButtonConfiguration {
     
     private static func primaryConfiguration(size: NWButtonSize) -> NWButtonConfiguration {
         NWButtonConfiguration(
-            backgroundColor: DS.Colors.TaskItem.orange,
+            backgroundColor: DS.Colors.Toast._500,
             foregroundColor: DS.Colors.Neutral.white,
             borderColor: .clear,
             borderWidth: 0,
