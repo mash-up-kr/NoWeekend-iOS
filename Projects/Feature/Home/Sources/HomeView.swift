@@ -39,7 +39,7 @@ public struct HomeView: View {
 
 // MARK: - ViewModel Implementation
 @MainActor
-class HomeViewModel: ObservableObject, HomeProtocol {
+class HomeViewModel: ObservableObject {
     @Published var events: [Event] = []
     @Published var isLoading: Bool = false
     
@@ -62,29 +62,4 @@ class HomeViewModel: ObservableObject, HomeProtocol {
     func refreshEvents() async {
         await loadEvents()
     }
-}
-
-// MARK: - Factory Implementation (Self-Registration)
-public struct HomeViewFactory: HomeViewFactory {
-    public static func create() -> AnyView {
-        let eventUseCase = EventUseCase()
-        return AnyView(HomeView(eventUseCase: eventUseCase))
-    }
-}
-
-// MARK: - Self Registration (각 Feature가 스스로 등록)
-@objc public class HomeFeatureModule: NSObject {
-    @objc public static func register() {
-        // DIContainer를 import하지 않고도 등록 가능
-        // Runtime에 동적으로 등록
-        if let containerClass = NSClassFromString("DIContainer"),
-           let sharedMethod = containerClass.value(forKey: "shared") {
-            // 동적으로 등록 로직 구현
-            print("🏠 Home Feature: Self-registered")
-        }
-    }
-}
-
-#Preview {
-    HomeViewFactory.create()
 }
