@@ -1,4 +1,5 @@
 import Foundation
+import Entity
 
 // MARK: - Network Service Protocol
 public protocol NetworkServiceProtocol {
@@ -19,4 +20,4 @@ public protocol EventStorageProtocol {
     func saveEvents(_ events: [Event]) async throws
     func loadEvents() async throws -> [Event]
     func deleteEvent(id: String) async throws
-} 
+}
