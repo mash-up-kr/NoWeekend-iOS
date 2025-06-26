@@ -9,43 +9,28 @@ let project = Project.make(
             bundleId: Environment.App.baseBundleId,
             infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             dependencies: [
-                // DI 모듈만 의존 (Needle 기반)
-                .target(name: "DI"),
-                
-                // UI 컴포넌트만 의존
-                .shared(.designSystem)
-            ]
-        ),
-        .framework(
-            name: "DI",
-            bundleId: Environment.bundleId(category: .app, module: "di"),
-            sources: [
-                "DI/Sources/**",
-                "../Feature/Home/Interface/Sources/**",
-                "../Feature/Profile/Interface/Sources/**",
-                "../Feature/Calendar/Interface/Sources/**",
-                "../Feature/Onboarding/Interface/Sources/**"
-            ],
-            scripts: [
-                .pre(
-                    script: "$NEEDLE_BINARY" generate \
-                        --header-doc="" \
-                        "$GENERATED_FILE" \
-                        "${SRCROOT}/Projects/App/DI/Sources",
-                    name: "Needle Generate"
-                )
-            ],
-            dependencies: [
-                // Feature 구현체들 (DI에서만 알고 있음)
+                // Feature 모듈들
                 .feature(.home),
                 .feature(.profile),
                 .feature(.calendar),
                 .feature(.onboarding),
-                .feature(.calendarInterface),
-                .feature(.profileInterface),
-                .feature(.homeInterface)
-
-                .external(.needle)
+                
+                // Core 모듈들 (실제 존재하는 것만)
+                .core(.network),
+                
+                // Domain 모듈들
+                .domain(.entity),
+                .domain(.repositoryInterface),
+                .domain(.serviceInterface),
+                .domain(.useCase),
+                
+                // Data 모듈들
+                .data(.repository),
+                .data(.storage),
+                
+                // Shared 모듈들
+                .shared(.designSystem),
+                .shared(.utils)
             ]
         )
     ]
