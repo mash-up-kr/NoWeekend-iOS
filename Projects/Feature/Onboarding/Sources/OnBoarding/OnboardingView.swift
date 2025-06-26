@@ -1,6 +1,5 @@
 import SwiftUI
 import OnboardingInterface
-import Entity
 import DesignSystem
 
 // MARK: - Onboarding View Implementation
@@ -27,12 +26,12 @@ public struct OnboardingView: View {
             
             // Onboarding Content
             VStack(spacing: 24) {
-                DS.Images.imgMain
-                    .frame(width: 200, height: 200)
-                
+//                DS.Images.imgMain
+//                    .frame(width: 200, height: 200)
+//                
                 VStack(spacing: 16) {
                     Text(viewModel.currentTitle)
-                        .font(Font.heading1)
+//                        .font(Font.heading1)
                         .foregroundColor(DS.Colors.Text.gray900)
                         .multilineTextAlignment(.center)
                     
@@ -52,7 +51,7 @@ public struct OnboardingView: View {
                     viewModel.nextStep()
                 }) {
                     Text(viewModel.primaryButtonTitle)
-                        .font(Font.button)
+//                        .font(Font.button)
                         .foregroundColor(DS.Colors.Background.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
@@ -78,7 +77,7 @@ public struct OnboardingView: View {
 
 // MARK: - ViewModel Implementation
 @MainActor
-class OnboardingViewModel: ObservableObject, OnboardingProtocol {
+class OnboardingViewModel: ObservableObject {
     @Published var isOnboardingCompleted: Bool = false
     @Published var currentStep: Int = 0
     
@@ -158,13 +157,7 @@ private struct OnboardingStep {
     let imageName: String
 }
 
-// MARK: - Factory Implementation
-public struct OnboardingViewFactory: OnboardingViewFactory {
-    public static func create() -> AnyView {
-        return AnyView(OnboardingView())
-    }
-}
-
+// MARK: - Preview
 #Preview {
-    OnboardingViewFactory.create()
+    OnboardingView()
 }
