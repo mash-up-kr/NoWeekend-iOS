@@ -21,8 +21,8 @@ public struct ProfileView: View {
                 
                 if let user = viewModel.user {
                     Text(user.name)
-                        .font(Font.heading1)
-                        .foregroundColor(DS.Colors.Text.gray900)
+//                        .font(Font.heading1)
+//                        .foregroundColor(DS.Colors.Text.gray900)
                     
                     Text(user.email)
                         .font(Font.body1)
@@ -76,7 +76,7 @@ private struct ProfileSettingRow: View {
 
 // MARK: - ViewModel Implementation
 @MainActor
-class ProfileViewModel: ObservableObject, ProfileProtocol {
+class ProfileViewModel: ObservableObject {
     @Published var user: User?
     @Published var isLoading: Bool = false
     @Published var currentTheme: Theme = .system
@@ -92,11 +92,9 @@ class ProfileViewModel: ObservableObject, ProfileProtocol {
     func loadProfile() async {
         isLoading = true
         do {
-            let profile = try await userUseCase.getCurrentUserProfile()
-            user = profile.user
-            currentTheme = profile.preferences.theme
-            isNotificationsEnabled = profile.preferences.notificationsEnabled
-            language = profile.preferences.language
+            let user = try await userUseCase.getCurrentUser()
+            self.user = user
+            // TODO: UserPreferences 로딩 로직 추가
         } catch {
             print("Error loading profile: \(error)")
         }
@@ -114,14 +112,4 @@ class ProfileViewModel: ObservableObject, ProfileProtocol {
     }
 }
 
-// MARK: - Factory Implementation
-public struct ProfileViewFactory: ProfileViewFactory {
-    public static func create() -> AnyView {
-        let userUseCase = UserUseCase()
-        return AnyView(ProfileView(userUseCase: userUseCase))
-    }
-}
-
-#Preview {
-    ProfileViewFactory.create()
-}
+// MARK: - Preview
