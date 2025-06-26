@@ -17,6 +17,5 @@ let package = Package(
     dependencies: [
          .package(url: "https://github.com/Alamofire/Alamofire", from: "5.10.2"),
          .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.3.0"),
-         .package(url: "https://github.com/uber/needle.git", from: "0.25.0")
     ]
 )
