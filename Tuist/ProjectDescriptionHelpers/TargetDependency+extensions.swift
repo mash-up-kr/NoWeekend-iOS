@@ -23,11 +23,6 @@ extension TargetDependency {
         return .project(target: target, path: path.relativePath)
     }
     
-    // Interface 모듈들
-    public static func interface(_ interface: InterfaceModule) -> TargetDependency {
-        return .project(target: interface.rawValue, path: .interface)
-    }
-    
     // Feature 모듈들
     public static func feature(_ feature: FeatureModule) -> TargetDependency {
         return .project(target: feature.rawValue, path: .feature)
@@ -46,5 +41,15 @@ extension TargetDependency {
     // Plugin 모듈들
     public static func plugin(_ plugin: PluginModule) -> TargetDependency {
         return .project(target: plugin.rawValue, path: .plugin)
+    }
+    
+    // Domain 모듈들
+    public static func domain(_ domain: DomainModule) -> TargetDependency {
+        return .project(target: domain.rawValue, path: .domain)
+    }
+    
+    // Data 모듈들
+    public static func data(_ data: DataModule) -> TargetDependency {
+        return .project(target: data.rawValue, path: .data)
     }
 }

@@ -12,7 +12,8 @@ public enum ProjectPath: String, CaseIterable {
     case app = "Projects/App"
     case core = "Projects/Core"
     case feature = "Projects/Feature"
-    case interface = "Projects/Interface"
+    case data = "Projects/Data"
+    case domain = "Projects/Domain"
     case shared = "Projects/Shared"
     case plugin = "Projects/Plugin"
     
@@ -25,18 +26,7 @@ public enum ProjectPath: String, CaseIterable {
 public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
-}
-
-// MARK: - Interface Modules
-public enum InterfaceModule: String, CaseIterable {
-    case domain = "Domain"
-    case homeInterface = "HomeInterface"
-    case profileInterface = "ProfileInterface"
-    case calendarInterface = "CalendarInterface"
-    case repositoryInterface = "RepositoryInterface"
-    case networkInterface = "NetworkInterface"
-    case storageInterface = "StorageInterface"
-    case serviceInterface = "ServiceInterface"
+    case needle = "NeedleFoundation"
 }
 
 // MARK: - Feature Modules
@@ -46,6 +36,11 @@ public enum FeatureModule: String, CaseIterable {
     case calendar = "Calendar"
     case profile = "Profile"
     case onboarding = "Onboarding"
+
+    case homeInterface = "HomeInterface"
+    case profileInterface = "ProfileInterface"
+    case calendarInterface = "CalendarInterface"
+    case onboardingInterface = "OnboardingInterface"
 }
 
 // MARK: - Shared Modules
@@ -67,4 +62,18 @@ public enum PluginModule: String, CaseIterable {
     case analytics = "Analytics"
     case push = "Push"
     case thirdParty = "ThirdParty"
+}
+
+// MARK: - Domain Modules
+public enum DomainModule: String, CaseIterable {
+    case entity = "Entity"
+    case repositoryInterface = "RepositoryInterface"
+    case serviceInterface = "ServiceInterface"
+    case useCase = "UseCase"
+}
+
+// MARK: - Data Modules
+public enum DataModule: String, CaseIterable {
+    case repository = "Repository"
+    case storage = "Storage"
 }

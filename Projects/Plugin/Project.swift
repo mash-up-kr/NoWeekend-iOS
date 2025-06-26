@@ -10,7 +10,7 @@ let project = Project.make(
             bundleId: BundleID.Plugin.analytics,
             sources: ["Analytics/Sources/**"],
             dependencies: [
-                .interface(.serviceInterface)
+                .domain(.serviceInterface)
             ]
         ),
         .framework(
@@ -18,7 +18,7 @@ let project = Project.make(
             bundleId: BundleID.Plugin.push,
             sources: ["Push/Sources/**"],
             dependencies: [
-                .interface(.serviceInterface)
+                .domain(.serviceInterface)
             ]
         ),
         .framework(

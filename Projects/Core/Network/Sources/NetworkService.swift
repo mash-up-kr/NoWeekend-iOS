@@ -1,6 +1,7 @@
 import Foundation
 import Alamofire
-import NetworkInterface
+import ServiceInterface
+import Entity
 
 public class NetworkService: NetworkServiceProtocol {
     private let baseURL: String

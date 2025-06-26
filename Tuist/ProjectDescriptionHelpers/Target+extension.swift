@@ -13,6 +13,7 @@ extension Target {
         bundleId: String? = nil,
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
+        scripts: [TargetScript] = [],
         dependencies: [TargetDependency] = [],
         settings: Settings? = .frameworkSettings
     ) -> Target {
@@ -25,6 +26,7 @@ extension Target {
             infoPlist: .default,
             sources: sources,
             resources: resources,
+            scripts: scripts,
             dependencies: dependencies,
             settings: settings
         )
