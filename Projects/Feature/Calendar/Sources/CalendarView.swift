@@ -132,7 +132,7 @@ private struct CalendarEventRow: View {
 
 // MARK: - ViewModel Implementation
 @MainActor
-class CalendarViewModel: ObservableObject, CalendarProtocol {
+class CalendarViewModel: ObservableObject {
     @Published var events: [CalendarEvent] = []
     @Published var selectedDate: Date = Date()
     @Published var isLoading: Bool = false
@@ -203,16 +203,4 @@ class CalendarViewModel: ObservableObject, CalendarProtocol {
     private func updateSelectedDateEvents() {
         selectedDateEvents = getEvents(for: selectedDate)
     }
-}
-
-// MARK: - Factory Implementation
-public struct CalendarViewFactory: CalendarViewFactory {
-    public static func create() -> AnyView {
-        let eventUseCase = EventUseCase()
-        return AnyView(CalendarView(eventUseCase: eventUseCase))
-    }
-}
-
-#Preview {
-    CalendarViewFactory.create()
 }

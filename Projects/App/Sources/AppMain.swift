@@ -1,37 +1,68 @@
-import DI
+import SwiftUI
+import Home
+import Profile
+import Calendar
+import Onboarding
+import UseCase
+import Repository
+import Entity
+import Network
+import Storage
 
 @main
 struct NoWeekendApp: App {
     
-    init() {
-        // Needle DI 그래프 초기화
-        registerProviderFactory()
-    }
-    
     var body: some Scene {
         WindowGroup {
-            MainTabView(component: DIContainer.shared.tabBarComponent)
+            MainTabView()
         }
     }
 }
 
-// MARK: - Main TabView
+// MARK: - Main TabView (Simple DI)
 struct MainTabView: View {
-    let component: TabBarComponent
+    // Simple dependency injection
+    private let eventUseCase: EventUseCase
+    private let userUseCase: UserUseCase
+    
+    init() {
+        // Create network service
+        let networkService = NetworkService(
+            baseURL: "", // TODO: 실제 API URL로 변경 + Config
+            headers: ["Content-Type": "application/json"]
+        )
+        
+        // Create storage
+        let storage = UserDefaultsStorage()
+        
+        // Create repositories
+        let eventRepository = EventRepository(
+            networkService: networkService,
+            storage: storage
+        )
+        let userRepository = UserRepository(
+            networkService: networkService,
+            storage: storage
+        )
+        
+        // Create use cases
+        self.eventUseCase = EventUseCase(eventRepository: eventRepository)
+        self.userUseCase = UserUseCase(userRepository: userRepository)
+    }
     
     var body: some View {
         TabView {
-            component.homeBuilder.makeHomeView()
+            HomeView(eventUseCase: eventUseCase)
                 .tabItem {
                     Label("홈", systemImage: "house")
                 }
             
-            component.calendarBuilder.makeCalendarView()
+            CalendarView(eventUseCase: eventUseCase)
                 .tabItem {
                     Label("캘린더", systemImage: "calendar")
                 }
             
-            component.profileBuilder.makeProfileView()
+            ProfileView(userUseCase: userUseCase)
                 .tabItem {
                     Label("프로필", systemImage: "person")
                 }
