@@ -77,7 +77,11 @@ public struct OnboardingView: View {
                             get: { store.state.nickname },
                             set: { store.send(.updateNickname($0)) }
                         ),
-                        placeholder: "닉네임 입력하세요."
+                        placeholder: "닉네임 입력하세요.",
+                        errorMessage: Binding(
+                            get: { store.state.nicknameError },
+                            set: { _ in }
+                        )
                     )
                 }
                 .padding(.top, 40)
@@ -119,19 +123,25 @@ public struct OnboardingView: View {
                                         set: { store.send(.updateRemainingDays($0)) }
                                     ),
                                     suffixText: "일",
-                                    placeholder: "0"
+                                    placeholder: "0",
+                                    errorMessage: Binding(
+                                        get: { store.state.remainingDaysError },
+                                        set: { _ in }
+                                    )
                                 )
-                                .frame(maxWidth: .infinity)
                                 
                                 NWTextField.userInputTextField(
-                                    text: Binding(
+                                text: Binding(
                                         get: { store.state.remainingHours },
                                         set: { store.send(.updateRemainingHours($0)) }
-                                    ),
-                                    suffixText: "시간",
-                                    placeholder: "0"
+                                ),
+                                suffixText: "시간",
+                                placeholder: "0",
+                                errorMessage: Binding(
+                                        get: { store.state.remainingHoursError },
+                                        set: { _ in }
+                                    )
                                 )
-                                .frame(maxWidth: .infinity)
                             }
                         }
                         
@@ -147,7 +157,11 @@ public struct OnboardingView: View {
                                     set: { store.send(.updateTotalDays($0)) }
                                 ),
                                 suffixText: "일",
-                                placeholder: "15"
+                                placeholder: "15",
+                                errorMessage: Binding(
+                                    get: { store.state.totalDaysError },
+                                    set: { _ in }
+                                )
                             )
                         }
                         .padding(.top, 24)
