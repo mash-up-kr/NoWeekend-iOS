@@ -30,7 +30,10 @@ let project = Project.make(
                 
                 // Shared 모듈들
                 .shared(.designSystem),
-                .shared(.utils)
+                .shared(.utils),
+                .external(name: "Swinject")
+
+                
             ]
         )
     ]

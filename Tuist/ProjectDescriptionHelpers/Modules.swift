@@ -26,7 +26,8 @@ public enum ProjectPath: String, CaseIterable {
 public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
-    case needle = "NeedleFoundation"
+    case swinject = "Swinject"
+
 }
 
 // MARK: - Feature Modules
