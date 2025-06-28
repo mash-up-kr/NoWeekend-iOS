@@ -71,7 +71,7 @@ public struct OnboardingView: View {
                 title: "닉네임을 알려주세요!",
                 subtitle: "언제든 변경할 수 있어요"
             ) {
-                VStack {
+                VStack(spacing: 24) {
                     NWTextField.todoMultiLine(
                         text: Binding(
                             get: { store.state.nickname },
@@ -83,6 +83,28 @@ public struct OnboardingView: View {
                             set: { _ in }
                         )
                     )
+                    
+                    VStack(alignment: .leading) {
+                        Text("생년월일")
+                            .font(.subtitle1)
+                            .foregroundColor(DS.Colors.Text.gray700)
+                        
+                        NWTextField.todoMultiLine(
+                            text: Binding(
+                                get: { store.state.birthDate },
+                                set: { newValue in
+                                    let filtered = newValue.filter { $0.isNumber }
+                                    store.send(.updateBirthDate(filtered))
+                                }
+                            ),
+                            placeholder: "예) 19900101",
+                            errorMessage: Binding(
+                                get: { store.state.birthDateError },
+                                set: { _ in }
+                            )
+                        )
+                    }
+                    
                 }
                 .padding(.top, 40)
                 .padding(.horizontal, 8)

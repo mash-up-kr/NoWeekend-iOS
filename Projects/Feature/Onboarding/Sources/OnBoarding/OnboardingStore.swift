@@ -27,6 +27,9 @@ public class OnboardingStore: ObservableObject {
         case .updateNickname(let nickname):
             handleUpdateNickname(nickname)
             
+        case .updateBirthDate(let birthDate):
+            handleUpdateBirthDate(birthDate)
+            
         case .updateRemainingDays(let days):
             handleUpdateRemainingDays(days)
             
@@ -68,6 +71,14 @@ public class OnboardingStore: ObservableObject {
     private func handleUpdateNickname(_ nickname: String) {
         state.nickname = nickname
         validateNickname()
+        updateButtonEnabledState()
+    }
+    
+    private func handleUpdateBirthDate(_ birthDate: String) {
+        // 8자리 숫자로 제한
+        let filteredBirthDate = String(birthDate.filter { $0.isNumber }.prefix(8))
+        state.birthDate = filteredBirthDate
+        validateBirthDate()
         updateButtonEnabledState()
     }
     
@@ -125,6 +136,18 @@ public class OnboardingStore: ObservableObject {
             state.nicknameError = "유효한 닉네임을 입력해주세요"
         } else {
             state.nicknameError = nil
+        }
+    }
+    
+    private func validateBirthDate() {
+        if state.birthDate.isEmpty {
+            state.birthDateError = "생년월일을 입력해주세요"
+        } else if state.birthDate.count != 8 {
+            state.birthDateError = "생년월일은 8자리로 입력해주세요"
+        } else if state.birthDate.filter({ !$0.isNumber }).count > 0 {
+            state.birthDateError = "유효한 생년월일을 입력해주세요"
+        } else {
+            state.birthDateError = nil
         }
     }
     
@@ -219,7 +242,10 @@ public class OnboardingStore: ObservableObject {
     private func updateButtonEnabledState() {
         switch state.currentStep {
         case 0:
-            state.isNextButtonEnabled = !state.nickname.isEmpty && state.nicknameError == nil
+            state.isNextButtonEnabled = !state.nickname.isEmpty && 
+                                       !state.birthDate.isEmpty && 
+                                       state.nicknameError == nil && 
+                                       state.birthDateError == nil
             
         case 1:
             let hasRemainingDays = !state.remainingDays.isEmpty

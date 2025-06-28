@@ -13,12 +13,15 @@ import Combine
 public struct OnboardingState: Equatable {
     public var currentStep: Int = 0
     public var nickname: String = ""
+    public var birthDate: String = ""
+    
     public var remainingDays: String = ""
     public var remainingHours: String = ""
     public var totalDays: String = "15"
     public var selectedTags: Set<String> = []
     
     public var nicknameError: String? = nil
+    public var birthDateError: String? = nil
     public var remainingDaysError: String? = nil
     public var remainingHoursError: String? = nil
     public var totalDaysError: String? = nil
@@ -53,6 +56,7 @@ public enum OnboardingIntent {
     case goToNextStep
     case goToPreviousStep
     case updateNickname(String)
+    case updateBirthDate(String)
     case updateRemainingDays(String)
     case updateRemainingHours(String)
     case updateTotalDays(String)
