@@ -33,19 +33,19 @@ public struct TaskEditBottomSheet: View {
                     ActionItem(
                         image: Image(.icnEdit),
                         title: " 할 일 수정",
-                        textColor: DS.Colors.Text.gray900,
+                        textColor: DS.Colors.Text.netural,
                         action: onEditAction
                     ),
                     ActionItem(
                         image: Image(.icnArrowForward),
                         title: "내일 또 하기",
-                        textColor: DS.Colors.Text.gray900,
+                        textColor: DS.Colors.Text.netural,
                         action: onTomorrowAction
                     ),
                     ActionItem(
                         image: Image(.icnDelete),
                         title: "삭제하기",
-                        textColor: DS.Colors.Text.gray900,
+                        textColor: DS.Colors.Text.netural,
                         action: onDeleteAction
                     )
                 ],

@@ -17,7 +17,7 @@ public struct ActionItem {
     public init(
         image: Image? = nil,
         title: String,
-        textColor: Color = DS.Colors.Text.gray900,
+        textColor: Color = DS.Colors.Text.netural,
         action: @escaping () -> Void
     ) {
         self.image = image

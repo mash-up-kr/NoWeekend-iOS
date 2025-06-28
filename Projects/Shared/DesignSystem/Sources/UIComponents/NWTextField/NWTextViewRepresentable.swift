@@ -74,16 +74,16 @@ public struct NWTextViewRepresentable: UIViewRepresentable {
         textView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         
         textView.font = UIFont(font: DesignSystemFontFamily.Pretendard.medium, size: 16)
-        textView.textColor = UIColor(DS.Colors.Text.gray900)
+        textView.textColor = UIColor(DS.Colors.Text.netural)
     }
     
     private func setupInitialContent(_ textView: NWUITextView) {
         if text.isEmpty {
             textView.text = placeholder
-            textView.textColor = UIColor(DS.Colors.Neutral._400)
+            textView.textColor = UIColor(DS.Colors.Neutral.gray400)
         } else {
             textView.text = text
-            textView.textColor = UIColor(DS.Colors.Text.gray900)
+            textView.textColor = UIColor(DS.Colors.Text.netural)
         }
     }
     
@@ -92,12 +92,12 @@ public struct NWTextViewRepresentable: UIViewRepresentable {
             if isEditing {
                 if uiView.text != "" {
                     uiView.text = ""
-                    uiView.textColor = UIColor(DS.Colors.Text.gray900)
+                    uiView.textColor = UIColor(DS.Colors.Text.netural)
                 }
             } else {
                 if uiView.text != placeholder {
                     uiView.text = placeholder
-                    uiView.textColor = UIColor(DS.Colors.Neutral._400)
+                    uiView.textColor = UIColor(DS.Colors.Neutral.gray400)
                 }
             }
             return
@@ -105,7 +105,7 @@ public struct NWTextViewRepresentable: UIViewRepresentable {
         
         if !text.isEmpty && uiView.text != text {
             uiView.text = text
-            uiView.textColor = UIColor(DS.Colors.Text.gray900)
+            uiView.textColor = UIColor(DS.Colors.Text.netural)
         }
     }
 }

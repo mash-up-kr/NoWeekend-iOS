@@ -42,38 +42,44 @@ public struct WeekCalendarView<Content: View>: View {
     }
     
     public var body: some View {
-        HStack {
-            ForEach(Array(zip(weekdaySymbols.indices, weekdaySymbols)), id: \.0) { index, weekday in
-                VStack(spacing: 0) {
-                    // 헤더
-                    Text(weekday)
-                        .font(.body3)
-                        .foregroundColor(DS.Colors.Neutral._700)
-                        .frame(height: 41)
-                    
-                    // 날짜
-                    Button(action: {
-                        onDateTap?(datesInWeek[index])
-                    }) {
-                        VStack(spacing: 1) {
-                            // 날짜 표시
-                            ZStack {
-                                if index < datesInWeek.count && calendar.isDateInToday(datesInWeek[index]) {
-                                    Circle()
-                                        .fill(DS.Colors.Toast._100)
-                                        .frame(width: 32, height: 32)
-                                }
-                                
-                                if index < datesInWeek.count {
-                                    Text("\(calendar.component(.day, from: datesInWeek[index]))")
-                                        .font(.subtitle1)
-                                        .foregroundColor(calendar.isDateInToday(datesInWeek[index]) ? DS.Colors.Toast._700 : DS.Colors.Neutral._900)
-                                }
+        VStack(spacing: 0) {
+            weekdayHeader
+            weekGrid
+        }
+        .padding(.horizontal, 20)
+
+    }
+    
+    private var weekdayHeader: some View {
+        HStack(spacing: 0) {
+            ForEach(weekdaySymbols, id: \.self) { weekday in
+                Text(weekday)
+                    .font(.body3)
+                    .foregroundColor(DS.Colors.Neutral.gray700)
+                    .frame(width: 41, height: 41)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+    
+    private var weekGrid: some View {
+        HStack(spacing: 0) {
+            ForEach(datesInWeek, id: \.self) { date in
+                Button(action: {
+                    onDateTap?(date)
+                }) {
+                    VStack(spacing: 1) {
+                        ZStack {
+                            if calendar.isDateInToday(date) {
+                                Circle()
+                                    .fill(DS.Colors.Toast._100)
+                                    .frame(width: 32, height: 32)
                             }
                             .frame(height: 41)
                             
-                            cellContent(datesInWeek[index])
-                                .frame(width: 41, height: 41)
+                            Text("\(calendar.component(.day, from: date))")
+                                .font(.subtitle2)
+                                .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
                         }
                     }
                 }

@@ -62,7 +62,7 @@ private extension CustomNavigationBar {
             Button(action: { onCancelTapped?() }) {
                 Text("취소")
                     .font(.heading6)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                    .foregroundColor(DS.Colors.Text.disable)
             }
         }
     }

@@ -101,7 +101,7 @@ public struct NWTextField: View {
         if !text.isEmpty {
             Button(action: clearText) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(DS.Colors.Neutral._400)
+                    .foregroundColor(DS.Colors.Neutral.gray400)
                     .font(.system(size: 20))
             }
         }

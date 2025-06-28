@@ -13,7 +13,7 @@ public struct ProfileView: View {
 
             Text("시종")
                 .font(.heading2)
-                .foregroundColor(DS.Colors.Text.gray900)
+                .foregroundColor(DS.Colors.Text.netural)
         }
     }
 }

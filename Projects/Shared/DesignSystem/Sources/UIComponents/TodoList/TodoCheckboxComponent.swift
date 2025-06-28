@@ -85,11 +85,9 @@ public struct TodoCheckboxComponent: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(todoItem.title)
                     .font(.body2)
-                    .foregroundColor(DS.Colors.Neutral._900)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                
-                if todoItem.category != nil || todoItem.time != nil {
+                    .foregroundColor(DS.Colors.Neutral.gray900)
+                    .lineLimit(1)
+                if category != nil {
                     HStack(spacing: 8) {
                         if let category = todoItem.category {
                             Text(category.name)
@@ -99,15 +97,13 @@ public struct TodoCheckboxComponent: View {
                         
                         if todoItem.category != nil && todoItem.time != nil {
                             Rectangle()
-                                .fill(DS.Colors.Border.gray300)
-                                .frame(width: 1, height: 12)
+                                .fill(DS.Colors.Border.border02)
+                                .frame(width: 2, height: 12)
                         }
                         
-                        if todoItem.time != nil {
-                            Text(timeOrDate)
-                                .font(.body3)
-                                .foregroundColor(DS.Colors.Text.gray700)
-                        }
+                        Text(timeOrDate)
+                            .font(.body2)
+                            .foregroundColor(DS.Colors.Text.body)
                     }
                 }
             }
