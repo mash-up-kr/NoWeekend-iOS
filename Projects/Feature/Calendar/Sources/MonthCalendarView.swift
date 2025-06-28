@@ -67,7 +67,7 @@ struct MonthCalendarView: View {
             ForEach(weekdaySymbols, id: \.self) { weekday in
                 Text(weekday)
                     .font(.body3)
-                    .foregroundStyle(DS.Colors.Text.gray700)
+                    .foregroundStyle(DS.Colors.Text.netural)
                     .frame(maxWidth: .infinity)
                     .frame(height: 41)
             }
@@ -96,7 +96,7 @@ struct MonthCalendarView: View {
                     ZStack {
                         Text("\(calendar.component(.day, from: date))")
                             .font(.subtitle1)
-                            .foregroundStyle(isToday ? DS.Colors.Toast._700 : DS.Colors.Neutral._900)
+                            .foregroundStyle(isToday ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
                     }
                     .frame(height: 41)
                     
@@ -111,16 +111,6 @@ struct MonthCalendarView: View {
             Color.clear
                 .frame(maxWidth: .infinity)
                 .frame(height: 84)
-        }
-    }
-    
-    private func dayTextColor(isCurrentMonth: Bool, isToday: Bool) -> Color {
-        if isToday {
-            return DS.Colors.Toast._700
-        } else if isCurrentMonth {
-            return DS.Colors.Neutral._900
-        } else {
-            return DS.Colors.Neutral._400
         }
     }
 }

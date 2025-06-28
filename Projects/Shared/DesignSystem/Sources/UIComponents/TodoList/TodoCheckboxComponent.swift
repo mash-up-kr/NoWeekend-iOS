@@ -87,7 +87,7 @@ public struct TodoCheckboxComponent: View {
                     .font(.body2)
                     .foregroundColor(DS.Colors.Neutral.gray900)
                     .lineLimit(1)
-                if category != nil {
+                if todoItem.category != nil {
                     HStack(spacing: 8) {
                         if let category = todoItem.category {
                             Text(category.name)

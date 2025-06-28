@@ -40,7 +40,6 @@ public struct CalendarView: View {
                     }
                 )
                 
-                // 기존 CalendarSection 사용 (주/월 토글 기능 포함)
                 CalendarSection(
                     selectedDate: selectedDate,
                     selectedToggle: selectedToggle,
@@ -58,13 +57,13 @@ public struct CalendarView: View {
                         scrollOffset: $scrollOffset,
                         isScrolling: $isScrolling
                     )
-                    .background(DS.Colors.Background.white)
+                    .background(.white)
                 } else {
                     Spacer()
-                        .background(DS.Colors.Background.white)
+                        .background(.white)
                 }
             }
-            .background(DS.Colors.Background.white)
+            .background(.white)
             
             // 플로팅 버튼
             VStack {

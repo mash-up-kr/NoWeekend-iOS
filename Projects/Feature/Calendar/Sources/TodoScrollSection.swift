@@ -59,23 +59,23 @@ struct TodoScrollSection: View {
                 HStack(spacing: 0) {
                     Text("할 일 ")
                         .font(.heading5)
-                        .foregroundStyle(DS.Colors.Text.gray900)
+                        .foregroundStyle(DS.Colors.Text.netural)
                     
                     Text("\(incompleteTodoCount)")
                         .font(.heading5)
-                        .foregroundStyle(DS.Colors.Text.gray900)
+                        .foregroundStyle(DS.Colors.Text.netural)
                     
                     Text(" / ")
                         .font(.heading5)
-                        .foregroundStyle(DS.Colors.Text.gray700)
+                        .foregroundStyle(DS.Colors.Text.disable)
                     
                     Text("\(todoItems.count)")
                         .font(.heading5)
-                        .foregroundStyle(DS.Colors.Text.gray700)
+                        .foregroundStyle(DS.Colors.Text.disable)
                     
                     Text("개")
                         .font(.heading5)
-                        .foregroundStyle(DS.Colors.Text.gray900)
+                        .foregroundStyle(DS.Colors.Text.netural)
                 }
                 
                 Spacer()

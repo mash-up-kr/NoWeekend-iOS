@@ -50,7 +50,7 @@ struct CalendarSection: View {
             
             if selectedToggle == .week {
                 Rectangle()
-                    .fill(DS.Colors.Neutral._100)
+                    .fill(DS.Colors.Neutral.gray100)
                     .frame(height: 8)
                     .padding(.top, 12)
             }

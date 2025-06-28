@@ -47,7 +47,6 @@ public struct WeekCalendarView<Content: View>: View {
             weekGrid
         }
         .padding(.horizontal, 20)
-
     }
     
     private var weekdayHeader: some View {
@@ -75,12 +74,12 @@ public struct WeekCalendarView<Content: View>: View {
                                     .fill(DS.Colors.Toast._100)
                                     .frame(width: 32, height: 32)
                             }
-                            .frame(height: 41)
                             
                             Text("\(calendar.component(.day, from: date))")
                                 .font(.subtitle2)
                                 .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
                         }
+                        .frame(height: 41)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -93,6 +92,7 @@ public struct WeekCalendarView<Content: View>: View {
         return ["월", "화", "수", "목", "금", "토", "일"]
     }
 }
+
 struct WeekCalendarExampleView: View {
     var body: some View {
         WeekCalendarView { date in
