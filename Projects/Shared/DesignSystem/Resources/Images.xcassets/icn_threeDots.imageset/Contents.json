@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icn_threeDots.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
