@@ -8,36 +8,64 @@
 
 import SwiftUI
 
-struct TodoCategory {
-    let name: String
-    let color: Color
+public struct TodoCategory {
+    public let name: String
+    public let color: Color
+    
+    public init(name: String, color: Color) {
+        self.name = name
+        self.color = color
+    }
 }
 
-struct TodoCheckboxComponent: View {
-    let isCompleted: Bool
-    let title: String
-    let category: TodoCategory?
-    let time: String?
-    let date: String?
-    let onToggle: () -> Void
+public struct TodoItem: Identifiable {
+    public let id: Int
+    public let title: String
+    public var isCompleted: Bool
+    public let category: TodoCategory?
+    public let time: String?
     
-    init(
+    public init(id: Int, title: String, isCompleted: Bool, category: TodoCategory?, time: String?) {
+        self.id = id
+        self.title = title
+        self.isCompleted = isCompleted
+        self.category = category
+        self.time = time
+    }
+}
+
+public struct TodoCheckboxComponent: View {
+    public let todoItem: TodoItem
+    public let onToggle: () -> Void
+    public let onMoreTapped: (() -> Void)?
+    
+    public init(todoItem: TodoItem, onToggle: @escaping () -> Void, onMoreTapped: (() -> Void)? = nil) {
+        self.todoItem = todoItem
+        self.onToggle = onToggle
+        self.onMoreTapped = onMoreTapped
+    }
+    
+    public init(
         isCompleted: Bool,
         title: String,
         category: TodoCategory? = TodoCategory(name: "개인", color: DS.Colors.TaskItem.orange),
         time: String? = nil,
-        onToggle: @escaping () -> Void
+        onToggle: @escaping () -> Void,
+        onMoreTapped: (() -> Void)? = nil
     ) {
-        self.isCompleted = isCompleted
-        self.title = title
-        self.category = category
-        self.time = time
-        self.date = nil
+        self.todoItem = TodoItem(
+            id: 0, //임시 ID
+            title: title,
+            isCompleted: isCompleted,
+            category: category,
+            time: time
+        )
         self.onToggle = onToggle
+        self.onMoreTapped = onMoreTapped
     }
     
     private var timeOrDate: String {
-        if let time = time {
+        if let time = todoItem.time {
             return time
         } else {
             let formatter = DateFormatter()
@@ -46,85 +74,108 @@ struct TodoCheckboxComponent: View {
         }
     }
     
-    var body: some View {
+    public var body: some View {
         HStack(spacing: 12) {
             Button(action: onToggle) {
-                         (isCompleted ? DS.Images.icnCheckbox : DS.Images.icTodo)
-                             .resizable()
-                             .frame(width: 18, height: 18)
-                     }
+                (todoItem.isCompleted ? DS.Images.icnCheckbox : DS.Images.icTodo)
+                    .resizable()
+                    .frame(width: 20, height: 20)
+            }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
+                Text(todoItem.title)
                     .font(.body2)
                     .foregroundColor(DS.Colors.Neutral._900)
-                    .lineLimit(1)
-                if category != nil {
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                
+                if todoItem.category != nil || todoItem.time != nil {
                     HStack(spacing: 8) {
-                        if let category = category {
+                        if let category = todoItem.category {
                             Text(category.name)
-                                .font(.subtitle1)
+                                .font(.body3)
                                 .foregroundColor(category.color)
                         }
                         
-                        if category != nil {
+                        if todoItem.category != nil && todoItem.time != nil {
                             Rectangle()
                                 .fill(DS.Colors.Border.gray300)
-                                .frame(width: 2, height: 12)
+                                .frame(width: 1, height: 12)
                         }
                         
-                        Text(timeOrDate)
-                            .font(.body2)
-                            .foregroundColor(DS.Colors.Text.gray800)
+                        if todoItem.time != nil {
+                            Text(timeOrDate)
+                                .font(.body3)
+                                .foregroundColor(DS.Colors.Text.gray700)
+                        }
                     }
                 }
             }
             
             Spacer()
+            
+            Button(action: {
+                onMoreTapped?()
+            }) {
+                DS.Images.icnThreeDots
+                    .resizable()
+                    .frame(width: 32, height: 32)
+            }
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 24)
-        .opacity(isCompleted ? 0.32 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isCompleted)
+        .padding(.vertical, 12)
+        .padding(.leading, 24)
+        .padding(.trailing, 16)
+        .opacity(todoItem.isCompleted ? 0.32 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: todoItem.isCompleted)
     }
 }
 
-struct TodoCheckboxComponent_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 16) {
-            TodoCheckboxComponent(
+#Preview {
+    VStack(spacing: 16) {
+        TodoCheckboxComponent(
+            isCompleted: false,
+            title: "기본 개인 할일",
+            onToggle: { }
+        )
+        
+        TodoCheckboxComponent(
+            todoItem: TodoItem(
+                id: 1,
+                title: "TodoItem으로 생성된 할일",
                 isCompleted: false,
-                title: "기본 개인 할일",
-                onToggle: { }
-            )
-            
-            TodoCheckboxComponent(
-                isCompleted: false,
-                title: "시간이 있는 할일ㅏㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅘㅓㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏㅗㅓㅏ",
-                time: "오전 10:00",
-                onToggle: { }
-            )
-            
-            TodoCheckboxComponent(
-                isCompleted: false,
-                title: "시간 없는 할일",
-                onToggle: { }
-            )
-            
-            TodoCheckboxComponent(
-                isCompleted: false,
-                title: "회사 업무",
                 category: TodoCategory(name: "회사", color: DS.Colors.TaskItem.purple),
-                time: "오후 2:00",
-                onToggle: { }
-            )
-            
-            TodoCheckboxComponent(
-                isCompleted: true,
-                title: "완료된 할일",
-                time: "오전 9:00",
-                onToggle: { }
-            )
-        }
-       }
+                time: "오전 10:00"
+            ),
+            onToggle: { }
+        )
+        
+        TodoCheckboxComponent(
+            isCompleted: false,
+            title: "시간이 있는 할일입니다 이것은 길어질 수 있는 텍스트입니다",
+            time: "오전 10:00",
+            onToggle: { }
+        )
+        
+        TodoCheckboxComponent(
+            isCompleted: false,
+            title: "시간 없는 할일",
+            onToggle: { }
+        )
+        
+        TodoCheckboxComponent(
+            isCompleted: false,
+            title: "회사 업무",
+            category: TodoCategory(name: "회사", color: DS.Colors.TaskItem.purple),
+            time: "오후 2:00",
+            onToggle: { }
+        )
+        
+        TodoCheckboxComponent(
+            isCompleted: true,
+            title: "완료된 할일",
+            time: "오전 9:00",
+            onToggle: { }
+        )
+    }
+    .background(Color.gray.opacity(0.1))
 }
