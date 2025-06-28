@@ -12,7 +12,7 @@ public struct HomeView: View {
             
             Text("나희")
                 .font(Font.heading2)
-                .foregroundColor(DS.Colors.Text.gray900)
+                .foregroundColor(DS.Colors.Text.netural)
         }
     }
 }

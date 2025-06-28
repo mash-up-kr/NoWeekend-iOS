@@ -62,7 +62,7 @@ public struct TabBarView: View {
                 }
                 .tag(Tab.profile)
         }
-        .accentColor(DS.Colors.Neutral._900)
+        .accentColor(DS.Colors.Neutral.gray900)
     }
 }
 

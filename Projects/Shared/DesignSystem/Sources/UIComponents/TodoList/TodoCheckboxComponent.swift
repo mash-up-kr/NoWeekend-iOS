@@ -57,7 +57,7 @@ struct TodoCheckboxComponent: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.body2)
-                    .foregroundColor(DS.Colors.Neutral._900)
+                    .foregroundColor(DS.Colors.Neutral.gray900)
                     .lineLimit(1)
                 if category != nil {
                     HStack(spacing: 8) {
@@ -69,13 +69,13 @@ struct TodoCheckboxComponent: View {
                         
                         if category != nil {
                             Rectangle()
-                                .fill(DS.Colors.Border.gray300)
+                                .fill(DS.Colors.Border.border02)
                                 .frame(width: 2, height: 12)
                         }
                         
                         Text(timeOrDate)
                             .font(.body2)
-                            .foregroundColor(DS.Colors.Text.gray800)
+                            .foregroundColor(DS.Colors.Text.body)
                     }
                 }
             }

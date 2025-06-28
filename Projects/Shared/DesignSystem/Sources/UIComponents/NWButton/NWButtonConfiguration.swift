@@ -68,7 +68,7 @@ public struct NWButtonConfiguration {
     
     private static func blackConfiguration(size: NWButtonSize, isEnabled: Bool) -> NWButtonConfiguration {
         NWButtonConfiguration(
-            backgroundColor: isEnabled ? DS.Colors.Neutral.black : DS.Colors.Neutral._700,
+            backgroundColor: isEnabled ? DS.Colors.Neutral.black : DS.Colors.Neutral.gray700,
             foregroundColor: DS.Colors.Neutral.white,
             borderColor: .clear,
             borderWidth: 0,
@@ -78,9 +78,9 @@ public struct NWButtonConfiguration {
     
     private static func outlineConfiguration(size: NWButtonSize) -> NWButtonConfiguration {
         NWButtonConfiguration(
-            backgroundColor: DS.Colors.Background.white,
+            backgroundColor: DS.Colors.Background.normal,
             foregroundColor: DS.Colors.Neutral.black,
-            borderColor: DS.Colors.Border.gray300,
+            borderColor: DS.Colors.Border.border02,
             borderWidth: 1,
             font: size.outlineButtonFont
         )

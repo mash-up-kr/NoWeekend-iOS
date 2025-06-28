@@ -21,8 +21,8 @@ public struct UnderlineTextField: View {
         placeholder: String,
         text: Binding<String>,
         font: Font = .body1,
-        textColor: Color = DS.Colors.Neutral._700,
-        underlineColor: Color = DS.Colors.Border.gray200,
+        textColor: Color = DS.Colors.Neutral.gray700,
+        underlineColor: Color = DS.Colors.Border.border01,
         topPadding: CGFloat = 24,
         bottomPadding: CGFloat = 12
     ) {

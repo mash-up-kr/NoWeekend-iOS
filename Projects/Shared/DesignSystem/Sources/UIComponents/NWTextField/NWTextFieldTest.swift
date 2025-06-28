@@ -86,7 +86,7 @@ public struct NWTextFieldExample: View {
                 
                 Text("에러가 있을 때 border 색상과 두께가 변경됩니다.")
                     .font(.caption)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                    .foregroundColor(DS.Colors.Text.disable)
             }
         }
     }
@@ -120,11 +120,11 @@ private struct ExampleSection<Content: View>: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
-                    .foregroundColor(DS.Colors.Text.gray900)
+                    .foregroundColor(DS.Colors.Text.netural)
                 
                 Text(description)
                     .font(.body2)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                    .foregroundColor(DS.Colors.Text.disable)
             }
             
             content
@@ -146,7 +146,7 @@ private struct ExampleSubSection<Content: View>: View {
             Text(label)
                 .font(.body2)
                 .fontWeight(.medium)
-                .foregroundColor(DS.Colors.Text.gray700)
+                .foregroundColor(DS.Colors.Text.disable)
             
             content
         }

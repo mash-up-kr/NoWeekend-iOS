@@ -55,7 +55,7 @@ public struct WeekCalendarView<Content: View>: View {
             ForEach(weekdaySymbols, id: \.self) { weekday in
                 Text(weekday)
                     .font(.body3)
-                    .foregroundColor(DS.Colors.Neutral._700)
+                    .foregroundColor(DS.Colors.Neutral.gray700)
                     .frame(width: 41, height: 41)
                     .frame(maxWidth: .infinity)
             }
@@ -78,7 +78,7 @@ public struct WeekCalendarView<Content: View>: View {
                             
                             Text("\(calendar.component(.day, from: date))")
                                 .font(.subtitle2)
-                                .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral._900)
+                                .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
                         }
                         .frame(width: 41, height: 41)
                         cellContent(date)
