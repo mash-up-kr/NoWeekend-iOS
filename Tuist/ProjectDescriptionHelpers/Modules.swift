@@ -25,6 +25,7 @@ public enum ProjectPath: String, CaseIterable {
 public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
+    case googleSignIn = "GoogleSignIn"
 }
 
 // MARK: - Interface Modules
@@ -37,6 +38,7 @@ public enum InterfaceModule: String, CaseIterable {
     case networkInterface = "NetworkInterface"
     case storageInterface = "StorageInterface"
     case serviceInterface = "ServiceInterface"
+    case loginInterface = "LoginInterface"
 }
 
 // MARK: - Feature Modules
@@ -46,6 +48,7 @@ public enum FeatureModule: String, CaseIterable {
     case calendar = "Calendar"
     case profile = "Profile"
     case onboarding = "Onboarding"
+    case login = "Login"
 }
 
 // MARK: - Shared Modules

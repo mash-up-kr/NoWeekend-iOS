@@ -50,6 +50,12 @@ let project = Project.make(
             bundleId: BundleID.Interface.service,
             sources: ["ServiceInterface/Sources/**"],
             dependencies: [.target(name: "Domain")]
+        ),
+        .framework(
+            name: "LoginInterface",
+            bundleId: BundleID.Interface.login,
+            sources: ["LoginInterface/Sources/**"],
+            dependencies: [.target(name: "Domain")]
         )
     ]
 )

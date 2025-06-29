@@ -8,9 +8,16 @@
 
 import SwiftUI
 import DesignSystem
+import LoginInterface
 
-struct LoginView: View {
-    var body: some View {
+public struct LoginView: View {
+    @ObservedObject private var store: LoginStore
+    
+    public init(store: LoginStore) {
+        self.store = store
+    }
+    
+    public var body: some View {
         VStack {
             Spacer()
             DS.Images.imageMain
@@ -18,7 +25,7 @@ struct LoginView: View {
             
             VStack(spacing: 12) {
                 NWButton(variant: .outline, size: .xl) {
-                    // 애플 로그인 액션
+                    store.send(.signInWithApple)
                 } content: {
                     HStack {
                         DS.Images.icon
@@ -27,7 +34,7 @@ struct LoginView: View {
                 }
                 
                 NWButton(variant: .outline, size: .xl) {
-                    
+                    store.send(.signInWithGoogle)
                 } content: {
                     HStack {
                         DS.Images.icon1
@@ -40,7 +47,3 @@ struct LoginView: View {
     }
 }
 
-
-#Preview {
-    LoginView()
-}

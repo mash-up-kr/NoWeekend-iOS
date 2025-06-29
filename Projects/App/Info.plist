@@ -46,5 +46,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>GOOGLE_CLIENT_ID</key>
+    <string>470643991609-tjdjcd8oh5qj7cor86m1r169iflqv7h3.apps.googleusercontent.com</string>
+    <key>GOOGLE_SERVER_CLIENT_ID</key>
+    <string>470643991609-fp3udlr9jfheib6sq9tdvtn34tmllmeg.apps.googleusercontent.com</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>google</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>470643991609-tjdjcd8oh5qj7cor86m1r169iflqv7h3.apps.googleusercontent.com</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

@@ -128,7 +128,7 @@ public struct OnboardingView: View {
                         Text(" / \(store.state.totalDays)일")
                             .font(.body1)
                             .foregroundColor(DS.Colors.Neutral.black)
-                             
+                        
                     }
                     .padding(.vertical, 32)
                     
@@ -153,13 +153,13 @@ public struct OnboardingView: View {
                                 )
                                 
                                 NWTextField.userInputTextField(
-                                text: Binding(
+                                    text: Binding(
                                         get: { store.state.remainingHours },
                                         set: { store.send(.updateRemainingHours($0)) }
-                                ),
-                                suffixText: "시간",
-                                placeholder: "0",
-                                errorMessage: Binding(
+                                    ),
+                                    suffixText: "시간",
+                                    placeholder: "0",
+                                    errorMessage: Binding(
                                         get: { store.state.remainingHoursError },
                                         set: { _ in }
                                     )

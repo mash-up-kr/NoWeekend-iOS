@@ -32,7 +32,10 @@ let project = Project.make(
             sources: ["Network/Sources/**"],
             dependencies: [
                 .interface(.networkInterface),
-                .external(.alamofire)
+                .interface(.serviceInterface),
+                .interface(.domain),
+                .external(.alamofire),
+                .external(.googleSignIn)
             ]
         ),
         .framework(

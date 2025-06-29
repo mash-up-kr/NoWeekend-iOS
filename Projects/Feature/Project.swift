@@ -54,6 +54,17 @@ let project = Project.make(
                 .interface(.domain),
                 .shared(.designSystem)
             ]
+        ),
+        .framework(
+            name: "Login",
+            bundleId: BundleID.Feature.login,
+            sources: ["Login/Sources/**"],
+            dependencies: [
+                .interface(.domain),
+                .interface(.loginInterface),
+                .interface(.serviceInterface),
+                .shared(.designSystem)
+            ]
         )
     ]
 )

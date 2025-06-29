@@ -1,10 +1,11 @@
 import SwiftUI
-import TabBar
+import Login
 import Onboarding
 
+@MainActor
 struct ContentView: View {
     var body: some View {
-        TabBarView()
+        LoginView(store: DIContainer.shared.loginStore)
     }
 }
 

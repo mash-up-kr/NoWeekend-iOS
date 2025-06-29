@@ -23,6 +23,7 @@ public struct BundleID {
         public static let calendar = Environment.bundleId(category: .feature, module: "calendar")
         public static let profile = Environment.bundleId(category: .feature, module: "profile")
         public static let onboarding = Environment.bundleId(category: .feature, module: "onboarding")
+        public static let login = Environment.bundleId(category: .feature, module: "login")
     }
     
     public struct Interface {
@@ -34,6 +35,7 @@ public struct BundleID {
         public static let network = Environment.bundleId(category: .interface, module: "network")
         public static let storage = Environment.bundleId(category: .interface, module: "storage")
         public static let service = Environment.bundleId(category: .interface, module: "service")
+        public static let login = Environment.bundleId(category: .interface, module: "login")
     }
     
     public struct Shared {
