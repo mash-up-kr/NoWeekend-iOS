@@ -1,21 +1,22 @@
 //
-//  LoginUser.swift
+//  LoginEntity.swift
 //  CalendarInterface
 //
-//  Created by 김시종 on 6/28/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
+//  Created by SiJongKim on 6/11/25.
 //
 
 import Foundation
 
 public struct LoginUser {
     public let email: String
-    public let isExistingUser: Bool
-    public let accessToken: String
+    public let accessToken: String?
+    public let isExistingUser: Bool?
+    public let isOnboardingCompleted: Bool
     
-    public init(email: String, isExistingUser: Bool, accessToken: String) {
+    public init(email: String, accessToken: String?, isExistingUser: Bool?, isOnboardingCompleted: Bool = false) {
         self.email = email
-        self.isExistingUser = isExistingUser
         self.accessToken = accessToken
+        self.isExistingUser = isExistingUser
+        self.isOnboardingCompleted = isOnboardingCompleted
     }
 }

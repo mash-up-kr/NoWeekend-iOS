@@ -12,7 +12,8 @@ let project = Project.make(
             dependencies: [
                 .interface(.domain),
                 .interface(.repositoryInterface),
-                .interface(.serviceInterface)
+                .interface(.serviceInterface),
+                .interface(.loginInterface)
             ]
         ),
         .framework(

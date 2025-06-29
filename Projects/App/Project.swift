@@ -11,13 +11,7 @@ let project = Project.make(
             dependencies: [
                 .feature(.tabBar),
                 .feature(.onboarding),
-                .feature(.login),
-                // DIContainer에서 필요한 의존성들
-                .core(.useCase),
-                .core(.repository),
-                .core(.network),
-                // 외부 의존성
-                .external(.alamofire)
+                .feature(.login)
             ]
         )
     ]

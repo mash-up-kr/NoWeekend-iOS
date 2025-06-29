@@ -1,9 +1,8 @@
 //
-//  LoginModel.swift
-//  CalendarInterface
+//  LoginModels.swift
+//  Calendar
 //
-//  Created by 김시종 on 6/28/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
+//  Created by SiJongKim on 6/12/25.
 //
 
 import Foundation
@@ -20,8 +19,8 @@ public enum LoginIntent {
 public struct LoginState {
     public var isSignedIn: Bool = false
     public var userEmail: String = ""
-    public var isLoading: Bool = false
     public var errorMessage: String = ""
+    public var isLoading: Bool = false
     
     public init() {}
 }

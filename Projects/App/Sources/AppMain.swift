@@ -4,7 +4,7 @@ import Login
 @main
 struct AppMain: App {
     var body: some Scene {
-        @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+        @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
         
         WindowGroup {
             ContentView()

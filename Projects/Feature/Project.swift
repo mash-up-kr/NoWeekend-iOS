@@ -63,7 +63,11 @@ let project = Project.make(
                 .interface(.domain),
                 .interface(.loginInterface),
                 .interface(.serviceInterface),
-                .shared(.designSystem)
+                .shared(.designSystem),
+                .core(.useCase),
+                .core(.repository),
+                .core(.network),
+                .shared(.utils)
             ]
         )
     ]

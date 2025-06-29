@@ -8,14 +8,15 @@
 
 import UIKit
 import GoogleSignIn
+import Login
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        let clientID = "470643991609-tjdjcd8oh5qj7cor86m1r169iflqv7h3.apps.googleusercontent.com"
-        let serverClientID = "470643991609-fp3udlr9jfheib6sq9tdvtn34tmllmeg.apps.googleusercontent.com"
+        let clientID = GoogleConfig.clientID
+        let serverClientID = GoogleConfig.serverClientID
         
         let config = GIDConfiguration(
             clientID: clientID,
