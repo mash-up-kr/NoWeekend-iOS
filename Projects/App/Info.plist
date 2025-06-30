@@ -46,25 +46,20 @@
             <string>UIInterfaceOrientationLandscapeLeft</string>
             <string>UIInterfaceOrientationLandscapeRight</string>
         </array>
+        <key>GIDClientID</key>
+        <string>178939662981-k1frtfi591an22rs8fubv33i64b19uik.apps.googleusercontent.com</string>
         
-        <!-- Google Client ID -->
-            <key>GIDClientID</key>
-            <string>470643991609-tjdjcd8oh5qj7cor86m1r169iflqv7h3.apps.googleusercontent.com</string>
-            
-            <!-- Google Server Client ID -->
-            <key>GIDServerClientID</key>
-            <string>470643991609-fp3udlr9jfheib6sq9tdvtn34tmllmeg.apps.googleusercontent.com</string>
+        <key>GIDServerClientID</key>
+        <string>178939662981-irg5o685k19p6evbr1pnfnok5scdaja8.apps.googleusercontent.com</string>
         
-            <key>CFBundleURLTypes</key>
-            <array>
-                <dict>
-                    <key>CFBundleURLName</key>
-                    <string>GoogleSignIn</string>
-                    <key>CFBundleURLSchemes</key>
-                    <array>
-                        <string>com.googleusercontent.apps.470643991609-tjdjcd8oh5qj7cor86m1r169iflqv7h3</string>
-                    </array>
-                </dict>
-            </array>
-        </dict>
-        </plist>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>com.googleusercontent.apps.178939662981-k1frtfi591an22rs8fubv33i64b19uik</string>
+                </array>
+            </dict>
+        </array>
+    </dict>
+</plist>

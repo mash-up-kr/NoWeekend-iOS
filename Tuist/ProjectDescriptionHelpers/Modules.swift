@@ -26,6 +26,7 @@ public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
     case googleSignIn = "GoogleSignIn"
+    case appAuth = "AppAuth"
 }
 
 // MARK: - Interface Modules

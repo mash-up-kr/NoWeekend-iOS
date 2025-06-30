@@ -37,7 +37,12 @@ let project = Project.make(
                 .interface(.domain),
                 .external(.alamofire),
                 .external(.googleSignIn)
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "OTHER_LDFLAGS": ["-ObjC"]
+                ]
+            )
         ),
         .framework(
             name: "Storage",

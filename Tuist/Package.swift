@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.10.2"),
         .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.3.0"),
-        .package(url: "https://github.com/openid/AppAuth-iOS", from: "1.6.0"),
-        .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "7.0.0")
+        .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "7.0.0"),
+        .package(url: "https://github.com/openid/AppAuth-iOS", from: "1.7.6")
     ]
 )

@@ -16,20 +16,37 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {}
     
     public func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult {
-        let result = try await GIDSignIn.sharedInstance.signIn(
-            withPresenting: presentingViewController,
-            hint: nil,
-            additionalScopes: ["profile", "email"]
-        )
-        
-        let user = result.user
-        let accessToken = user.accessToken.tokenString
-        
-        return GoogleSignInResult(
-            accessToken: accessToken,
-            name: user.profile?.name,
-            email: user.profile?.email
-        )
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    guard let result = result else {
+                        let error = NSError(
+                            domain: "GoogleSignInError",
+                            code: -1,
+                            userInfo: [NSLocalizedDescriptionKey: "No result received"]
+                        )
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    let user = result.user
+                    let accessToken = user.accessToken.tokenString
+                    
+                    let signInResult = GoogleSignInResult(
+                        accessToken: accessToken,
+                        name: user.profile?.name,
+                        email: user.profile?.email 
+                    )
+                    
+                    continuation.resume(returning: signInResult)
+                }
+            }
+        }
     }
 
     public func signOut() {
