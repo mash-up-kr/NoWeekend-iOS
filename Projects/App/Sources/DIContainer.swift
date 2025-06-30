@@ -26,12 +26,13 @@ public final class DIContainer {
     
     public func makeLoginStore() -> LoginStore {
         let networkService = NetworkService(
-            baseURL: "https://api.noweekend.com",
+            baseURL: "https://noweekend.store",
             headers: ["Content-Type": "application/json"]
         )
         
         let authRepository = AuthRepositoryImpl(networkService: networkService)
         let googleAuthService = GoogleAuthService()
+        let appleAuthService = AppleAuthService()
         let viewControllerProvider = ViewControllerProvider()
         
         let googleLoginUseCase = GoogleLoginUseCase(
@@ -40,10 +41,19 @@ public final class DIContainer {
             viewControllerProvider: viewControllerProvider
         )
         
-        let authUseCase = AuthUseCase(googleAuthService: googleAuthService)
+        let appleLoginUseCase = AppleLoginUseCase(
+            authRepository: authRepository,
+            appleAuthService: appleAuthService
+        )
+        
+        let authUseCase = AuthUseCase(
+            googleAuthService: googleAuthService,
+            appleAuthService: appleAuthService
+        )
         
         return LoginStore(
             loginWithGoogleUseCase: googleLoginUseCase,
+            loginWithAppleUseCase: appleLoginUseCase,
             authUseCase: authUseCase
         )
     }

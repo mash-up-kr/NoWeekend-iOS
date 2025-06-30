@@ -15,15 +15,15 @@ import Domain
 public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {}
     
+    @MainActor
     public func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult {
+        
         return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.async {
-                GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                        return
-                    }
-                    
+            let strongVC = presentingViewController
+            
+            do {
+                GIDSignIn.sharedInstance.signIn(withPresenting: strongVC) { result, error in
+
                     guard let result = result else {
                         let error = NSError(
                             domain: "GoogleSignInError",
@@ -40,15 +40,19 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
                     let signInResult = GoogleSignInResult(
                         accessToken: accessToken,
                         name: user.profile?.name,
-                        email: user.profile?.email 
+                        email: user.profile?.email
                     )
                     
                     continuation.resume(returning: signInResult)
                 }
+                
+            } catch {
+                continuation.resume(throwing: error)
             }
         }
     }
 
+    @MainActor
     public func signOut() {
         GIDSignIn.sharedInstance.signOut()
     }

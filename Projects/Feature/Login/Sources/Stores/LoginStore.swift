@@ -16,13 +16,16 @@ public final class LoginStore: ObservableObject {
     public let effect = PassthroughSubject<LoginEffect, Never>()
     
     private let loginWithGoogleUseCase: GoogleLoginUseCaseInterface
+    private let loginWithAppleUseCase: AppleLoginUseCaseInterface
     private let authUseCase: AuthUseCaseInterface
     
     public init(
         loginWithGoogleUseCase: GoogleLoginUseCaseInterface,
+        loginWithAppleUseCase: AppleLoginUseCaseInterface,
         authUseCase: AuthUseCaseInterface
     ) {
         self.loginWithGoogleUseCase = loginWithGoogleUseCase
+        self.loginWithAppleUseCase = loginWithAppleUseCase
         self.authUseCase = authUseCase
     }
     
@@ -31,7 +34,7 @@ public final class LoginStore: ObservableObject {
         case .signInWithGoogle:
             handleGoogleSignIn()
         case .signInWithApple:
-            break
+            handleAppleSignIn()
         case .signInSucceeded(let user):
             handleSignInSuccess(user)
         case .signInFailed(let error):
@@ -56,6 +59,20 @@ public final class LoginStore: ObservableObject {
         }
     }
     
+    private func handleAppleSignIn() {
+        state.errorMessage = ""
+        state.isLoading = true
+        
+        Task {
+            do {
+                let user = try await loginWithAppleUseCase.execute()
+                send(.signInSucceeded(user: user))
+            } catch {
+                send(.signInFailed(error: error))
+            }
+        }
+    }
+    
     private func handleSignInSuccess(_ user: LoginUser) {
         state.isSignedIn = true
         state.userEmail = user.email
@@ -70,7 +87,7 @@ public final class LoginStore: ObservableObject {
     }
     
     private func handleSignOut() {
-        authUseCase.signOut()
+        authUseCase.signOutGoogle()
         state = LoginState()
     }
 }

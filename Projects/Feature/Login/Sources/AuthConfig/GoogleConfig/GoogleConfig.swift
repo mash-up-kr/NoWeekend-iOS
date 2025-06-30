@@ -9,14 +9,14 @@ import Foundation
 
 public struct GoogleConfig {
     public static var clientID: String {
-        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_CLIENT_ID") as? String else {
+        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String else {
             fatalError("Google Client ID not found in Info.plist")
         }
         return clientID
     }
     
     public static var serverClientID: String {
-        guard let serverClientID = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_SERVER_CLIENT_ID") as? String else {
+        guard let serverClientID = Bundle.main.object(forInfoDictionaryKey: "GIDServerClientID") as? String else {
             fatalError("Google Server Client ID not found in Info.plist")
         }
         return serverClientID
