@@ -10,6 +10,7 @@ import Domain
 import RepositoryInterface
 import NetworkInterface
 
+
 public final class AuthRepositoryImpl: AuthRepositoryInterface {
     private let networkService: NetworkServiceProtocol
     
@@ -17,34 +18,22 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         self.networkService = networkService
     }
     
-    public func loginWithGoogle(accessToken: String, name: String?) async throws -> LoginUser {
-        var parameters: [String: Any] = [
-            "authorizationCode": accessToken
-        ]
-        
-        if let name = name {
-            parameters["name"] = name
-        }
-        
+    public func loginWithGoogle(
+        authorizationCode: String,
+        name: String?
+    ) async throws -> LoginUser {
+        let requestDTO = GoogleLoginRequestDTO(authorizationCode: authorizationCode, name: name)
+        let parameters = try requestDTO.asDictionary()
         let endpoint = "/api/v1/login/GOOGLE"
-        
-        do {
-            let apiDTO: ApiResponseGoogleLoginDTO = try await networkService.post(
-                endpoint: endpoint,
-                parameters: parameters
-            )
-            
-            guard apiDTO.result == "SUCCESS" else {
-                let errorMessage = apiDTO.error?.message ?? "Server Error"
-                throw NetworkError.serverError(errorMessage)
-            }
-            
-            let user = apiDTO.data.toDomain()
-            return user
-            
-        } catch {
-            throw error
+        let apiDTO: ApiResponseGoogleLoginDTO = try await networkService.post(
+            endpoint: endpoint,
+            parameters: parameters
+        )
+        guard apiDTO.result == "SUCCESS" else {
+            let errorMessage = apiDTO.error?.message ?? "Server Error"
+            throw NetworkError.serverError(errorMessage)
         }
+        return apiDTO.data.toDomain()
     }
     
     public func loginWithApple(
@@ -84,5 +73,16 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         } catch {
             throw error
         }
+    }
+}
+
+extension Encodable {
+    func asDictionary() throws -> [String: Any] {
+        let data = try JSONEncoder().encode(self)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        guard let dict = json as? [String: Any] else {
+            throw NSError(domain: "Encoding", code: -1, userInfo: nil)
+        }
+        return dict
     }
 }

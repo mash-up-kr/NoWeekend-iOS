@@ -44,7 +44,7 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             )
             
             let user = try await authRepository.loginWithGoogle(
-                accessToken: signInResult.accessToken,
+                authorizationCode: signInResult.accessToken,
                 name: nil
             )
             
@@ -56,7 +56,7 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                     throw LoginError.nameNotAvailable
                 }
                 let user = try await authRepository.loginWithGoogle(
-                    accessToken: signInResult?.accessToken ?? "",
+                    authorizationCode: signInResult?.accessToken ?? "",
                     name: profileName
                 )
                 return user

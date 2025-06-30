@@ -9,7 +9,7 @@ import Foundation
 import Domain
 
 public protocol AuthRepositoryInterface {
-    func loginWithGoogle(accessToken: String, name: String?) async throws -> LoginUser
+    func loginWithGoogle(authorizationCode: String, name: String?) async throws -> LoginUser
     func loginWithApple(identityToken: String, authorizationCode: String?, email: String?, name: String?) async throws -> LoginUser
 }
 
