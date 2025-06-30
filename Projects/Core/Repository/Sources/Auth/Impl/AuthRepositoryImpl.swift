@@ -22,7 +22,10 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         authorizationCode: String,
         name: String?
     ) async throws -> LoginUser {
-        let requestDTO = GoogleLoginRequestDTO(authorizationCode: authorizationCode, name: name)
+        let requestDTO = GoogleLoginRequestDTO(
+            authorizationCode: authorizationCode,
+            name: name
+        )
         let parameters = try requestDTO.asDictionary()
         let endpoint = "/api/v1/login/GOOGLE"
         let apiDTO: ApiResponseGoogleLoginDTO = try await networkService.post(
@@ -42,20 +45,13 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         email: String?,
         name: String?
     ) async throws -> LoginUser {
-        var parameters: [String: Any] = [
-            "identityToken": identityToken
-        ]
-        
-        if let authorizationCode = authorizationCode {
-            parameters["authorizationCode"] = authorizationCode
-        }
-        if let email = email {
-            parameters["email"] = email
-        }
-        if let name = name {
-            parameters["name"] = name
-        }
-        
+        let requestDTO = AppleLoginRequestDTO(
+            identityToken: identityToken,
+            authorizationCode: authorizationCode,
+            email: email,
+            name: name
+        )
+        let parameters = try requestDTO.asDictionary()
         let endpoint = "/api/v1/login/APPLE"
         
         do {

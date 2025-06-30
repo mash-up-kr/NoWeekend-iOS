@@ -16,6 +16,8 @@ struct ContentView: View {
                     break
                 case .navigateToHome:
                     showingOnboarding = true
+                @unknown default:
+                    break
                 }
             }
     }

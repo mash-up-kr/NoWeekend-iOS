@@ -4,44 +4,68 @@ import DesignSystem
 
 public struct OnboardingView: View {
     @ObservedObject private var store = OnboardingStore()
+    @State private var isGoingBack = false // 뒤로가기 상태 추적
     
     public init() {}
     
     public var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 56) {
-                headerView
-                
-                TabView(selection: Binding(
-                    get: { store.state.currentStep },
-                    set: { _ in }
-                )) {
-                    nicknameStepView.tag(0)
-                    experienceStepView.tag(1)
-                    scheduleStepView.tag(2)
+        VStack(spacing: 0) {
+            headerView
+                .padding(.bottom, 56)
+                .padding(.horizontal, 24)
+            
+            Group {
+                switch store.state.currentStep {
+                case 0:
+                    nicknameStepView
+                        .transition(.asymmetric(
+                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
+                            removal: .move(edge: isGoingBack ? .trailing : .leading)
+                        ))
+                case 1:
+                    experienceStepView
+                        .transition(.asymmetric(
+                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
+                            removal: .move(edge: isGoingBack ? .trailing : .leading)
+                        ))
+                case 2:
+                    scheduleStepView
+                        .transition(.asymmetric(
+                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
+                            removal: .move(edge: isGoingBack ? .trailing : .leading)
+                        ))
+                default:
+                    nicknameStepView
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .animation(.easeInOut(duration: 0.3), value: store.state.currentStep)
-                
-                bottomButtonView
             }
+            .padding(.horizontal, 24)
+            .animation(.easeInOut(duration: 0.3), value: store.state.currentStep)
+            
+            bottomButtonView
+                .padding(.horizontal, 24)
         }
         .background(DS.Colors.Background.white)
         .navigationBarHidden(true)
+        .ignoresSafeArea(.keyboard, edges: .bottom) // 키보드 영역 무시
         .onChange(of: store.state.isOnboardingCompleted) {
             if store.state.isOnboardingCompleted {
-                // 온보딩 완료 후 처리 (예: 메인 화면으로 이동)
+                // 온보딩 완료 알림 발송
             }
         }
-        .padding(.horizontal, 16)
     }
     
     // MARK: - Header View
     private var headerView: some View {
         VStack {
-            HStack {
+            HStack(alignment: .center) {
                 Button(action: {
+                    isGoingBack = true
                     store.send(.goToPreviousStep)
+                    
+                    // 애니메이션 후 상태 리셋
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        isGoingBack = false
+                    }
                 }) {
                     DS.Images.icnChevronLeft
                         .foregroundColor(DS.Colors.Text.gray900)
@@ -61,7 +85,7 @@ public struct OnboardingView: View {
                 }
                 .opacity(0)
             }
-            .padding(.top, 16)
+            .frame(height: 56)
         }
     }
     
@@ -104,7 +128,6 @@ public struct OnboardingView: View {
                             )
                         )
                     }
-                    
                 }
                 .padding(.top, 40)
                 .padding(.horizontal, 8)
@@ -120,17 +143,10 @@ public struct OnboardingView: View {
         ) {
             VStack {
                 VStack(alignment: .center) {
-                    HStack(alignment: .bottom, spacing: 6) {
-                        Text("\(store.state.displayRemainingDays)일 \(store.state.displayRemainingHours)시간")
-                            .font(.heading2)
-                            .foregroundColor(DS.Colors.Toast._500)
-                        
-                        Text(" / \(store.state.totalDays)일")
-                            .font(.body1)
-                            .foregroundColor(DS.Colors.Neutral.black)
-                        
-                    }
-                    .padding(.vertical, 32)
+                    Text("\(store.state.displayRemainingDays)일 \(store.state.displayRemainingHours)시간")
+                        .font(.heading2)
+                        .foregroundColor(DS.Colors.Toast._500)
+                        .padding(.vertical, 32)
                     
                     VStack {
                         VStack(alignment: .leading, spacing: 8) {
@@ -138,7 +154,7 @@ public struct OnboardingView: View {
                                 .font(.subtitle1)
                                 .foregroundColor(DS.Colors.Text.gray700)
                             
-                            HStack(spacing: 24) {
+                            VStack(spacing: 24) {
                                 NWTextField.userInputTextField(
                                     text: Binding(
                                         get: { store.state.remainingDays },
@@ -152,42 +168,22 @@ public struct OnboardingView: View {
                                     )
                                 )
                                 
-                                NWTextField.userInputTextField(
-                                    text: Binding(
-                                        get: { store.state.remainingHours },
-                                        set: { store.send(.updateRemainingHours($0)) }
-                                    ),
-                                    suffixText: "시간",
-                                    placeholder: "0",
-                                    errorMessage: Binding(
-                                        get: { store.state.remainingHoursError },
-                                        set: { _ in }
-                                    )
-                                )
+                                HStack {
+                                    Text("반차도 남았어요.")
+                                        .font(.body1)
+                                        .foregroundColor(DS.Colors.Text.gray800) // 텍스트색상 변경
+                                    
+                                    Spacer()
+                                    
+                                    Toggle("", isOn: Binding(
+                                        get: { store.state.hasHalfDay },
+                                        set: { store.send(.updateHasHalfDay($0)) }
+                                    ))
+                                    .toggleStyle(SwitchToggleStyle(tint: DS.Colors.Neutral.black))
+                                    .frame(width: 52)
+                                }
                             }
                         }
-                        
-                        // 전체 연차 섹션
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("전체 연차")
-                                .font(.subtitle1)
-                                .foregroundColor(DS.Colors.Text.gray700)
-                            
-                            NWTextField.userInputTextField(
-                                text: Binding(
-                                    get: { store.state.totalDays },
-                                    set: { store.send(.updateTotalDays($0)) }
-                                ),
-                                suffixText: "일",
-                                placeholder: "15",
-                                errorMessage: Binding(
-                                    get: { store.state.totalDaysError },
-                                    set: { _ in }
-                                )
-                            )
-                        }
-                        .padding(.top, 24)
-                        
                     }
                 }
                 
@@ -221,6 +217,7 @@ public struct OnboardingView: View {
                 variant: .black,
                 isEnabled: store.state.isNextButtonEnabled && !store.state.isLoading
             ) {
+                isGoingBack = false // 다음 버튼은 앞으로 가는 것이므로 false로 설정
                 store.send(.goToNextStep)
             }
         }

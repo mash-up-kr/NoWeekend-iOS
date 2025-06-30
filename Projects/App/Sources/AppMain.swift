@@ -1,5 +1,6 @@
 import SwiftUI
 import Login
+import Onboarding
 
 @main
 struct AppMain: App {
@@ -7,7 +8,11 @@ struct AppMain: App {
         @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
         
         WindowGroup {
-            ContentView()
+            OnboardingView()
         }
     }
+}
+
+#Preview {
+    OnboardingView()
 }

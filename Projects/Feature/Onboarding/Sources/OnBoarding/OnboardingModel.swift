@@ -16,15 +16,14 @@ public struct OnboardingState: Equatable {
     public var birthDate: String = ""
     
     public var remainingDays: String = ""
-    public var remainingHours: String = ""
-    public var totalDays: String = "15"
+    public var remainingHours: String = "" // 0 or 4 only
     public var selectedTags: Set<String> = []
+    public var hasHalfDay: Bool = false
     
     public var nicknameError: String? = nil
     public var birthDateError: String? = nil
     public var remainingDaysError: String? = nil
     public var remainingHoursError: String? = nil
-    public var totalDaysError: String? = nil
     
     public var isLoading: Bool = false
     public var isNextButtonEnabled: Bool = false
@@ -45,7 +44,7 @@ public struct OnboardingState: Equatable {
     }
     
     public var hasVacationError: Bool {
-        return remainingDaysError != nil || remainingHoursError != nil || totalDaysError != nil
+        return remainingDaysError != nil || remainingHoursError != nil
     }
     
     public init() {}
@@ -58,8 +57,7 @@ public enum OnboardingIntent {
     case updateNickname(String)
     case updateBirthDate(String)
     case updateRemainingDays(String)
-    case updateRemainingHours(String)
-    case updateTotalDays(String)
+    case updateHasHalfDay(Bool)
     case toggleTag(String)
     case validateCurrentStep
     case completeOnboarding
