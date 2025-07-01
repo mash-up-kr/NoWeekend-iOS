@@ -50,6 +50,8 @@ public class OnboardingStore: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
+    /// 다음 스텝으로 이동 - TabView가 자동으로 애니메이션 처리
     private func handleGoToNextStep() {
         guard state.isNextButtonEnabled else { return }
         
@@ -61,8 +63,10 @@ public class OnboardingStore: ObservableObject {
         }
     }
     
+    /// 이전 스텝으로 이동 - TabView가 자동으로 애니메이션 처리
     private func handleGoToPreviousStep() {
         guard state.currentStep > 0 else { return }
+        
         state.currentStep -= 1
         updateButtonEnabledState()
     }
@@ -107,11 +111,12 @@ public class OnboardingStore: ObservableObject {
     }
     
     // MARK: - Validation Methods
+    
     private func validateNickname() {
         if state.nickname.isEmpty {
             state.nicknameError = "닉네임을 입력해주세요"
-        } else if state.nickname.count > 10 {
-            state.nicknameError = "닉네임은 10자 이하로 입력해주세요"
+        } else if state.nickname.count > 7 {
+            state.nicknameError = "6글자까지 작성할 수 있어요."
         } else if state.nickname.trimmingCharacters(in: .whitespaces).isEmpty {
             state.nicknameError = "유효한 닉네임을 입력해주세요"
         } else {
@@ -125,13 +130,12 @@ public class OnboardingStore: ObservableObject {
         } else if state.birthDate.count != 8 {
             state.birthDateError = "생년월일은 8자리로 입력해주세요"
         } else if state.birthDate.filter({ !$0.isNumber }).count > 0 {
-            state.birthDateError = "유효한 생년월일을 입력해주세요"
+            state.birthDateError = "숫자만 입력할 수 있어요."
         } else {
             state.birthDateError = nil
         }
     }
     
-    // MARK: - 개별 필드 검증 메서드들
     private func validateRemainingDays() {
         state.remainingDaysError = nil
         if state.remainingDays.isEmpty {
@@ -143,6 +147,7 @@ public class OnboardingStore: ObservableObject {
         }
     }
     
+    /// 현재 스텝의 유효성에 따라 다음 버튼 활성화 상태 업데이트
     private func updateButtonEnabledState() {
         switch state.currentStep {
         case 0:

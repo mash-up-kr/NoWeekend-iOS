@@ -4,7 +4,6 @@ import DesignSystem
 
 public struct OnboardingView: View {
     @ObservedObject private var store = OnboardingStore()
-    @State private var isGoingBack = false // 뒤로가기 상태 추적
     
     public init() {}
     
@@ -14,39 +13,30 @@ public struct OnboardingView: View {
                 .padding(.bottom, 56)
                 .padding(.horizontal, 24)
             
-            Group {
-                switch store.state.currentStep {
-                case 0:
-                    nicknameStepView
-                        .transition(.asymmetric(
-                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
-                            removal: .move(edge: isGoingBack ? .trailing : .leading)
-                        ))
-                case 1:
-                    experienceStepView
-                        .transition(.asymmetric(
-                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
-                            removal: .move(edge: isGoingBack ? .trailing : .leading)
-                        ))
-                case 2:
-                    scheduleStepView
-                        .transition(.asymmetric(
-                            insertion: .move(edge: isGoingBack ? .leading : .trailing),
-                            removal: .move(edge: isGoingBack ? .trailing : .leading)
-                        ))
-                default:
-                    nicknameStepView
-                }
+            // 🎯 가장 간단한 해결책: disabled 사용
+            TabView(selection: $store.state.currentStep) {
+                nicknameStepView
+                    .tag(0)
+                
+                experienceStepView
+                    .tag(1)
+                
+                scheduleStepView
+                    .tag(2)
             }
-            .padding(.horizontal, 24)
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: store.state.currentStep)
+            .highPriorityGesture(
+                DragGesture()
+                    .onChanged { _ in }
+            )
             
             bottomButtonView
                 .padding(.horizontal, 24)
         }
         .background(DS.Colors.Background.white)
         .navigationBarHidden(true)
-        .ignoresSafeArea(.keyboard, edges: .bottom) // 키보드 영역 무시
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .onChange(of: store.state.isOnboardingCompleted) {
             if store.state.isOnboardingCompleted {
                 // 온보딩 완료 알림 발송
@@ -54,18 +44,21 @@ public struct OnboardingView: View {
         }
     }
     
+    private func createTransition() -> AnyTransition {
+        let isMovingBackward = store.state.isMovingBackward
+        
+        return .asymmetric(
+            insertion: .move(edge: isMovingBackward ? .leading : .trailing),
+            removal: .move(edge: isMovingBackward ? .trailing : .leading)
+        )
+    }
+    
     // MARK: - Header View
     private var headerView: some View {
         VStack {
             HStack(alignment: .center) {
                 Button(action: {
-                    isGoingBack = true
                     store.send(.goToPreviousStep)
-                    
-                    // 애니메이션 후 상태 리셋
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        isGoingBack = false
-                    }
                 }) {
                     DS.Images.icnChevronLeft
                         .foregroundColor(DS.Colors.Text.gray900)
@@ -92,21 +85,27 @@ public struct OnboardingView: View {
     private var nicknameStepView: some View {
         VStack {
             OnboardingStepView(
-                title: "닉네임을 알려주세요!",
+                title: "정보를 작성해 주세요",
                 subtitle: "언제든 변경할 수 있어요"
             ) {
                 VStack(spacing: 24) {
-                    NWTextField.todoMultiLine(
-                        text: Binding(
-                            get: { store.state.nickname },
-                            set: { store.send(.updateNickname($0)) }
-                        ),
-                        placeholder: "닉네임 입력하세요.",
-                        errorMessage: Binding(
-                            get: { store.state.nicknameError },
-                            set: { _ in }
+                    VStack(alignment: .leading) {
+                        Text("닉네임")
+                            .font(.subtitle1)
+                            .foregroundColor(DS.Colors.Text.gray700)
+                        
+                        NWTextField.todoMultiLine(
+                            text: Binding(
+                                get: { store.state.nickname },
+                                set: { store.send(.updateNickname($0)) }
+                            ),
+                            placeholder: "최대 6글자",
+                            errorMessage: Binding(
+                                get: { store.state.nicknameError },
+                                set: { _ in }
+                            )
                         )
-                    )
+                    }
                     
                     VStack(alignment: .leading) {
                         Text("생년월일")
@@ -130,7 +129,7 @@ public struct OnboardingView: View {
                     }
                 }
                 .padding(.top, 40)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 24)
             }
         }
     }
@@ -138,8 +137,8 @@ public struct OnboardingView: View {
     // MARK: - Experience Step View
     private var experienceStepView: some View {
         OnboardingStepView(
-            title: "올해 연차를 입력해주세요",
-            subtitle: "숫자로 입력해 주세요."
+            title: "올해 남은 연차를 알려주세요",
+            subtitle: ""
         ) {
             VStack {
                 VStack(alignment: .center) {
@@ -171,7 +170,7 @@ public struct OnboardingView: View {
                                 HStack {
                                     Text("반차도 남았어요.")
                                         .font(.body1)
-                                        .foregroundColor(DS.Colors.Text.gray800) // 텍스트색상 변경
+                                        .foregroundColor(DS.Colors.Text.gray800)
                                     
                                     Spacer()
                                     
@@ -190,13 +189,13 @@ public struct OnboardingView: View {
                 Spacer()
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 24)
     }
     
     private var scheduleStepView: some View {
         OnboardingStepView(
             title: "자주하는 일정을 알려주세요",
-            subtitle: "일정 등록할 시에게 추천받을 수 있어요"
+            subtitle: "할일 등록을 AI에게 추천받을 수 있어요"
         ) {
             VStack {
                 TagSelectionView(
@@ -217,7 +216,6 @@ public struct OnboardingView: View {
                 variant: .black,
                 isEnabled: store.state.isNextButtonEnabled && !store.state.isLoading
             ) {
-                isGoingBack = false // 다음 버튼은 앞으로 가는 것이므로 false로 설정
                 store.send(.goToNextStep)
             }
         }

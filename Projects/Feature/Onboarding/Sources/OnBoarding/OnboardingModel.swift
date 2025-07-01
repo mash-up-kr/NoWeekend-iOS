@@ -16,7 +16,7 @@ public struct OnboardingState: Equatable {
     public var birthDate: String = ""
     
     public var remainingDays: String = ""
-    public var remainingHours: String = "" // 0 or 4 only
+    public var remainingHours: String = ""
     public var selectedTags: Set<String> = []
     public var hasHalfDay: Bool = false
     
@@ -26,6 +26,7 @@ public struct OnboardingState: Equatable {
     public var remainingHoursError: String? = nil
     
     public var isLoading: Bool = false
+    public var isMovingBackward: Bool = false
     public var isNextButtonEnabled: Bool = false
     public var isOnboardingCompleted: Bool = false
     
