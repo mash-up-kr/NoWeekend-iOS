@@ -13,7 +13,6 @@ public struct OnboardingView: View {
                 .padding(.bottom, 56)
                 .padding(.horizontal, 24)
             
-            // 🎯 가장 간단한 해결책: disabled 사용
             TabView(selection: $store.state.currentStep) {
                 nicknameStepView
                     .tag(0)
@@ -137,8 +136,7 @@ public struct OnboardingView: View {
     // MARK: - Experience Step View
     private var experienceStepView: some View {
         OnboardingStepView(
-            title: "올해 남은 연차를 알려주세요",
-            subtitle: ""
+            title: "올해 남은 연차를 알려주세요"
         ) {
             VStack {
                 VStack(alignment: .center) {

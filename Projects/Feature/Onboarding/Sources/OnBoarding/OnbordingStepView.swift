@@ -11,12 +11,18 @@ import DesignSystem
 
 struct OnboardingStepView<Content: View>: View {
     let title: String
-    let subtitle: String
+    let subtitle: String?
     let content: Content
     
     init(title: String, subtitle: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.subtitle = subtitle
+        self.content = content()
+    }
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.subtitle = nil
         self.content = content()
     }
     
@@ -27,9 +33,11 @@ struct OnboardingStepView<Content: View>: View {
                     .font(.heading2)
                     .foregroundColor(DS.Colors.Neutral.black)
                 
-                Text(subtitle)
-                    .font(.body1)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.body1)
+                        .foregroundColor(DS.Colors.Text.gray700)
+                }
             }
             
             content

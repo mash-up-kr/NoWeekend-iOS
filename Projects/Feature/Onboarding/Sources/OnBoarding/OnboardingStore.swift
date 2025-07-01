@@ -72,8 +72,17 @@ public class OnboardingStore: ObservableObject {
     }
     
     private func handleUpdateNickname(_ nickname: String) {
-        state.nickname = nickname
-        validateNickname()
+        let hasExceededLimit = nickname.count > 7
+        
+        let filteredNickname = String(nickname.prefix(7))
+        state.nickname = filteredNickname
+        
+        if hasExceededLimit {
+            state.nicknameError = "6글자까지 작성할 수 있어요."
+        } else {
+            validateNickname()
+        }
+        
         updateButtonEnabledState()
     }
     
@@ -115,7 +124,7 @@ public class OnboardingStore: ObservableObject {
     private func validateNickname() {
         if state.nickname.isEmpty {
             state.nicknameError = "닉네임을 입력해주세요"
-        } else if state.nickname.count > 7 {
+        } else if state.nickname.count > 6 {
             state.nicknameError = "6글자까지 작성할 수 있어요."
         } else if state.nickname.trimmingCharacters(in: .whitespaces).isEmpty {
             state.nicknameError = "유효한 닉네임을 입력해주세요"
@@ -130,7 +139,7 @@ public class OnboardingStore: ObservableObject {
         } else if state.birthDate.count != 8 {
             state.birthDateError = "생년월일은 8자리로 입력해주세요"
         } else if state.birthDate.filter({ !$0.isNumber }).count > 0 {
-            state.birthDateError = "숫자만 입력할 수 있어요."
+            state.birthDateError = "유효한 생년월일을 입력해주세요"
         } else {
             state.birthDateError = nil
         }
