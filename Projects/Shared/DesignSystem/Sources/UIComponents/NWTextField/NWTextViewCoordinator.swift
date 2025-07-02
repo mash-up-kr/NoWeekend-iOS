@@ -59,6 +59,11 @@ public final class NWTextViewCoordinator: NSObject, UITextViewDelegate {
     }
     
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        
         if textView.text == placeholder && !text.isEmpty {
             textView.text = ""
             textView.textColor = UIColor(DS.Colors.Text.netural)
