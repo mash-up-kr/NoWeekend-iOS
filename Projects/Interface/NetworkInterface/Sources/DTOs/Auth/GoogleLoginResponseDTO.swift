@@ -9,24 +9,24 @@ import Foundation
 import Domain
 
 public struct GoogleLoginResponseDTO: Decodable {
-    let email: String
-    let exists: Bool
-    let accessToken: String
+    public let email: String
+    public let exists: Bool
+    public let accessToken: String
 }
 
 public struct ApiResponseGoogleLoginDTO: Decodable {
-    let result: String
-    let data: GoogleLoginResponseDTO
-    let error: ErrorMessageDTO?
+    public let result: String
+    public let data: GoogleLoginResponseDTO
+    public let error: ErrorMessageDTO?
 }
 
 public struct ErrorMessageDTO: Decodable {
-    let code: String
-    let message: String
+    public let code: String
+    public let message: String
 }
 
 extension GoogleLoginResponseDTO {
-    func toDomain() -> LoginUser {
+    public func toDomain() -> LoginUser {
         return LoginUser(
             email: self.email,
             accessToken: self.accessToken,

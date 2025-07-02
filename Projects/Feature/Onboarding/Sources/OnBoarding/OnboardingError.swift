@@ -28,7 +28,7 @@ public enum OnboardingError: Equatable, CaseIterable {
         case .nicknameEmpty:
             return "닉네임을 입력해주세요"
         case .nicknameTooLong:
-            return "닉네임은 10자 이하로 입력해주세요"
+            return "닉네임은 6자 이하로 입력해주세요"
         case .nicknameInvalid:
             return "유효한 닉네임을 입력해주세요"
             

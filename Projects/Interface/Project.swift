@@ -37,7 +37,8 @@ let project = Project.make(
         .framework(
             name: "NetworkInterface",
             bundleId: BundleID.Interface.network,
-            sources: ["NetworkInterface/Sources/**"]
+            sources: ["NetworkInterface/Sources/**"],
+            dependencies: [.target(name: "Domain")]
         ),
         .framework(
             name: "StorageInterface",

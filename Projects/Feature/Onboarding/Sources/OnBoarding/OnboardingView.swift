@@ -2,10 +2,17 @@ import SwiftUI
 import Domain
 import DesignSystem
 
+
+import SwiftUI
+import Domain
+import DesignSystem
+
 public struct OnboardingView: View {
-    @ObservedObject private var store = OnboardingStore()
+    @ObservedObject private var store: OnboardingStore
     
-    public init() {}
+    public init(store: OnboardingStore) {
+        self.store = store
+    }
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -43,14 +50,7 @@ public struct OnboardingView: View {
         }
     }
     
-    private func createTransition() -> AnyTransition {
-        let isMovingBackward = store.state.isMovingBackward
-        
-        return .asymmetric(
-            insertion: .move(edge: isMovingBackward ? .leading : .trailing),
-            removal: .move(edge: isMovingBackward ? .trailing : .leading)
-        )
-    }
+
     
     // MARK: - Header View
     private var headerView: some View {
@@ -96,7 +96,11 @@ public struct OnboardingView: View {
                         NWTextField.todoMultiLine(
                             text: Binding(
                                 get: { store.state.nickname },
-                                set: { store.send(.updateNickname($0)) }
+                                set: { newValue in
+                                    // 6글자 제한 적용
+                                    let limitedValue = String(newValue.prefix(6))
+                                    store.send(.updateNickname(limitedValue))
+                                }
                             ),
                             placeholder: "최대 6글자",
                             errorMessage: Binding(
@@ -234,8 +238,4 @@ public struct OnboardingView: View {
             return "다음"
         }
     }
-}
-
-#Preview {
-    OnboardingView()
 }

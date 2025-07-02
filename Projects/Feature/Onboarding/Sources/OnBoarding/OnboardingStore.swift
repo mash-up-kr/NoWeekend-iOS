@@ -8,173 +8,129 @@
 
 import SwiftUI
 import Combine
+import UseCase
+import Domain
+import Repository
 
 public class OnboardingStore: ObservableObject {
+    
+    // MARK: - Published State
     @Published public var state = OnboardingState()
     
-    public init() {
-        updateButtonEnabledState()
+    // MARK: - Dependencies
+    private let reducer = OnboardingReducer()
+    private let intentMapper = OnboardingIntentMapper()
+    
+    private let saveProfileUseCase: SaveProfileUseCaseInterface
+    private let saveLeaveUseCase: SaveLeaveUseCaseInterface
+    private let saveTagsUseCase: SaveTagsUseCaseInterface
+    private let validateNicknameUseCase: ValidateNicknameUseCaseInterface
+    private let validateBirthDateUseCase: ValidateBirthDateUseCaseInterface
+    private let validateRemainingDaysUseCase: ValidateRemainingDaysUseCaseInterface
+    
+    // MARK: - Initialization
+    public init(
+        saveProfileUseCase: SaveProfileUseCaseInterface,
+        saveLeaveUseCase: SaveLeaveUseCaseInterface,
+        saveTagsUseCase: SaveTagsUseCaseInterface,
+        validateNicknameUseCase: ValidateNicknameUseCaseInterface,
+        validateBirthDateUseCase: ValidateBirthDateUseCaseInterface,
+        validateRemainingDaysUseCase: ValidateRemainingDaysUseCaseInterface
+    ) {
+        self.saveProfileUseCase = saveProfileUseCase
+        self.saveLeaveUseCase = saveLeaveUseCase
+        self.saveTagsUseCase = saveTagsUseCase
+        self.validateNicknameUseCase = validateNicknameUseCase
+        self.validateBirthDateUseCase = validateBirthDateUseCase
+        self.validateRemainingDaysUseCase = validateRemainingDaysUseCase
+        
+        // 초기 상태 검증
+        send(.validateCurrentStep)
     }
     
+    // MARK: - Intent Processing
     public func send(_ intent: OnboardingIntent) {
-        switch intent {
-        case .goToNextStep:
-            handleGoToNextStep()
-            
-        case .goToPreviousStep:
-            handleGoToPreviousStep()
-            
-        case .updateNickname(let nickname):
-            handleUpdateNickname(nickname)
-            
-        case .updateBirthDate(let birthDate):
-            handleUpdateBirthDate(birthDate)
-            
-        case .updateRemainingDays(let days):
-            handleUpdateRemainingDays(days)
-            
-        case .updateHasHalfDay(let value):
-            state.hasHalfDay = value
-            state.remainingHours = value ? "4" : "0"
-            updateButtonEnabledState()
-            
-        case .toggleTag(let tag):
-            handleToggleTag(tag)
-            
-        case .validateCurrentStep:
-            updateButtonEnabledState()
-            
-        case .completeOnboarding:
-            handleCompleteOnboarding()
-        }
-    }
-    
-    // MARK: - Private Methods
-    
-    /// 다음 스텝으로 이동 - TabView가 자동으로 애니메이션 처리
-    private func handleGoToNextStep() {
-        guard state.isNextButtonEnabled else { return }
+        let actions = intentMapper.mapIntent(intent, currentState: state)
         
-        if state.isLastStep {
-            handleCompleteOnboarding()
-        } else {
-            state.currentStep += 1
-            updateButtonEnabledState()
-        }
-    }
-    
-    /// 이전 스텝으로 이동 - TabView가 자동으로 애니메이션 처리
-    private func handleGoToPreviousStep() {
-        guard state.currentStep > 0 else { return }
-        
-        state.currentStep -= 1
-        updateButtonEnabledState()
-    }
-    
-    private func handleUpdateNickname(_ nickname: String) {
-        let hasExceededLimit = nickname.count > 7
-        
-        let filteredNickname = String(nickname.prefix(7))
-        state.nickname = filteredNickname
-        
-        if hasExceededLimit {
-            state.nicknameError = "6글자까지 작성할 수 있어요."
-        } else {
-            validateNickname()
+        for action in actions {
+            processAction(action)
         }
         
-        updateButtonEnabledState()
+        performAdditionalValidation(for: intent)
     }
     
-    private func handleUpdateBirthDate(_ birthDate: String) {
-        // 8자리 숫자로 제한
-        let filteredBirthDate = String(birthDate.filter { $0.isNumber }.prefix(8))
-        state.birthDate = filteredBirthDate
-        validateBirthDate()
-        updateButtonEnabledState()
-    }
-    
-    private func handleUpdateRemainingDays(_ days: String) {
-        let filteredDays = String(days.filter { $0.isNumber }.prefix(2))
-        state.remainingDays = filteredDays
-        validateRemainingDays()
-        updateButtonEnabledState()
-    }
-    
-    private func handleToggleTag(_ tag: String) {
-        if state.selectedTags.contains(tag) {
-            state.selectedTags.remove(tag)
-        } else {
-            state.selectedTags.insert(tag)
-        }
-        updateButtonEnabledState()
-    }
-    
-    private func handleCompleteOnboarding() {
-        state.isLoading = true
+    // MARK: - Action Processing
+    private func processAction(_ action: OnboardingAction) {
+        state = reducer.reduce(state, action)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.state.isLoading = false
-            self?.state.isOnboardingCompleted = true
-        }
+        handleSideEffects(for: action)
     }
     
-    // MARK: - Validation Methods
-    
-    private func validateNickname() {
-        if state.nickname.isEmpty {
-            state.nicknameError = "닉네임을 입력해주세요"
-        } else if state.nickname.count > 6 {
-            state.nicknameError = "6글자까지 작성할 수 있어요."
-        } else if state.nickname.trimmingCharacters(in: .whitespaces).isEmpty {
-            state.nicknameError = "유효한 닉네임을 입력해주세요"
-        } else {
-            state.nicknameError = nil
-        }
-    }
-    
-    private func validateBirthDate() {
-        if state.birthDate.isEmpty {
-            state.birthDateError = "생년월일을 입력해주세요"
-        } else if state.birthDate.count != 8 {
-            state.birthDateError = "생년월일은 8자리로 입력해주세요"
-        } else if state.birthDate.filter({ !$0.isNumber }).count > 0 {
-            state.birthDateError = "유효한 생년월일을 입력해주세요"
-        } else {
-            state.birthDateError = nil
-        }
-    }
-    
-    private func validateRemainingDays() {
-        state.remainingDaysError = nil
-        if state.remainingDays.isEmpty {
-            return
-        }
-        guard let _ = Int(state.remainingDays) else {
-            state.remainingDaysError = "올바른 숫자를 입력해주세요"
-            return
-        }
-    }
-    
-    /// 현재 스텝의 유효성에 따라 다음 버튼 활성화 상태 업데이트
-    private func updateButtonEnabledState() {
-        switch state.currentStep {
-        case 0:
-            state.isNextButtonEnabled = !state.nickname.isEmpty &&
-                                       !state.birthDate.isEmpty &&
-                                       state.nicknameError == nil &&
-                                       state.birthDateError == nil
+    // MARK: - Side Effects
+    private func handleSideEffects(for action: OnboardingAction) {
+        switch action {
+        case .saveProfileStarted:
+            Task { @MainActor in
+                do {
+                    try await saveProfileUseCase.execute(
+                        nickname: state.nickname,
+                        birthDate: state.birthDate
+                    )
+                    processAction(.saveProfileSucceeded)
+                } catch {
+                    processAction(.saveProfileFailed(error))
+                }
+            }
             
-        case 1:
-            let hasRemainingDays = !state.remainingDays.isEmpty
-            let hasNoError = state.hasVacationError == false
-            state.isNextButtonEnabled = hasRemainingDays && hasNoError
+        case .saveLeaveStarted:
+            Task { @MainActor in
+                do {
+                    let days = Int(state.remainingDays) ?? 0
+                    let hours = Int(state.remainingHours) ?? 0
+                    
+                    try await saveLeaveUseCase.execute(days: days, hours: hours)
+                    processAction(.saveLeaveSucceeded)
+                } catch {
+                    processAction(.saveLeaveSuccaFailed(error))
+                }
+            }
             
-        case 2:
-            state.isNextButtonEnabled = state.selectedTags.count >= 3
+        case .saveTagsStarted:
+            Task { @MainActor in
+                do {
+                    let tags = Array(state.selectedTags)
+                    try await saveTagsUseCase.execute(tags: tags)
+                    processAction(.saveTagsSucceeded)
+                } catch {
+                    processAction(.saveTagsFailed(error))
+                }
+            }
             
         default:
-            state.isNextButtonEnabled = false
+            break
+        }
+    }
+    
+    // MARK: - Additional Validation
+    private func performAdditionalValidation(for intent: OnboardingIntent) {
+        switch intent {
+        case .updateNickname(_):
+            let result = validateNicknameUseCase.execute(state.nickname)
+            processAction(.nicknameValidated(result))
+            
+        case .updateBirthDate(_):
+            let result = validateBirthDateUseCase.execute(state.birthDate)
+            processAction(.birthDateValidated(result))
+            
+        case .updateRemainingDays(_):
+            let result = validateRemainingDaysUseCase.execute(state.remainingDays)
+            processAction(.remainingDaysValidated(result))
+            
+        case .updateHasHalfDay(_), .toggleTag(_):
+            processAction(.stepValidated(state.isCurrentStepValid))
+            
+        default:
+            break
         }
     }
 }

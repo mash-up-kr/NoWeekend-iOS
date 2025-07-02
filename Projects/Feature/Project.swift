@@ -52,6 +52,8 @@ let project = Project.make(
             sources: ["Onboarding/Sources/**"],
             dependencies: [
                 .interface(.domain),
+                .core(.useCase),
+                .core(.repository),
                 .shared(.designSystem)
             ]
         ),

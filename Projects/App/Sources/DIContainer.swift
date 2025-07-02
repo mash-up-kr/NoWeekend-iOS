@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Login
 import LoginInterface
+import Onboarding
 import Domain
 import UseCase
 import ServiceInterface
@@ -24,6 +25,7 @@ public final class DIContainer {
     
     private init() {}
     
+    // MARK: - Login Store
     public func makeLoginStore() -> LoginStore {
         let networkService = NetworkService(
             baseURL: "https://noweekend.store",
@@ -55,6 +57,35 @@ public final class DIContainer {
             loginWithGoogleUseCase: googleLoginUseCase,
             loginWithAppleUseCase: appleLoginUseCase,
             authUseCase: authUseCase
+        )
+    }
+    
+    // MARK: - Onboarding Store
+    public func makeOnboardingStore() -> OnboardingStore {
+        let networkService = NetworkService(
+            baseURL: "https://noweekend.store",
+            headers: ["Content-Type": "application/json"]
+        )
+        
+        // Repository 생성
+        let onboardingDataSource = OnboardingNetworkDataSource(networkService: networkService)
+        let onboardingRepository = OnboardingRepository(dataSource: onboardingDataSource)
+        
+        // UseCase들 생성
+        let saveProfileUseCase = SaveProfileUseCase(repository: onboardingRepository)
+        let saveLeaveUseCase = SaveLeaveUseCase(repository: onboardingRepository)
+        let saveTagsUseCase = SaveTagsUseCase(repository: onboardingRepository)
+        let validateNicknameUseCase = ValidateNicknameUseCase()
+        let validateBirthDateUseCase = ValidateBirthDateUseCase()
+        let validateRemainingDaysUseCase = ValidateRemainingDaysUseCase()
+        
+        return OnboardingStore(
+            saveProfileUseCase: saveProfileUseCase,
+            saveLeaveUseCase: saveLeaveUseCase,
+            saveTagsUseCase: saveTagsUseCase,
+            validateNicknameUseCase: validateNicknameUseCase,
+            validateBirthDateUseCase: validateBirthDateUseCase,
+            validateRemainingDaysUseCase: validateRemainingDaysUseCase
         )
     }
 }

@@ -8,11 +8,8 @@ struct AppMain: App {
         @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
         
         WindowGroup {
-            OnboardingView()
+            let onboardingStore = DIContainer.shared.makeOnboardingStore()
+            OnboardingView(store: onboardingStore)
         }
     }
-}
-
-#Preview {
-    OnboardingView()
 }

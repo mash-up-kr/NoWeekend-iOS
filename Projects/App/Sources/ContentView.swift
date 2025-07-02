@@ -8,6 +8,9 @@ struct ContentView: View {
     @State private var showingOnboarding = false
     @State private var showingTabBar = false
     
+    // 온보딩 스토어를 lazy로 생성 (필요할 때만 생성)
+    @State private var onboardingStore: OnboardingStore?
+    
     var body: some View {
         content
             .onReceive(loginStore.effect) { effect in
@@ -27,11 +30,7 @@ struct ContentView: View {
         if showingTabBar {
             TabBarView()
         } else if showingOnboarding {
-            OnboardingView()
-//                .onReceive(NotificationCenter.default.publisher(for: .onboardingCompleted)) { _ in
-//                    showingTabBar = true
-//                    showingOnboarding = false
-//                }
+            onboardingView
         } else {
             LoginView(store: loginStore)
                 .alert("에러", isPresented: .constant(!loginStore.state.errorMessage.isEmpty)) {
@@ -48,5 +47,25 @@ struct ContentView: View {
                     }
                 )
         }
+    }
+    
+    @ViewBuilder
+    private var onboardingView: some View {
+        let store = getCurrentOnboardingStore()
+        OnboardingView(store: store)
+            .onChange(of: store.state.isOnboardingCompleted) { _, isCompleted in
+                if isCompleted {
+                    showingTabBar = true
+                    showingOnboarding = false
+                    onboardingStore = nil // 메모리 정리
+                }
+            }
+    }
+    
+    private func getCurrentOnboardingStore() -> OnboardingStore {
+        if onboardingStore == nil {
+            onboardingStore = DIContainer.shared.makeOnboardingStore()
+        }
+        return onboardingStore!
     }
 }

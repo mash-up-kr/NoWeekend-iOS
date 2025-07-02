@@ -10,19 +10,19 @@ import Foundation
 import Domain
 
 public struct AppleLoginResponseDTO: Decodable {
-    let email: String
-    let exists: Bool
-    let accessToken: String
+    public let email: String
+    public let exists: Bool
+    public let accessToken: String
 }
 
 public struct ApiResponseAppleLoginDTO: Decodable {
-    let result: String
-    let data: AppleLoginResponseDTO
-    let error: ErrorMessageDTO?
+    public let result: String
+    public let data: AppleLoginResponseDTO
+    public let error: ErrorMessageDTO?
 }
 
 extension AppleLoginResponseDTO {
-    func toDomain() -> LoginUser {
+    public func toDomain() -> LoginUser {
         return LoginUser(
             email: self.email,
             accessToken: self.accessToken,
