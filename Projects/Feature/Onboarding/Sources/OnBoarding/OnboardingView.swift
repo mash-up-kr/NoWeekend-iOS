@@ -32,6 +32,7 @@ public struct OnboardingView: View {
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: store.state.currentStep)
+            .dismissKeyboardOnTap()
             .highPriorityGesture(
                 DragGesture()
                     .onChanged { _ in }

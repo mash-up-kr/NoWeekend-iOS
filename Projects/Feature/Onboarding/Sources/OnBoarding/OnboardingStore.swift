@@ -45,7 +45,9 @@ public class OnboardingStore: ObservableObject {
         self.validateRemainingDaysUseCase = validateRemainingDaysUseCase
         
         // 초기 상태 검증
-        send(.validateCurrentStep)
+        DispatchQueue.main.async {
+            self.send(.validateCurrentStep)
+        }
     }
     
     // MARK: - Intent Processing
@@ -61,7 +63,9 @@ public class OnboardingStore: ObservableObject {
     
     // MARK: - Action Processing
     private func processAction(_ action: OnboardingAction) {
-        state = reducer.reduce(state, action)
+        DispatchQueue.main.async {
+            self.state = self.reducer.reduce(self.state, action)
+        }
         
         handleSideEffects(for: action)
     }
