@@ -4,15 +4,14 @@ import ProjectDescriptionHelpers
 let project = Project.make(
     name: "Core",
     targets: [
-        // MARK: - Network Infrastructure
+        // MARK: - Core (Network + DI + Coordinator)
         .framework(
-            name: "Network",
+            name: "Core",
             bundleId: BundleID.Core.network,
-            sources: ["Network/Sources/**"],
+            sources: ["Sources/**"],
             dependencies: [
                 .external(.alamofire),
-                .project(target: "Entity", path: "../Domain"),
-                .project(target: "ServiceInterface", path: "../Domain")
+                .external(.swinject)
             ]
         )
     ]
