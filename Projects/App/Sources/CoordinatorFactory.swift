@@ -16,18 +16,14 @@ struct CoordinatorFactory {
     init() {}
     
     var homeCoordinatorRootView: some View {
-        let coordinator = HomeCoordinator()
-        return HomeCoordinatorView()
-            .environment(coordinator)
+        HomeCoordinatorView()
     }
     
     var profileCoordinatorRootView: some View {
-        let coordinator = ProfileCoordinator()
-        return ProfileCoordinatorView()
-            .environment(coordinator)
+        ProfileCoordinatorView()
     }
     
     var calendarCoordinatorRootView: some View {
-        CalendarView()
+        CalendarCoordinatorView()
     }
 }

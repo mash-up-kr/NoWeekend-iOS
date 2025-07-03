@@ -23,7 +23,7 @@ public struct HomeAssembly: Assembly {
             return EventRepositoryImpl()
         }.inObjectScope(.container)
         
-        // UseCase 등록
+        // UseCase 등록 (Feature Layer의 UseCase 구현체)
         container.register(EventUseCaseProtocol.self) { resolver in
             print("📋 EventUseCase 생성")
             let repository = resolver.resolve(EventRepositoryProtocol.self)!
