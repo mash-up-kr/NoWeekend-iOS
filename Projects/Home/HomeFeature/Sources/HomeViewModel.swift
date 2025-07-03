@@ -17,10 +17,11 @@ public final class HomeViewModel: ObservableObject {
     @Published public var errorMessage: String = ""
     
     private let eventUseCase: EventUseCaseProtocol
+    private var cancellables = Set<AnyCancellable>()
     
-    public init(eventUseCase: EventUseCaseProtocol) {
-        self.eventUseCase = eventUseCase
-        print("🏠 HomeViewModel 생성 - 생성자 주입 방식")
+    public init() {
+        self.eventUseCase = DIContainer.shared.resolve(EventUseCaseProtocol.self)
+        print("🏠 HomeViewModel 생성 - DI Container 방식")
     }
     
     var todayEvents: [Event] {

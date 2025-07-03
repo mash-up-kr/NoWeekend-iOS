@@ -8,16 +8,16 @@
 
 import SwiftUI
 import Core
+import Combine
 
-@Observable
-public final class HomeCoordinator: Coordinatorable {
+public final class HomeCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = HomeRouter.Screen
     public typealias SheetScreen = HomeRouter.Sheet
     public typealias FullScreen = HomeRouter.FullScreen
     
-    public var path: NavigationPath = NavigationPath()
-    public var sheet: SheetScreen?
-    public var fullScreenCover: FullScreen?
+    @Published public var path: NavigationPath = NavigationPath()
+    @Published public var sheet: SheetScreen?
+    @Published public var fullScreenCover: FullScreen?
     
     public init() {
         print("🧭 HomeCoordinator 생성")
