@@ -51,15 +51,3 @@ public final class EventRepositoryImpl: EventRepositoryProtocol {
         print("✅ 이벤트 삭제 완료")
     }
 }
-
-// MARK: - HomeData Module Configuration
-public enum HomeDataModule {
-    public static func configure() {
-        print("🏠 HomeData 모듈 설정 시작")
-        
-        let assembly = HomeAssembly()
-        DIContainer.shared.registerAssembly(assembly: [assembly])
-        
-        print("✅ HomeData 모듈 설정 완료")
-    }
-}

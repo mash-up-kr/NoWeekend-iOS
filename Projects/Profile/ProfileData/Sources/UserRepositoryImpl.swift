@@ -71,15 +71,3 @@ enum UserError: Error, LocalizedError {
         }
     }
 }
-
-// MARK: - ProfileData Module Configuration
-public enum ProfileDataModule {
-    public static func configure() {
-        print("👤 ProfileData 모듈 설정 시작")
-        
-        let assembly = ProfileAssembly()
-        DIContainer.shared.registerAssembly(assembly: [assembly])
-        
-        print("✅ ProfileData 모듈 설정 완료")
-    }
-}

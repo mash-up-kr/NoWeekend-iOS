@@ -3,7 +3,6 @@
 //  ProfileFeature
 //
 //  Created by 이지훈 on 7/3/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +11,7 @@ import Core
 import Combine
 
 public final class ProfileViewModel: ObservableObject {
+    @Dependency private var userUseCase: UserUseCaseProtocol
     @Published public var user: User?
     @Published public var isLoading: Bool = false
     @Published public var currentTheme: Theme = .system
@@ -19,12 +19,10 @@ public final class ProfileViewModel: ObservableObject {
     @Published public var language: String = "한국어"
     @Published public var errorMessage: String = ""
     
-    private let userUseCase: UserUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     
     public init() {
-        self.userUseCase = DIContainer.shared.resolve(UserUseCaseProtocol.self)
-        print("👤 ProfileViewModel 생성 - DI Container 방식")
+        print("👤 ProfileViewModel 생성 - @Dependency 방식")
     }
     
     @MainActor
@@ -45,5 +43,4 @@ public final class ProfileViewModel: ObservableObject {
         }
         isLoading = false
     }
-    
 }

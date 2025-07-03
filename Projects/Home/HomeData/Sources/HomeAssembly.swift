@@ -17,18 +17,11 @@ public struct HomeAssembly: Assembly {
     public func assemble(container: Container) {
         print("🏠 HomeAssembly 등록 시작")
         
-        // Repository 등록
+        // Repository만 등록 (UseCase는 Feature에서 등록)
         container.register(EventRepositoryProtocol.self) { _ in
             print("📦 EventRepository 생성")
             return EventRepositoryImpl()
         }.inObjectScope(.container)
-        
-        // UseCase 등록 (Feature Layer의 UseCase 구현체)
-        container.register(EventUseCaseProtocol.self) { resolver in
-            print("📋 EventUseCase 생성")
-            let repository = resolver.resolve(EventRepositoryProtocol.self)!
-            return EventUseCase(eventRepository: repository)
-        }.inObjectScope(.graph)
         
         print("✅ HomeAssembly 등록 완료")
     }

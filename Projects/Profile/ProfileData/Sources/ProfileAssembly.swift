@@ -17,18 +17,11 @@ public struct ProfileAssembly: Assembly {
     public func assemble(container: Container) {
         print("👤 ProfileAssembly 등록 시작")
         
-        // Repository 등록
+        // Repository만 등록 (UseCase는 Feature에서 등록)
         container.register(UserRepositoryProtocol.self) { _ in
             print("📦 UserRepository 생성")
             return UserRepositoryImpl()
         }.inObjectScope(.container)
-        
-        // UseCase 등록
-        container.register(UserUseCaseProtocol.self) { resolver in
-            print("📋 UserUseCase 생성")
-            let repository = resolver.resolve(UserRepositoryProtocol.self)!
-            return UserUseCase(userRepository: repository)
-        }.inObjectScope(.graph)
         
         print("✅ ProfileAssembly 등록 완료")
     }

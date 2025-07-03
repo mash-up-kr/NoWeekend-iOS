@@ -17,18 +17,11 @@ public struct OnboardingAssembly: Assembly {
     public func assemble(container: Container) {
         print("🚪 OnboardingAssembly 등록 시작")
         
-        // Repository 등록
+        // Repository만 등록 (UseCase는 Feature에서 등록)
         container.register(OnboardingRepositoryProtocol.self) { _ in
             print("📦 OnboardingRepository 생성")
             return OnboardingRepositoryImpl()
         }.inObjectScope(.container)
-        
-        // UseCase 등록
-        container.register(OnboardingUseCaseProtocol.self) { resolver in
-            print("📋 OnboardingUseCase 생성")
-            let repository = resolver.resolve(OnboardingRepositoryProtocol.self)!
-            return OnboardingUseCase(onboardingRepository: repository)
-        }.inObjectScope(.graph)
         
         print("✅ OnboardingAssembly 등록 완료")
     }

@@ -76,15 +76,3 @@ public final class OnboardingRepositoryImpl: OnboardingRepositoryProtocol {
         return isCompleted
     }
 }
-
-// MARK: - OnboardingData Module Configuration
-public enum OnboardingDataModule {
-    public static func configure() {
-        print("🚪 OnboardingData 모듈 설정 시작")
-        
-        let assembly = OnboardingAssembly()
-        DIContainer.shared.registerAssembly(assembly: [assembly])
-        
-        print("✅ OnboardingData 모듈 설정 완료")
-    }
-}

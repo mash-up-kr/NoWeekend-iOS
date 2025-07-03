@@ -3,7 +3,6 @@
 //  HomeFeature
 //
 //  Created by 이지훈 on 7/3/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
 import Foundation
@@ -12,16 +11,15 @@ import Core
 import Combine
 
 public final class HomeViewModel: ObservableObject {
+    @Dependency private var eventUseCase: EventUseCaseProtocol
     @Published public var events: [Event] = []
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String = ""
     
-    private let eventUseCase: EventUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     
     public init() {
-        self.eventUseCase = DIContainer.shared.resolve(EventUseCaseProtocol.self)
-        print("🏠 HomeViewModel 생성 - DI Container 방식")
+        print("🏠 HomeViewModel 생성 - @Dependency 방식")
     }
     
     var todayEvents: [Event] {
