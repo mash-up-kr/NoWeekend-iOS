@@ -20,10 +20,11 @@ public final class ProfileViewModel: ObservableObject {
     @Published public var errorMessage: String = ""
     
     private let userUseCase: UserUseCaseProtocol
+    private var cancellables = Set<AnyCancellable>()
     
-    public init(userUseCase: UserUseCaseProtocol) {
-        self.userUseCase = userUseCase
-        print("👤 ProfileViewModel 생성 - 생성자 주입 방식")
+    public init() {
+        self.userUseCase = DIContainer.shared.resolve(UserUseCaseProtocol.self)
+        print("👤 ProfileViewModel 생성 - DI Container 방식")
     }
     
     @MainActor

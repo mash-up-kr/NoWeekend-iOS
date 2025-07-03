@@ -9,21 +9,19 @@
 import SwiftUI
 
 public struct ProfileCoordinatorView: View {
-    @Environment(ProfileCoordinator.self) var coordinator
+    @StateObject private var coordinator = ProfileCoordinator()
     
     public init() {
         print("👤 ProfileCoordinatorView 초기화")
     }
     
     public var body: some View {
-        @Bindable var bindableCoordinator = coordinator
-        
-        NavigationStack(path: $bindableCoordinator.path) {
+        NavigationStack(path: $coordinator.path) {
             coordinator.view(.main)
                 .navigationDestination(for: ProfileRouter.Screen.self) { screen in
                     coordinator.view(screen)
                 }
-                .sheet(item: $bindableCoordinator.sheet) { sheet in
+                .sheet(item: $coordinator.sheet) { sheet in
                     NavigationView {
                         coordinator.presentView(sheet)
                             .navigationBarTitleDisplayMode(.inline)
@@ -36,10 +34,9 @@ public struct ProfileCoordinatorView: View {
                             }
                     }
                 }
-                .fullScreenCover(item: $bindableCoordinator.fullScreenCover) { cover in
+                .fullScreenCover(item: $coordinator.fullScreenCover) { cover in
                     coordinator.fullCoverView(cover)
                 }
         }
-        .environment(coordinator)
     }
 }

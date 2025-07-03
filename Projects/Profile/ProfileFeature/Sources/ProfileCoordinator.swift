@@ -8,16 +8,16 @@
 
 import SwiftUI
 import Core
+import Combine
 
-@Observable
-public final class ProfileCoordinator: Coordinatorable {
+public final class ProfileCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = ProfileRouter.Screen
     public typealias SheetScreen = ProfileRouter.Sheet
     public typealias FullScreen = ProfileRouter.FullScreen
     
-    public var path: NavigationPath = NavigationPath()
-    public var sheet: SheetScreen?
-    public var fullScreenCover: FullScreen?
+    @Published public var path: NavigationPath = NavigationPath()
+    @Published public var sheet: SheetScreen?
+    @Published public var fullScreenCover: FullScreen?
     
     public init() {
         print("🧭 ProfileCoordinator 생성")
