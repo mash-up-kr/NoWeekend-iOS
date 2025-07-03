@@ -45,29 +45,4 @@ public final class ProfileViewModel: ObservableObject {
         isLoading = false
     }
     
-    @MainActor
-    public func updateTheme(_ theme: Theme) async {
-        currentTheme = theme
-        await updatePreferences()
-    }
-    
-    @MainActor
-    public func toggleNotifications() async {
-        isNotificationsEnabled.toggle()
-        await updatePreferences()
-    }
-    
-    private func updatePreferences() async {
-        let preferences = UserPreferences(
-            theme: currentTheme,
-            isNotificationsEnabled: isNotificationsEnabled,
-            language: language == "한국어" ? "ko" : "en"
-        )
-        
-        do {
-            try await userUseCase.updateUserPreferences(preferences)
-        } catch {
-            print("Error updating preferences: \(error)")
-        }
-    }
 }

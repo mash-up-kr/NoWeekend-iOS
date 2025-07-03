@@ -1,19 +1,13 @@
 //
-//  EventUseCaseProtocol.swift
-//  HomeDomain
+//  EventUseCase.swift
+//  HomeFeature
 //
 //  Created by 이지훈 on 7/3/25.
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
 import Foundation
-
-public protocol EventUseCaseProtocol {
-    func getEvents() async throws -> [Event]
-    func createEvent(title: String, date: Date, description: String?) async throws
-    func deleteEvent(id: String) async throws
-    func getUpcomingEvents() async throws -> [Event]
-}
+import HomeDomain
 
 public class EventUseCase: EventUseCaseProtocol {
     private let eventRepository: EventRepositoryProtocol
@@ -24,6 +18,12 @@ public class EventUseCase: EventUseCaseProtocol {
     
     public func getEvents() async throws -> [Event] {
         return try await eventRepository.getEvents()
+    }
+    
+    public func getUpcomingEvents() async throws -> [Event] {
+        let allEvents = try await eventRepository.getEvents()
+        let now = Date()
+        return allEvents.filter { $0.date > now }
     }
     
     public func createEvent(title: String, date: Date, description: String?) async throws {
@@ -39,10 +39,5 @@ public class EventUseCase: EventUseCaseProtocol {
     public func deleteEvent(id: String) async throws {
         try await eventRepository.deleteEvent(id: id)
     }
-    
-    public func getUpcomingEvents() async throws -> [Event] {
-        let allEvents = try await eventRepository.getEvents()
-        let now = Date()
-        return allEvents.filter { $0.date > now }.sorted { $0.date < $1.date }
-    }
 }
+
