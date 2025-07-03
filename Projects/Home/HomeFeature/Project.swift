@@ -13,7 +13,6 @@ let project = Project.make(
                 .project(target: "Core", path: .relativeToRoot("Projects/Core")),
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
                 .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
-                // HomeData 의존성 완전 제거!
             ]
         )
     ]
