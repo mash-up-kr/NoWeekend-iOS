@@ -25,9 +25,11 @@ let project = Project(
                 .project(target: "ProfileFeature", path: .relativeToRoot("Projects/Profile/ProfileFeature")),
                 .project(target: "CalendarFeature", path: .relativeToRoot("Projects/Calendar/CalendarFeature")),
                 
+                // Data 모듈들 대신 DataBridge만 의존
+                .project(target: "DataBridge", path: .relativeToRoot("Projects/DataBridge")),
+                
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
                 .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
-                
             ]
         )
     ]
