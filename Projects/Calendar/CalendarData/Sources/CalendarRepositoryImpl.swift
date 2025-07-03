@@ -67,15 +67,3 @@ public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
         print("✅ 캘린더 이벤트 삭제 완료")
     }
 }
-
-// MARK: - CalendarData Module Configuration
-public enum CalendarDataModule {
-    public static func configure() {
-        print("📅 CalendarData 모듈 설정 시작")
-        
-        let assembly = CalendarAssembly()
-        DIContainer.shared.registerAssembly(assembly: [assembly])
-        
-        print("✅ CalendarData 모듈 설정 완료")
-    }
-}
