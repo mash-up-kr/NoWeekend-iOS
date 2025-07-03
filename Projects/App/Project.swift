@@ -1,15 +1,17 @@
 import ProjectDescription
 
 let project = Project(
-    name: "App",
+    name: "NoWeekend",
     targets: [
         .target(
-            name: "DiExamTuist",
+            name: "NoWeekend",
             destinations: .iOS,
             product: .app,
-            bundleId: "io.tuist.DiExamTuist",
+            bundleId: "com.noweekend.app",
             infoPlist: .extendingDefault(
                 with: [
+                    "CFBundleDisplayName": "NoWeekend",
+                    "CFBundleName": "NoWeekend",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
@@ -17,14 +19,15 @@ let project = Project(
                 ]
             ),
             sources: ["Sources/**"],
+            resources: ["Resources/**"],
             dependencies: [
                 .project(target: "HomeFeature", path: .relativeToRoot("Projects/Home/HomeFeature")),
                 .project(target: "ProfileFeature", path: .relativeToRoot("Projects/Profile/ProfileFeature")),
                 .project(target: "CalendarFeature", path: .relativeToRoot("Projects/Calendar/CalendarFeature")),
-                .project(target: "OnboardingFeature", path: .relativeToRoot("Projects/Onboarding/OnboardingFeature")),
-            
+                
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
                 .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
+                
             ]
         )
     ]
