@@ -11,59 +11,35 @@ import CalendarDomain
 import Core
 
 public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
-    private let realCalendarDatabase: [CalendarEvent] = [
+    private let mockEvents: [CalendarEvent] = [
         CalendarEvent(
-            id: "cal_001", 
-            title: "팀 회의", 
+            id: "1", 
+            title: "샘플 캘린더 이벤트", 
             startDate: Date(), 
-            endDate: Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date(),
-            description: "주간 팀 회의",
-            category: .work
-        ),
-        CalendarEvent(
-            id: "cal_002", 
-            title: "운동", 
-            startDate: Calendar.current.date(byAdding: .hour, value: 2, to: Date()) ?? Date(),
-            endDate: Calendar.current.date(byAdding: .hour, value: 3, to: Date()) ?? Date(),
-            description: "헬스장 운동",
-            category: .health
+            endDate: Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
         )
     ]
     
-    public init() {
-        print("📅 CalendarRepositoryImpl 생성")
-    }
+    public init() {}
     
     public func getCalendarEvents() async throws -> [CalendarEvent] {
-        print("📅 캘린더 이벤트 조회 API 호출")
-        
-        // 네트워크 지연 시뮬레이션
-        try await Task.sleep(nanoseconds: 500_000_000)
-        
-        print("✅ 캘린더 이벤트 조회 성공: \(realCalendarDatabase.count)개")
-        return realCalendarDatabase
+        try await Task.sleep(nanoseconds: 100_000_000)
+        return mockEvents
     }
     
     public func getEventsForDate(_ date: Date) async throws -> [CalendarEvent] {
-        let events = try await getCalendarEvents()
-        return events.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
+        return mockEvents.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
     }
     
     public func createCalendarEvent(_ event: CalendarEvent) async throws {
-        print("💾 캘린더 이벤트 생성: \(event.title)")
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        print("✅ 캘린더 이벤트 생성 완료")
+        try await Task.sleep(nanoseconds: 100_000_000)
     }
     
     public func updateCalendarEvent(_ event: CalendarEvent) async throws {
-        print("📝 캘린더 이벤트 업데이트: \(event.title)")
-        try await Task.sleep(nanoseconds: 500_000_000)
-        print("✅ 캘린더 이벤트 업데이트 완료")
+        try await Task.sleep(nanoseconds: 100_000_000)
     }
     
     public func deleteCalendarEvent(id: String) async throws {
-        print("🗑️ 캘린더 이벤트 삭제: \(id)")
-        try await Task.sleep(nanoseconds: 500_000_000)
-        print("✅ 캘린더 이벤트 삭제 완료")
+        try await Task.sleep(nanoseconds: 100_000_000)
     }
 }

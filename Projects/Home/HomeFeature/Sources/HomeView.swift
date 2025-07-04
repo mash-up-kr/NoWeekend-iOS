@@ -8,62 +8,44 @@
 
 import SwiftUI
 import HomeDomain
-import DesignSystem
-import Utils
+import Core
 
 public struct HomeView: View {
-    @StateObject private var viewModel = MockHomeViewModel()
+    @Dependency private var eventUseCase: EventUseCaseProtocol
+    @State private var events: [Event] = []
+    @State private var isLoading = false
     
-    public init() {
-        print("🏠 HomeView 초기화 (Mock 데이터 사용)")
-    }
+    public init() {}
     
     public var body: some View {
-        VStack {
+        VStack(spacing: 20) {
             Image(systemName: "house.fill")
-                .font(.system(size: 100))
+                .font(.system(size: 60))
                 .foregroundColor(.green)
             
-            Text("나희")
+            Text("홈")
                 .font(.title)
-                .padding()
             
-            if viewModel.isLoading {
+            if isLoading {
                 ProgressView()
-                    .padding()
             } else {
-                Text("이벤트 수: \(viewModel.events.count)")
-                    .font(.body)
+                Text("이벤트: \(events.count)개")
                     .foregroundColor(.gray)
-                    .padding()
             }
         }
         .navigationBarHidden(true)
         .task {
-            await viewModel.loadEvents()
+            await loadEvents()
         }
     }
-}
-
-// 임시 Mock ViewModel
-class MockHomeViewModel: ObservableObject {
-    @Published var events: [Event] = []
-    @Published var isLoading: Bool = false
     
-    @MainActor
-    func loadEvents() async {
+    private func loadEvents() async {
         isLoading = true
-        
-        // 임시 Mock 데이터
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        events = [
-            Event(id: "1", title: "Mock 이벤트 1", date: Date()),
-            Event(id: "2", title: "Mock 이벤트 2", date: Date()),
-            Event(id: "3", title: "Mock 이벤트 3", date: Date())
-        ]
-        
+        do {
+            events = try await eventUseCase.getEvents()
+        } catch {
+            print("이벤트 로드 실패: \(error)")
+        }
         isLoading = false
-        print("🏠 Mock 이벤트 로드 완료: \(events.count)개")
     }
 }

@@ -7,113 +7,64 @@
 //
 
 import SwiftUI
-import HomeDomain
-import DesignSystem
-import Utils
+import CalendarDomain
+import Core
 
 public struct CalendarView: View {
-    @State private var viewModel: CalendarViewModel
+    @Dependency private var calendarUseCase: CalendarUseCaseProtocol
+    @State private var events: [CalendarEvent] = []
+    @State private var isLoading = false
     @EnvironmentObject var coordinator: CalendarCoordinator
     
-    public init(eventUseCase: EventUseCaseProtocol? = nil) {
-        self._viewModel = State(wrappedValue: CalendarViewModel(eventUseCase: eventUseCase))
-    }
+    public init() {}
     
     public var body: some View {
         VStack(spacing: 20) {
-            // 기존 콘텐츠
-            LottieView(type: JSONFiles.Fire.self)
-                .frame(width: 100, height: 100)
+            Image(systemName: "calendar")
+                .font(.system(size: 60))
+                .foregroundColor(.orange)
             
-            Text("📅 캘린더")
-                .font(.heading2)
-                .foregroundColor(DS.Colors.Text.gray900)
+            Text("캘린더")
+                .font(.title)
             
-            if viewModel.isLoading {
+            if isLoading {
                 ProgressView()
-                    .padding()
             } else {
-                Text("이벤트 수: \(viewModel.events.count)")
-                    .font(.body1)
-                    .foregroundColor(DS.Colors.Text.gray700)
-                    .padding()
+                Text("이벤트: \(events.count)개")
+                    .foregroundColor(.gray)
             }
             
-            // 네비게이션 버튼들
-            VStack(spacing: 16) {
-                // Push 네비게이션 (한 뎁스 더 들어가기)
-                Button("이벤트 상세 보기") {
-                    coordinator.push(.eventDetail("sample-event-123"))
+            // 네비게이션 테스트 버튼들 (간소화)
+            VStack(spacing: 12) {
+                Button("이벤트 상세") {
+                    coordinator.push(.eventDetail("sample-123"))
                 }
                 .padding()
-                .frame(maxWidth: .infinity)
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(8)
                 
-                // Modal (Sheet) 띄우기
-                HStack(spacing: 12) {
-                    Button("새 이벤트") {
-                        coordinator.sheet(.createEvent)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    
-                    Button("필터") {
-                        coordinator.sheet(.eventFilter)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.orange)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                }
-                
-                // FullScreen Cover
-                Button("이벤트 가져오기") {
-                    coordinator.fullCover(.eventImport)
+                Button("새 이벤트") {
+                    coordinator.sheet(.createEvent)
                 }
                 .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.purple)
+                .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(8)
             }
-            .padding(.horizontal)
         }
         .navigationBarHidden(true)
         .task {
-            await viewModel.loadEvents()
+            await loadEvents()
         }
     }
-}
-
-@Observable
-class CalendarViewModel {
-    var events: [Event] = []
-    var isLoading: Bool = false
     
-    private let eventUseCase: EventUseCaseProtocol?
-    
-    init(eventUseCase: EventUseCaseProtocol?) {
-        self.eventUseCase = eventUseCase
-    }
-    
-    @MainActor
-    func loadEvents() async {
+    private func loadEvents() async {
         isLoading = true
         do {
-            if let eventUseCase = eventUseCase {
-                events = try await eventUseCase.getEvents()
-            } else {
-                // 임시 데이터
-                events = []
-            }
+            events = try await calendarUseCase.getCalendarEvents()
         } catch {
-            print("Error loading calendar events: \(error)")
+            print("캘린더 이벤트 로드 실패: \(error)")
         }
         isLoading = false
     }

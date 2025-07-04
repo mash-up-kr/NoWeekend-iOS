@@ -8,63 +8,46 @@
 
 import SwiftUI
 import ProfileDomain
-import DesignSystem
-import Utils
+import Core
 
 public struct ProfileView: View {
-    @StateObject private var viewModel = MockProfileViewModel()
+    @Dependency private var userUseCase: UserUseCaseProtocol
+    @State private var user: User?
+    @State private var isLoading = false
     
-    public init() {
-        print("👤 ProfileView 초기화 (Mock 데이터 사용)")
-    }
+    public init() {}
     
     public var body: some View {
-        VStack {
+        VStack(spacing: 20) {
             Image(systemName: "person.circle.fill")
-                .font(.system(size: 100))
+                .font(.system(size: 60))
                 .foregroundColor(.blue)
             
-            if let user = viewModel.user {
+            if let user = user {
                 Text(user.name)
                     .font(.title)
-                
                 Text(user.email)
-                    .font(.body)
                     .foregroundColor(.gray)
-                    .padding(.top, 4)
-            } else {
-                Text("시종")
-                    .font(.title)
-                    .padding()
-            }
-            
-            if viewModel.isLoading {
+            } else if isLoading {
                 ProgressView()
-                    .padding()
+            } else {
+                Text("프로필")
+                    .font(.title)
             }
         }
         .navigationBarHidden(true)
         .task {
-            await viewModel.loadProfile()
+            await loadProfile()
         }
     }
-}
-
-// 임시 Mock ViewModel
-class MockProfileViewModel: ObservableObject {
-    @Published var user: User?
-    @Published var isLoading: Bool = false
     
-    @MainActor
-    func loadProfile() async {
+    private func loadProfile() async {
         isLoading = true
-        
-        // 임시 Mock 데이터
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        user = User(id: "mock", name: "나희", email: "nahee@noweekend.com")
-        
+        do {
+            user = try await userUseCase.getCurrentUser()
+        } catch {
+            print("프로필 로드 실패: \(error)")
+        }
         isLoading = false
-        print("👤 Mock 프로필 로드 완료")
     }
 }
