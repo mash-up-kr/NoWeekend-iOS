@@ -11,6 +11,7 @@ import ProfileFeature
 import CalendarFeature
 import OnboardingFeature
 
+@MainActor
 struct ContentView: View {
     @State private var selectedTab: Tab = .home
     @State private var appState = AppState()
