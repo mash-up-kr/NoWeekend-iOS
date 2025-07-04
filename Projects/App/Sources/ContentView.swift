@@ -9,47 +9,64 @@ import SwiftUI
 import HomeFeature
 import ProfileFeature
 import CalendarFeature
+import OnboardingFeature
 
 struct ContentView: View {
     @State private var selectedTab: Tab = .home
-    @State private var showOnboarding = false
-    // TODO: 여기서 온보딩 할지말지 결정 for ㅇ시종샘
+    @State private var appState = AppState()
+    
     private let coordinatorFactory: CoordinatorFactory = CoordinatorFactory()
     
     init() {
-        print("📱 ContentView 초기화 (TabView 방식 + DI Container)")
+        print("📱 ContentView 초기화 (온보딩 로직 포함)")
     }
     
     var body: some View {
-        if showOnboarding {
-            Text("온보딩 화면")
-        } else {
-            TabView(selection: $selectedTab) {
-                // 홈 탭
-                coordinatorFactory.homeCoordinatorRootView
-                    .tabItem {
-                        (selectedTab == .home ? Tab.home.iconOn : Tab.home.iconOff)
-                        Text(Tab.home.title)
-                    }
-                    .tag(Tab.home)
-                
-                // 캘린더 탭
-                coordinatorFactory.calendarCoordinatorRootView
-                    .tabItem {
-                        (selectedTab == .calendar ? Tab.calendar.iconOn : Tab.calendar.iconOff)
-                        Text(Tab.calendar.title)
-                    }
-                    .tag(Tab.calendar)
-                
-                // 프로필 탭
-                coordinatorFactory.profileCoordinatorRootView
-                    .tabItem {
-                        (selectedTab == .profile ? Tab.profile.iconOn : Tab.profile.iconOff)
-                        Text(Tab.profile.title)
-                    }
-                    .tag(Tab.profile)
+        Group {
+            if appState.isLoading {
+                // 로딩 화면
+                VStack {
+                    ProgressView()
+                    Text("로딩 중...")
+                        .padding(.top)
+                }
+            } else if !appState.isOnboardingCompleted {
+                // 온보딩 화면
+                OnboardingView {
+                    appState.completeOnboarding()
+                }
+            } else {
+                // 메인 탭뷰
+                TabView(selection: $selectedTab) {
+                    // 홈 탭
+                    coordinatorFactory.homeCoordinatorRootView
+                        .tabItem {
+                            (selectedTab == .home ? Tab.home.iconOn : Tab.home.iconOff)
+                            Text(Tab.home.title)
+                        }
+                        .tag(Tab.home)
+                    
+                    // 캘린더 탭
+                    coordinatorFactory.calendarCoordinatorRootView
+                        .tabItem {
+                            (selectedTab == .calendar ? Tab.calendar.iconOn : Tab.calendar.iconOff)
+                            Text(Tab.calendar.title)
+                        }
+                        .tag(Tab.calendar)
+                    
+                    // 프로필 탭
+                    coordinatorFactory.profileCoordinatorRootView
+                        .tabItem {
+                            (selectedTab == .profile ? Tab.profile.iconOn : Tab.profile.iconOff)
+                            Text(Tab.profile.title)
+                        }
+                        .tag(Tab.profile)
+                }
+                .accentColor(.black)
             }
-            .accentColor(.black)
+        }
+        .onAppear {
+            appState.checkOnboardingStatus()
         }
     }
 }

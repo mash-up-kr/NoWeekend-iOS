@@ -26,7 +26,7 @@ let project = Project(
                 .project(target: "CalendarFeature", path: .relativeToRoot("Projects/Calendar/CalendarFeature")),
                 .project(target: "OnboardingFeature", path: .relativeToRoot("Projects/Onboarding/OnboardingFeature")),
                 
-                // Data 모듈들 대신 DataBridge만 의존
+                // Data 모듈들을 DataBridge를 통해 의존
                 .project(target: "DataBridge", path: .relativeToRoot("Projects/DataBridge")),
                 
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),

@@ -7,6 +7,7 @@ let workspace = Workspace(
         "Projects/Core",
         "Projects/Shared",
         "Projects/Plugin",
+        "Projects/DataBridge",
         
         // 🏠 Home Module
         "Projects/Home/HomeFeature",
