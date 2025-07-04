@@ -6,32 +6,28 @@
 //
 
 import Foundation
-import Core
-import Swinject
 import HomeFeature
 import ProfileFeature
 import CalendarFeature
+
+import HomeData
+import ProfileData
+import CalendarData
 
 enum AppDependencyConfiguration {
     static func configure() {
         print("🔧 DI Container 앱 설정 시작")
         
-        DataConfiguration.configure()
-        registerFeatureAssemblies()
+        // 1. Data 모듈들이 자체 Repository 등록
+        HomeDataModule.registerRepositories()
+        ProfileDataModule.registerRepositories()
+        CalendarDataModule.registerRepositories()
         
-        print("✅ DI Container 방식 설정 완료")
-    }
-    
-    private static func registerFeatureAssemblies() {
-        print("📦 Feature Assembly 등록 시작")
-         let assemblies: [Assembly] = [
-            HomeFeatureAssembly(),
-            ProfileFeatureAssembly(),
-            CalendarFeatureAssembly(),
-        ]
+        // 2. Feature 모듈들이 자체 UseCase 등록
+        HomeFeatureModule.registerUseCases()
+        ProfileFeatureModule.registerUseCases()
+        CalendarFeatureModule.registerUseCases()
         
-        DIContainer.shared.registerAssembly(assembly: assemblies)
-        
-        print("✅ 모든 Feature Assembly 등록 완료")
+        print("✅ DI Container 설정 완료")
     }
 }
