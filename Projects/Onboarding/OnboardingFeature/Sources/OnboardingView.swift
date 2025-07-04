@@ -75,7 +75,7 @@ public struct OnboardingView: View {
                         showMainApp = true
                     }
                     .font(.body2)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                    .foregroundColor(DS.Colors.Text.netural)
                 }
                 .padding()
             }
@@ -104,12 +104,12 @@ struct OnboardingPageView: View {
                 Text(page.title)
                     .font(.heading2)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(DS.Colors.Text.gray900)
+                    .foregroundColor(DS.Colors.Text.netural)
                 
                 Text(page.description)
                     .font(.body1)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(DS.Colors.Text.gray700)
+                    .foregroundColor(DS.Colors.Text.disable)
                     .padding(.horizontal)
             }
             
