@@ -32,7 +32,7 @@ public final class NWTextViewCoordinator: NSObject, UITextViewDelegate {
         
         if textView.text == placeholder {
             textView.text = ""
-            textView.textColor = UIColor(DS.Colors.Text.gray900)
+            textView.textColor = UIColor(DS.Colors.Text.netural)
         }
     }
     
@@ -41,7 +41,7 @@ public final class NWTextViewCoordinator: NSObject, UITextViewDelegate {
         
         if textView.text.isEmpty {
             textView.text = placeholder
-            textView.textColor = UIColor(DS.Colors.Neutral._400)
+            textView.textColor = UIColor(DS.Colors.Neutral.gray400)
         }
     }
     
@@ -59,9 +59,14 @@ public final class NWTextViewCoordinator: NSObject, UITextViewDelegate {
     }
     
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        
         if textView.text == placeholder && !text.isEmpty {
             textView.text = ""
-            textView.textColor = UIColor(DS.Colors.Text.gray900)
+            textView.textColor = UIColor(DS.Colors.Text.netural)
         }
         return true
     }

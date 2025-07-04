@@ -52,7 +52,7 @@ public struct CalendarNavigationBar: View {
             
             ZStack {
                 Capsule()
-                    .fill(DS.Colors.Neutral._200)
+                    .fill(DS.Colors.Neutral.gray200)
                     .frame(width: 72, height: 38)
                 
                 Circle()
@@ -70,7 +70,7 @@ public struct CalendarNavigationBar: View {
                         }) {
                             Text(option.rawValue)
                                 .font(.heading6)
-                                .foregroundColor(selectedToggle == option ? DS.Colors.Neutral._900 : DS.Colors.Neutral._700)
+                                .foregroundColor(selectedToggle == option ? DS.Colors.Neutral.gray900 : DS.Colors.Neutral.gray700)
                                 .frame(width: 32, height: 32)
                         }
                     }
