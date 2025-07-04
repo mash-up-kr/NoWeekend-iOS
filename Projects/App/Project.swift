@@ -1,10 +1,10 @@
 import ProjectDescription
 
 let project = Project(
-    name: "NoWeekend",
+    name: "App",
     targets: [
         .target(
-            name: "NoWeekend",
+            name: "App",
             destinations: .iOS,
             product: .app,
             bundleId: "com.noweekend.app",
