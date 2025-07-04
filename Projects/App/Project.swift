@@ -1,4 +1,5 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let project = Project(
     name: "App",
@@ -31,7 +32,8 @@ let project = Project(
                 
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
                 .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
-            ]
+            ],
+            settings: .appSettings(teamID: Environment.teamID)  
         )
     ]
 )
