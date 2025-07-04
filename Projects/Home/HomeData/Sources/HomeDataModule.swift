@@ -7,13 +7,17 @@
 
 import Foundation
 import Core
+import HomeDomain
 
 public enum HomeDataModule {
-    @AutoRegisterData
-    static var assembly = HomeAssembly()
-    
-    public static func configure() {
-        print("🏠 HomeDataModule 활성화")
-        _ = assembly // PropertyWrapper 활성화
+    public static func registerRepositories() {
+        print("🏠 HomeData Repository 등록")
+        
+        // Domain Protocol을 Data 모듈에서 등록
+        DIContainer.shared.container.register(EventRepositoryProtocol.self) { _ in
+            return EventRepositoryImpl()
+        }.inObjectScope(.container)
+        
+        print("✅ HomeData Repository 등록 완료")
     }
 }

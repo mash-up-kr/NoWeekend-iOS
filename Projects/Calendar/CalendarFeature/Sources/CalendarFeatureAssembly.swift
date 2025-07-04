@@ -17,7 +17,7 @@ public struct CalendarFeatureAssembly: Assembly {
     public func assemble(container: Container) {
         print("📅 CalendarFeatureAssembly 등록 시작")
         
-        // UseCase만 등록 
+        // UseCase만 등록
         container.register(CalendarUseCaseProtocol.self) { resolver in
             print("📋 CalendarUseCase 생성 (Feature)")
             let repository = resolver.resolve(CalendarRepositoryProtocol.self)!

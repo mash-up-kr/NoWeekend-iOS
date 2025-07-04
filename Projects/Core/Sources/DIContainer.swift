@@ -26,7 +26,7 @@ public final class DIContainer {
     public let container: Container = Container()
     
     private init() {
-        print("📦 DIContainer 초기화 (Swinject 완전 은닉)")
+        print("📦 DIContainer 초기화 (Feature별 통합 DI)")
     }
     
     public func resolve<T>(_ serviceType: T.Type) -> T {
@@ -66,5 +66,14 @@ public struct DIResolver {
             fatalError("❌ \(serviceType) 타입을 해결할 수 없습니다.")
         }
         return service
+    }
+}
+
+@propertyWrapper
+public struct Dependency<T> {
+    public let wrappedValue: T
+    
+    public init() {
+        self.wrappedValue = DIContainer.shared.resolve(T.self)
     }
 }

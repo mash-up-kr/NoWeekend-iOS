@@ -7,13 +7,17 @@
 
 import Foundation
 import Core
+import CalendarDomain
 
 public enum CalendarDataModule {
-    @AutoRegisterData
-    static var assembly = CalendarAssembly()
-    
-    public static func configure() {
-        print("📅 CalendarDataModule 활성화")
-        _ = assembly // PropertyWrapper 활성화
+    public static func registerRepositories() {
+        print("📅 CalendarData Repository 등록")
+        
+        // Domain Protocol을 Data 모듈에서 등록
+        DIContainer.shared.container.register(CalendarRepositoryProtocol.self) { _ in
+            return CalendarRepositoryImpl()
+        }.inObjectScope(.container)
+        
+        print("✅ CalendarData Repository 등록 완료")
     }
 }

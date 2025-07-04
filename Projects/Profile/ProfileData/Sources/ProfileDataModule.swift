@@ -7,13 +7,17 @@
 
 import Foundation
 import Core
+import ProfileDomain
 
 public enum ProfileDataModule {
-    @AutoRegisterData
-    static var assembly = ProfileAssembly()
-    
-    public static func configure() {
-        print("👤 ProfileDataModule 활성화")
-        _ = assembly // PropertyWrapper 활성화
+    public static func registerRepositories() {
+        print("👤 ProfileData Repository 등록")
+        
+        // Domain Protocol을 Data 모듈에서 등록
+        DIContainer.shared.container.register(UserRepositoryProtocol.self) { _ in
+            return UserRepositoryImpl()
+        }.inObjectScope(.container)
+        
+        print("✅ ProfileData Repository 등록 완료")
     }
 }

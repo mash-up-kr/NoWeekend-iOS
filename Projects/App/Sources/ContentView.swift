@@ -13,7 +13,7 @@ import CalendarFeature
 struct ContentView: View {
     @State private var selectedTab: Tab = .home
     @State private var showOnboarding = false
-    // TODO: 여기서 온보딩 할지말지 결정 for 시종샘
+    // TODO: 여기서 온보딩 할지말지 결정 for ㅇ시종샘
     private let coordinatorFactory: CoordinatorFactory = CoordinatorFactory()
     
     init() {
