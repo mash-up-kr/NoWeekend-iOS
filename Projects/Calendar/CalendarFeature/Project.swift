@@ -11,7 +11,8 @@ let project = Project.make(
             dependencies: [
                 .project(target: "CalendarDomain", path: .relativeToRoot("Projects/Calendar/CalendarDomain")),
                 .project(target: "HomeDomain", path: .relativeToRoot("Projects/Home/HomeDomain")),
-                .project(target: "Core", path: .relativeToRoot("Projects/Core")),
+                .project(target: "Coordinator", path: .relativeToRoot("Projects/Core")),
+                .project(target: "DIContainer", path: .relativeToRoot("Projects/Core")),
                 .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
                 .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
             ]

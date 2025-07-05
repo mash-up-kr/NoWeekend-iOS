@@ -77,7 +77,7 @@ public enum CoreModule: String, CaseIterable {
     case network = "Network"
     case storage = "Storage"
     case diContainer = "DIContainer"
-    case coreCoordinator = "CoreCoordinator"
+    case coordinator = "Coordinator"
 }
 
 // MARK: - Plugin Modules

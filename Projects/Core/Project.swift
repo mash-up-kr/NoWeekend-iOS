@@ -4,14 +4,31 @@ import ProjectDescriptionHelpers
 let project = Project.make(
     name: "Core",
     targets: [
-        // MARK: - Core (Network + DI + Coordinator)
         .framework(
-            name: "Core",
-            bundleId: BundleID.Core.network,
-            sources: ["Sources/**"],
+            name: "DIContainer",
+            bundleId: BundleID.Core.dicontainer,
+            sources: ["DIContainer/Sources/**"],
+            dependencies: [
+                .external(.swinject)
+            ]
+        ),
+        .framework(
+            name: "Network",
+            bundleId: BundleID.Core.network + ".network",
+            sources: ["Network/Sources/**"],
             dependencies: [
                 .external(.alamofire),
-                .external(.swinject)
+                .external(.swinject),
+                .core(.diContainer)
+            ]
+        ),
+        .framework(
+            name: "Coordinator",
+            bundleId: BundleID.Core.coordinator,
+            sources: ["Coordinator/Sources/**"],
+            dependencies: [
+                .external(.swinject),
+                .core(.diContainer)
             ]
         )
     ]
