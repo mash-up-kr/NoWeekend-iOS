@@ -1,47 +1,17 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-
 let project = Project.make(
     name: "Core",
     targets: [
+        // MARK: - Core (Network + DI + Coordinator)
         .framework(
-            name: "UseCase",
-            bundleId: BundleID.Core.useCase,
-            sources: ["UseCase/Sources/**"],
-            dependencies: [
-                .interface(.domain),
-                .interface(.repositoryInterface),
-                .interface(.serviceInterface)
-            ]
-        ),
-        .framework(
-            name: "Repository",
-            bundleId: BundleID.Core.repository,
-            sources: ["Repository/Sources/**"],
-            dependencies: [
-                .interface(.repositoryInterface),
-                .interface(.domain),
-                .interface(.networkInterface),
-                .interface(.storageInterface)
-            ]
-        ),
-        .framework(
-            name: "Network",
+            name: "Core",
             bundleId: BundleID.Core.network,
-            sources: ["Network/Sources/**"],
+            sources: ["Sources/**"],
             dependencies: [
-                .interface(.networkInterface),
-                .external(.alamofire)
-            ]
-        ),
-        .framework(
-            name: "Storage",
-            bundleId: BundleID.Core.storage,
-            sources: ["Storage/Sources/**"],
-            dependencies: [
-                .interface(.storageInterface),
-                .interface(.domain)
+                .external(.alamofire),
+                .external(.swinject)
             ]
         )
     ]

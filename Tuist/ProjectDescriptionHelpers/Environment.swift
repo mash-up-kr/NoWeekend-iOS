@@ -74,7 +74,8 @@ public enum ModuleCategory: String, CaseIterable {
     case app = "app"
     case core = "core"
     case feature = "feature"
-    case interface = "interface"
+    case domain = "domain"
+    case data = "data"
     case shared = "shared"
     case plugin = "plugin"
 }

@@ -7,14 +7,29 @@
 
 import ProjectDescription
 
-// MARK: - Project Paths
+// MARK: - Project Paths (업데이트된 구조)
 public enum ProjectPath: String, CaseIterable {
     case app = "Projects/App"
     case core = "Projects/Core"
-    case feature = "Projects/Feature"
-    case interface = "Projects/Interface"
     case shared = "Projects/Shared"
     case plugin = "Projects/Plugin"
+    
+    // Feature별 모듈들
+    case homeFeature = "Projects/Home/HomeFeature"
+    case homeDomain = "Projects/Home/HomeDomain"
+    case homeData = "Projects/Home/HomeData"
+    
+    case profileFeature = "Projects/Profile/ProfileFeature"
+    case profileDomain = "Projects/Profile/ProfileDomain"
+    case profileData = "Projects/Profile/ProfileData"
+    
+    case calendarFeature = "Projects/Calendar/CalendarFeature"
+    case calendarDomain = "Projects/Calendar/CalendarDomain"
+    case calendarData = "Projects/Calendar/CalendarData"
+    
+    case onboardingFeature = "Projects/Onboarding/OnboardingFeature"
+    case onboardingDomain = "Projects/Onboarding/OnboardingDomain"
+    case onboardingData = "Projects/Onboarding/OnboardingData"
     
     public var relativePath: Path {
         return .relativeToRoot(self.rawValue)
@@ -25,27 +40,30 @@ public enum ProjectPath: String, CaseIterable {
 public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
+    case swinject = "Swinject"
 }
 
-// MARK: - Interface Modules
-public enum InterfaceModule: String, CaseIterable {
-    case domain = "Domain"
-    case homeInterface = "HomeInterface"
-    case profileInterface = "ProfileInterface"
-    case calendarInterface = "CalendarInterface"
-    case repositoryInterface = "RepositoryInterface"
-    case networkInterface = "NetworkInterface"
-    case storageInterface = "StorageInterface"
-    case serviceInterface = "ServiceInterface"
-}
-
-// MARK: - Feature Modules
+// MARK: - Feature Modules (정리된 구조)
 public enum FeatureModule: String, CaseIterable {
-    case tabBar = "TabBar"
-    case home = "Home"
-    case calendar = "Calendar"
-    case profile = "Profile"
-    case onboarding = "Onboarding"
+    // Home
+    case homeFeature = "HomeFeature"
+    case homeDomain = "HomeDomain"
+    case homeData = "HomeData"
+    
+    // Profile
+    case profileFeature = "ProfileFeature"
+    case profileDomain = "ProfileDomain"
+    case profileData = "ProfileData"
+    
+    // Calendar
+    case calendarFeature = "CalendarFeature"
+    case calendarDomain = "CalendarDomain"
+    case calendarData = "CalendarData"
+    
+    // Onboarding (정리됨 - 중복 제거)
+    case onboardingFeature = "OnboardingFeature"
+    case onboardingDomain = "OnboardingDomain"
+    case onboardingData = "OnboardingData"
 }
 
 // MARK: - Shared Modules
@@ -56,10 +74,10 @@ public enum SharedModule: String, CaseIterable {
 
 // MARK: - Core Modules
 public enum CoreModule: String, CaseIterable {
-    case useCase = "UseCase"
-    case repository = "Repository"
     case network = "Network"
     case storage = "Storage"
+    case diContainer = "DIContainer"
+    case coreCoordinator = "CoreCoordinator"
 }
 
 // MARK: - Plugin Modules
