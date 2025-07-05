@@ -8,7 +8,8 @@
 
 import SwiftUI
 import HomeDomain
-import Core
+import Coordinator
+import DIContainer
 
 public struct HomeView: View {
     @Dependency private var eventUseCase: EventUseCaseProtocol

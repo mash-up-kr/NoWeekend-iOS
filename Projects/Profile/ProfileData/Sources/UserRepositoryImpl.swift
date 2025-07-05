@@ -8,7 +8,6 @@
 
 import Foundation
 import ProfileDomain
-import Core
 
 public final class UserRepositoryImpl: UserRepositoryProtocol {
     private let mockUser = User(id: "1", name: "나희", email: "nahee@noweekend.com")

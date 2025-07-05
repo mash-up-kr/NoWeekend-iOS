@@ -8,7 +8,7 @@
 
 import SwiftUI
 import CalendarDomain
-import Core
+import DIContainer
 
 public struct CalendarView: View {
     @Dependency private var calendarUseCase: CalendarUseCaseProtocol

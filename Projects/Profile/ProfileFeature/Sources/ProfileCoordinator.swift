@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import Core
+import Coordinator
 
 public final class ProfileCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = ProfileRouter.Screen

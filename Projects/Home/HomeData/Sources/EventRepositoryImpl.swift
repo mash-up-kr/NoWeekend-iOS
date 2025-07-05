@@ -8,7 +8,7 @@
 
 import Foundation
 import HomeDomain
-import Core
+import DIContainer
 
 public final class EventRepositoryImpl: EventRepositoryProtocol {
     private let mockEvents: [Event] = [

@@ -8,7 +8,6 @@
 
 import Foundation
 import CalendarDomain
-import Core
 
 public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
     private let mockEvents: [CalendarEvent] = [
