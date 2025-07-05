@@ -8,7 +8,6 @@
 
 import Foundation
 import OnboardingDomain
-import Core
 
 public final class OnboardingRepositoryImpl: OnboardingRepositoryProtocol {
     private let userDefaults = UserDefaults.standard

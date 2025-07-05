@@ -13,7 +13,7 @@ let project = Project.make(
                 .project(target: "ProfileData", path: .relativeToRoot("Projects/Profile/ProfileData")),
                 .project(target: "CalendarData", path: .relativeToRoot("Projects/Calendar/CalendarData")),
                 .project(target: "OnboardingData", path: .relativeToRoot("Projects/Onboarding/OnboardingData")),
-                .project(target: "Core", path: .relativeToRoot("Projects/Core"))
+                .project(target: "DIContainer", path: .relativeToRoot("Projects/Core"))
             ]
         )
     ]

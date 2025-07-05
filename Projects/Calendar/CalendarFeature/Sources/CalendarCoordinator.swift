@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import Core
+import Coordinator
 import Combine
 
 public final class CalendarCoordinator: ObservableObject, Coordinatorable {

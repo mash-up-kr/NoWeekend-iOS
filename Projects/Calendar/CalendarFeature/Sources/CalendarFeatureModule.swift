@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Core
+import DIContainer
 import Swinject
 import CalendarDomain
 

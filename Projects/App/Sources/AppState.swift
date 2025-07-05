@@ -7,7 +7,7 @@
 
 import Foundation
 import OnboardingDomain
-import Core
+import DIContainer
 
 @MainActor
 @Observable

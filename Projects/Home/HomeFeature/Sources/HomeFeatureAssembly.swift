@@ -9,7 +9,7 @@
 import Foundation
 import Swinject
 import HomeDomain
-import Core
+import DIContainer
 
 public struct HomeFeatureAssembly: Assembly {
     public init() {}

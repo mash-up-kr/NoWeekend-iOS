@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import Core
+import Coordinator
 
 public final class HomeCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = HomeRouter.Screen

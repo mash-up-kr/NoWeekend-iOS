@@ -10,7 +10,8 @@ let project = Project.make(
             sources: ["Sources/**"],
             dependencies: [
                 .project(target: "OnboardingDomain", path: .relativeToRoot("Projects/Onboarding/OnboardingDomain")),
-                .project(target: "Core", path: .relativeToRoot("Projects/Core"))
+                .project(target: "Network", path: .relativeToRoot("Projects/Core")),
+                    .project(target: "DIContainer", path: .relativeToRoot("Projects/Core"))
             ]
         )
     ]

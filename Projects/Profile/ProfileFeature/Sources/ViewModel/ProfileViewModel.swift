@@ -7,8 +7,8 @@
 
 import Foundation
 import ProfileDomain
-import Core
 import Combine
+import DIContainer
 
 public final class ProfileViewModel: ObservableObject {
     @Dependency private var userUseCase: UserUseCaseProtocol

@@ -9,7 +9,7 @@
 import Foundation
 import Swinject
 import CalendarDomain
-import Core
+import DIContainer
 
 public struct CalendarFeatureAssembly: Assembly {
     public init() {}

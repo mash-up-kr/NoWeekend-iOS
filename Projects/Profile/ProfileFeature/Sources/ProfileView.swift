@@ -8,7 +8,8 @@
 
 import SwiftUI
 import ProfileDomain
-import Core
+import Coordinator
+import DIContainer
 
 public struct ProfileView: View {
     @Dependency private var userUseCase: UserUseCaseProtocol

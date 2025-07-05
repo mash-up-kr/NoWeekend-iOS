@@ -9,7 +9,7 @@
 import Foundation
 import Swinject
 import OnboardingDomain
-import Core
+import DIContainer
 
 public struct OnboardingFeatureAssembly: Assembly {
     public init() {}

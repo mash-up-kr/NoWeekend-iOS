@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import Core
 import Swinject
 import ProfileDomain
+import DIContainer
 
 // MARK: - Assembly (기존 ProfileModuleAssembly 내용을 여기로 이동)
 public struct ProfileFeatureAssembly: Assembly {

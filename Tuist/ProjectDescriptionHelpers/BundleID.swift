@@ -11,8 +11,8 @@ public struct BundleID {
     public static let app = Environment.App.baseBundleId
     
     public struct Core {
-        public static let network = Environment.bundleId(category: .core, module: "core")
-        public static let di = Environment.bundleId(category: .core, module: "di")
+        public static let network = Environment.bundleId(category: .core, module: "network")
+        public static let dicontainer = Environment.bundleId(category: .core, module: "dicontainer")
         public static let coordinator = Environment.bundleId(category: .core, module: "coordinator")
     }
     
