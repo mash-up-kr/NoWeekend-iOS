@@ -1,47 +1,34 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-
 let project = Project.make(
     name: "Core",
     targets: [
         .framework(
-            name: "UseCase",
-            bundleId: BundleID.Core.useCase,
-            sources: ["UseCase/Sources/**"],
+            name: "DIContainer",
+            bundleId: BundleID.Core.dicontainer,
+            sources: ["DIContainer/Sources/**"],
             dependencies: [
-                .interface(.domain),
-                .interface(.repositoryInterface),
-                .interface(.serviceInterface)
-            ]
-        ),
-        .framework(
-            name: "Repository",
-            bundleId: BundleID.Core.repository,
-            sources: ["Repository/Sources/**"],
-            dependencies: [
-                .interface(.repositoryInterface),
-                .interface(.domain),
-                .interface(.networkInterface),
-                .interface(.storageInterface)
+                .external(.swinject)
             ]
         ),
         .framework(
             name: "Network",
-            bundleId: BundleID.Core.network,
+            bundleId: BundleID.Core.network + ".network",
             sources: ["Network/Sources/**"],
             dependencies: [
-                .interface(.networkInterface),
-                .external(.alamofire)
+                .external(.alamofire),
+                .external(.swinject),
+                .core(.diContainer)
             ]
         ),
         .framework(
-            name: "Storage",
-            bundleId: BundleID.Core.storage,
-            sources: ["Storage/Sources/**"],
+            name: "Coordinator",
+            bundleId: BundleID.Core.coordinator,
+            sources: ["Coordinator/Sources/**"],
             dependencies: [
-                .interface(.storageInterface),
-                .interface(.domain)
+                .external(.swinject),
+                .core(.diContainer)
             ]
         )
     ]
