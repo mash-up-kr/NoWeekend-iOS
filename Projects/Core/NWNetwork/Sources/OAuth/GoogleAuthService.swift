@@ -23,37 +23,33 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
     
     @MainActor
     public func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult {
-        
         return try await withCheckedThrowingContinuation { continuation in
-            let strongVC = presentingViewController
-            
-            do {
-                GIDSignIn.sharedInstance.signIn(withPresenting: strongVC) { result, error in
-
-                    guard let result = result else {
-                        let error = NSError(
-                            domain: "GoogleSignInError",
-                            code: -1,
-                            userInfo: [NSLocalizedDescriptionKey: "No result received"]
-                        )
-                        continuation.resume(throwing: error)
-                        return
-                    }
-                    
-                    let user = result.user
-                    let accessToken = user.accessToken.tokenString
-                    
-                    let signInResult = GoogleSignInResult(
-                        accessToken: accessToken,
-                        name: user.profile?.name,
-                        email: user.profile?.email
-                    )
-                    
-                    continuation.resume(returning: signInResult)
+            GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
                 }
                 
-            } catch {
-                continuation.resume(throwing: error)
+                guard let result = result else {
+                    let error = NSError(
+                        domain: "GoogleSignInError",
+                        code: -1,
+                        userInfo: [NSLocalizedDescriptionKey: "No result received"]
+                    )
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                let user = result.user
+                let accessToken = user.accessToken.tokenString
+                
+                let signInResult = GoogleSignInResult(
+                    accessToken: accessToken,
+                    name: user.profile?.name,
+                    email: user.profile?.email
+                )
+                
+                continuation.resume(returning: signInResult)
             }
         }
     }
