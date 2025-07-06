@@ -39,7 +39,7 @@ jobs:
 
       - name: Create Config.swift for Network
         run: |
-          cat <<EOF > Projects/Core/Network/Sources/Config.swift
+          cat <<EOF > Projects/Core/NWNetwork/Sources/Config.swift
           import Foundation
 
           public enum Config {
