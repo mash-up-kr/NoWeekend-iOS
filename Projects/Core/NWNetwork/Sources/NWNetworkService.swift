@@ -20,7 +20,7 @@ public class NWNetworkService: NWNetworkServiceProtocol {
     private let baseURL: String
     private let session: Session
     
-    public init(baseURL: String, headers: [String: String] = [:]) {
+    public init(baseURL: String = Config.baseURL, headers: [String: String] = [:]) {
         self.baseURL = baseURL
         
         let configuration = URLSessionConfiguration.default

@@ -79,3 +79,6 @@ build_output/
 # fastlane test output
 fastlane/test_output/
 fastlane/report.xml
+
+# network
+Projects/Core/Network/Sources/Config.swift

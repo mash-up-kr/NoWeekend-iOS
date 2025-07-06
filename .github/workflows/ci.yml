@@ -37,6 +37,16 @@ jobs:
           eval "$(mise activate bash)"
           tuist version
 
+      - name: Create Config.swift for Network
+        run: |
+          cat <<EOF > Projects/Core/Network/Sources/Config.swift
+          import Foundation
+
+          public enum Config {
+              public static let baseURL = "${{ secrets.BASE_URL }}"
+          }
+          EOF
+
       - name: Tuist tasks (install + generate)
         run: |
           eval "$(mise activate bash)"
