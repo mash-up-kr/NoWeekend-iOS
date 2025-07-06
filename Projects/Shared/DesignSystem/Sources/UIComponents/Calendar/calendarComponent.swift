@@ -16,20 +16,20 @@ public struct WeekCalendarView<Content: View>: View {
     private let calendar = Calendar.current
     
     private var datesInWeek: [Date] {
-            guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
-                return []
-            }
-            
-            var dates: [Date] = []
-            var date = weekInterval.start
-            
-            for _ in 0..<7 {
-                dates.append(date)
-                date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
-            }
-            
-            return dates
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
+            return []
         }
+        
+        var dates: [Date] = []
+        var date = weekInterval.start
+        
+        for _ in 0..<7 {
+            dates.append(date)
+            date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
+        }
+        
+        return dates
+    }
     
     public init(
         baseDate: Date = Date(),
@@ -47,7 +47,6 @@ public struct WeekCalendarView<Content: View>: View {
             weekGrid
         }
         .padding(.horizontal, 20)
-
     }
     
     private var weekdayHeader: some View {
@@ -80,14 +79,13 @@ public struct WeekCalendarView<Content: View>: View {
                                 .font(.subtitle2)
                                 .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
                         }
-                        .frame(width: 41, height: 41)
-                        cellContent(date)
-                            .frame(width: 41, height: 41)
+                        .frame(height: 41)
                     }
-                    .frame(maxWidth: .infinity)
                 }
+                .frame(maxWidth: .infinity)
             }
         }
+        .padding(.horizontal, 20)
     }
     
     private var weekdaySymbols: [String] {
@@ -101,7 +99,6 @@ struct WeekCalendarExampleView: View {
             DS.Images.imgToastVacation
                 .resizable()
                 .scaledToFit()
-                .frame(width: 38)
         }
     }
 }

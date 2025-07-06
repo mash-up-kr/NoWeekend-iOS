@@ -10,6 +10,8 @@ import Foundation
 
 public protocol CalendarUseCaseProtocol {
     func getCalendarEvents() async throws -> [CalendarEvent]
+    func getEventsForDate(_ date: Date) async throws -> [CalendarEvent]
     func createCalendarEvent(_ event: CalendarEvent) async throws
+    func updateCalendarEvent(_ event: CalendarEvent) async throws
     func deleteCalendarEvent(id: String) async throws
 }

@@ -17,7 +17,6 @@ public struct CalendarEvent: Codable, Identifiable, Equatable {
     public let description: String?
     public let isAllDay: Bool
     public let category: CalendarEventCategory
-    public let reminder: EventReminder?
     
     public init(
         id: String,
@@ -26,8 +25,7 @@ public struct CalendarEvent: Codable, Identifiable, Equatable {
         endDate: Date,
         description: String? = nil,
         isAllDay: Bool = false,
-        category: CalendarEventCategory = .personal,
-        reminder: EventReminder? = nil
+        category: CalendarEventCategory = .personal
     ) {
         self.id = id
         self.title = title
@@ -36,7 +34,6 @@ public struct CalendarEvent: Codable, Identifiable, Equatable {
         self.description = description
         self.isAllDay = isAllDay
         self.category = category
-        self.reminder = reminder
     }
 }
 
@@ -75,20 +72,3 @@ public enum CalendarEventCategory: String, Codable, CaseIterable {
     }
 }
 
-// MARK: - Event Reminder
-public struct EventReminder: Codable, Equatable {
-    public let minutesBefore: Int
-    public let isEnabled: Bool
-    
-    public init(minutesBefore: Int, isEnabled: Bool = true) {
-        self.minutesBefore = minutesBefore
-        self.isEnabled = isEnabled
-    }
-    
-    public static let defaultReminders = [
-        EventReminder(minutesBefore: 5),
-        EventReminder(minutesBefore: 15),
-        EventReminder(minutesBefore: 30),
-        EventReminder(minutesBefore: 60)
-    ]
-}

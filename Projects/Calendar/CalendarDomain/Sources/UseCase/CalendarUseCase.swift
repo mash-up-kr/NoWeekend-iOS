@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import CalendarDomain
 
 public class CalendarUseCase: CalendarUseCaseProtocol {
     private let calendarRepository: CalendarRepositoryProtocol

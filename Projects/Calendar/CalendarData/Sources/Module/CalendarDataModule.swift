@@ -13,7 +13,6 @@ public enum CalendarDataModule {
     public static func registerRepositories() {
         print("📅 CalendarData Repository 등록")
         
-        // Domain Protocol을 Data 모듈에서 등록
         DIContainer.shared.container.register(CalendarRepositoryProtocol.self) { _ in
             return CalendarRepositoryImpl()
         }.inObjectScope(.container)
