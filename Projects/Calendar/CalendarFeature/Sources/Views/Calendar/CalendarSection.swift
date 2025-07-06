@@ -29,24 +29,23 @@ struct CalendarSection: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Group {
-                switch selectedToggle {
-                case .week:
-                    WeekCalendarView(
-                        baseDate: selectedDate,
-                        onDateTap: onDateTap
-                    ) { date in
-                        calendarCellContent(date)
-                    }
-                    
-                case .month:
-                    MonthCalendarView(
-                        selectedDate: selectedDate,
-                        onDateTap: onDateTap,
-                        calendarCellContent: { date in calendarCellContent(date) }
-                    )
+            switch selectedToggle {
+            case .week:
+                WeekCalendarView(
+                    baseDate: selectedDate,
+                    onDateTap: onDateTap
+                ) { date in
+                    calendarCellContent(date)
                 }
+                
+            case .month:
+                MonthCalendarView(
+                    selectedDate: selectedDate,
+                    onDateTap: onDateTap,
+                    calendarCellContent: { date in calendarCellContent(date) }
+                )
             }
+            
             
             if selectedToggle == .week {
                 Rectangle()
