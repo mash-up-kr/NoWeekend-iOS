@@ -16,7 +16,7 @@ let project = Project.make(
             sources: ["DesignSystem/Sources/**"],
             resources: ["DesignSystem/Resources/**"],
             dependencies: [
-                .external(.lottie)
+                .External.lottie
             ]
         )
     ],

@@ -9,7 +9,6 @@ let project = Project.make(
             bundleId: BundleID.Home.domain,
             sources: ["Sources/**"],
             dependencies: [
-                // 순수 도메인 - 아무것도 의존하지 않음
             ]
         )
     ]

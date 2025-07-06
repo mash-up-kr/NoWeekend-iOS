@@ -15,6 +15,10 @@ public enum ProjectPath: String, CaseIterable {
     case plugin = "Projects/Plugin"
     
     // Feature별 모듈들
+    case loginFeature = "Projects/Login/LoginFeature"
+    case loginDomain = "Projects/Login/LoginDomain"
+    case loginData = "Projects/Login/LoginData"
+    
     case homeFeature = "Projects/Home/HomeFeature"
     case homeDomain = "Projects/Home/HomeDomain"
     case homeData = "Projects/Home/HomeData"
@@ -41,10 +45,16 @@ public enum ExternalDependency: String, CaseIterable {
     case alamofire = "Alamofire"
     case lottie = "Lottie"
     case swinject = "Swinject"
+    case googleSignIn = "GoogleSignIn"
 }
 
 // MARK: - Feature Modules (정리된 구조)
 public enum FeatureModule: String, CaseIterable {
+    // Login
+    case loginFeature = "LoginFeature"
+    case loginDomain = "LoginDomain"
+    case loginData = "LoginData"
+    
     // Home
     case homeFeature = "HomeFeature"
     case homeDomain = "HomeDomain"
@@ -60,7 +70,7 @@ public enum FeatureModule: String, CaseIterable {
     case calendarDomain = "CalendarDomain"
     case calendarData = "CalendarData"
     
-    // Onboarding (정리됨 - 중복 제거)
+    // Onboarding
     case onboardingFeature = "OnboardingFeature"
     case onboardingDomain = "OnboardingDomain"
     case onboardingData = "OnboardingData"
@@ -74,8 +84,7 @@ public enum SharedModule: String, CaseIterable {
 
 // MARK: - Core Modules
 public enum CoreModule: String, CaseIterable {
-    case network = "Network"
-    case storage = "Storage"
+    case nwnetwork = "NWNetwork"
     case diContainer = "DIContainer"
     case coordinator = "Coordinator"
 }

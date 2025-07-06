@@ -2,16 +2,16 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.make(
-    name: "HomeFeature",
+    name: "LoginFeature",
     targets: [
         .framework(
-            name: "HomeFeature",
-            bundleId: BundleID.Home.feature,
+            name: "LoginFeature",
+            bundleId: BundleID.Login.feature,
             sources: ["Sources/**"],
             dependencies: [
-                .Home.domain,
-                .Core.diContainer,
+                .Login.domain,
                 .Core.coordinator,
+                .Core.diContainer,
                 .Shared.designSystem,
                 .Shared.utils
             ]
