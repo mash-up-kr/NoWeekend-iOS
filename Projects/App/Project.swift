@@ -1,14 +1,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project(
+let project = Project.make(
     name: "App",
     targets: [
-        .target(
+        .app(
             name: "App",
-            destinations: .iOS,
-            product: .app,
-            bundleId: "com.noweekend.app",
+            bundleId: BundleID.app,
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "NoWeekend",
@@ -22,18 +20,16 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
-                .project(target: "HomeFeature", path: .relativeToRoot("Projects/Home/HomeFeature")),
-                .project(target: "ProfileFeature", path: .relativeToRoot("Projects/Profile/ProfileFeature")),
-                .project(target: "CalendarFeature", path: .relativeToRoot("Projects/Calendar/CalendarFeature")),
-                .project(target: "OnboardingFeature", path: .relativeToRoot("Projects/Onboarding/OnboardingFeature")),
-                
-                // Data 모듈들 대신 DataBridge만 의존
-                .project(target: "DataBridge", path: .relativeToRoot("Projects/DataBridge")),
-                
-                .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
-                .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
+                .Home.feature,
+                .Profile.feature,
+                .Calendar.feature,
+                .Onboarding.feature,
+                .Login.feature,
+                .Bridge.dataBridge,
+                .Shared.designSystem,
+                .Shared.utils,
             ],
-            settings: .appSettings(teamID: Environment.teamID)  
+            settings: .appSettings(teamID: Environment.teamID)
         )
     ]
 )

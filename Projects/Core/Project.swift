@@ -9,26 +9,30 @@ let project = Project.make(
             bundleId: BundleID.Core.dicontainer,
             sources: ["DIContainer/Sources/**"],
             dependencies: [
-                .external(.swinject)
+                .External.swinject,
             ]
         ),
         .framework(
-            name: "Network",
-            bundleId: BundleID.Core.network + ".network",
-            sources: ["Network/Sources/**"],
+            name: "NWNetwork",
+            bundleId: BundleID.Core.nwnetwork,
+            sources: ["NWNetwork/Sources/**"],
             dependencies: [
-                .external(.alamofire),
-                .external(.swinject),
-                .core(.diContainer)
-            ]
+                .External.alamofire,
+                .Core.diContainer,
+                .External.googleSignIn
+            ],
+            settings: .settings(
+                base: [
+                    "OTHER_LDFLAGS": ["-ObjC"]
+                ]
+            )
         ),
         .framework(
             name: "Coordinator",
             bundleId: BundleID.Core.coordinator,
             sources: ["Coordinator/Sources/**"],
             dependencies: [
-                .external(.swinject),
-                .core(.diContainer)
+                .Core.diContainer
             ]
         )
     ]

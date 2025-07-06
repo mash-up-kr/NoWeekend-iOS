@@ -2,11 +2,11 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.make(
-    name: "CalendarDomain",
+    name: "LoginDomain",
     targets: [
         .framework(
-            name: "CalendarDomain",
-            bundleId: BundleID.Calendar.domain,
+            name: "LoginDomain",
+            bundleId: BundleID.Login.domain,
             sources: ["Sources/**"],
             dependencies: [
             ]

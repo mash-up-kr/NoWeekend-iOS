@@ -11,29 +11,18 @@ public struct BundleID {
     public static let app = Environment.App.baseBundleId
     
     public struct Core {
-        public static let network = Environment.bundleId(category: .core, module: "network")
+        public static let nwnetwork = Environment.bundleId(category: .core, module: "nwnetwork")
         public static let dicontainer = Environment.bundleId(category: .core, module: "dicontainer")
         public static let coordinator = Environment.bundleId(category: .core, module: "coordinator")
     }
     
     public struct Feature {
-        public static let homeInterface = Environment.bundleId(category: .feature, module: "homeinterface")
-        public static let profileInterface = Environment.bundleId(category: .feature, module: "profileinterface")
-        public static let calendarInterface = Environment.bundleId(category: .feature, module: "calendarinterface")
-        public static let onboardingInterface = Environment.bundleId(category: .feature, module: "onboardinginterface")
-
         public static let tabBar = Environment.bundleId(category: .feature, module: "tabbar")
         public static let home = Environment.bundleId(category: .feature, module: "home")
         public static let calendar = Environment.bundleId(category: .feature, module: "calendar")
         public static let profile = Environment.bundleId(category: .feature, module: "profile")
         public static let onboarding = Environment.bundleId(category: .feature, module: "onboarding")
-    }
-
-    public struct Domain {
-        public static let entity = Environment.bundleId(category: .domain, module: "entity")
-        public static let repositoryInterface = Environment.bundleId(category: .domain, module: "repositoryinterface")
-        public static let serviceInterface = Environment.bundleId(category: .domain, module: "serviceinterface")
-        public static let useCase = Environment.bundleId(category: .domain, module: "usecase")
+        public static let login = Environment.bundleId(category: .feature, module: "login")
     }
     
     public struct Shared {
@@ -70,5 +59,11 @@ public struct BundleID {
         public static let feature = Environment.bundleId(category: .feature, module: "onboardingfeature")
         public static let domain = Environment.bundleId(category: .domain, module: "onboardingdomain")
         public static let data = Environment.bundleId(category: .data, module: "onboardingdata")
+    }
+    
+    public struct Login {
+        public static let feature = Environment.bundleId(category: .feature, module: "loginfeature")
+        public static let domain = Environment.bundleId(category: .domain, module: "logindomain")
+        public static let data = Environment.bundleId(category: .data, module: "logindata")
     }
 }

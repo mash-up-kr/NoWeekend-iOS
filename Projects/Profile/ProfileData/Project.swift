@@ -9,9 +9,9 @@ let project = Project.make(
             bundleId: BundleID.Profile.data,
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "ProfileDomain", path: .relativeToRoot("Projects/Profile/ProfileDomain")),
-                .project(target: "Network", path: .relativeToRoot("Projects/Core")),
-                .project(target: "DIContainer", path: .relativeToRoot("Projects/Core"))
+                .Profile.domain,
+                .Core.nwnetwork,
+                .Core.diContainer
             ]
         )
     ]

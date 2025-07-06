@@ -9,12 +9,12 @@ let project = Project.make(
             bundleId: BundleID.Calendar.feature,
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "CalendarDomain", path: .relativeToRoot("Projects/Calendar/CalendarDomain")),
-                .project(target: "HomeDomain", path: .relativeToRoot("Projects/Home/HomeDomain")),
-                .project(target: "Coordinator", path: .relativeToRoot("Projects/Core")),
-                .project(target: "DIContainer", path: .relativeToRoot("Projects/Core")),
-                .project(target: "DesignSystem", path: .relativeToRoot("Projects/Shared")),
-                .project(target: "Utils", path: .relativeToRoot("Projects/Shared"))
+                .Calendar.domain,
+                .Home.domain,
+                .Core.coordinator,
+                .Core.diContainer,
+                .Shared.designSystem,
+                .Shared.utils
             ]
         )
     ]

@@ -10,6 +10,7 @@ import HomeFeature
 import ProfileFeature
 import CalendarFeature
 import OnboardingFeature
+import LoginFeature
 
 @MainActor
 struct ContentView: View {

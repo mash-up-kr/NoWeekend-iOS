@@ -27,6 +27,11 @@ let workspace = Workspace(
         // 🚪 Onboarding Module
         "Projects/Onboarding/OnboardingFeature",
         "Projects/Onboarding/OnboardingDomain",
-        "Projects/Onboarding/OnboardingData"
+        "Projects/Onboarding/OnboardingData",
+        
+        // Login
+        "Projects/Login/LoginFeature",
+        "Projects/Login/LoginDomain",
+        "Projects/Login/LoginData"
     ]
 )

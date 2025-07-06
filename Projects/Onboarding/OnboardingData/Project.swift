@@ -9,9 +9,8 @@ let project = Project.make(
             bundleId: BundleID.Onboarding.data,
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "OnboardingDomain", path: .relativeToRoot("Projects/Onboarding/OnboardingDomain")),
-                .project(target: "Network", path: .relativeToRoot("Projects/Core")),
-                    .project(target: "DIContainer", path: .relativeToRoot("Projects/Core"))
+                .Onboarding.domain,
+                .Core.diContainer
             ]
         )
     ]

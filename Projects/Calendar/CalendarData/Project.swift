@@ -9,9 +9,8 @@ let project = Project.make(
             bundleId: BundleID.Calendar.data,
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "CalendarDomain", path: .relativeToRoot("Projects/Calendar/CalendarDomain")),
-                .project(target: "Network", path: .relativeToRoot("Projects/Core")),
-                .project(target: "DIContainer", path: .relativeToRoot("Projects/Core"))
+                .Calendar.domain,
+                .Core.diContainer
             ]
         )
     ]
