@@ -22,17 +22,26 @@ struct MonthCalendarView: View {
         }
         
         let firstDayOfMonth = monthInterval.start
+        let lastDayOfMonth = monthInterval.end
+        
         guard let firstDayOfWeek = calendar.dateInterval(of: .weekOfYear, for: firstDayOfMonth)?.start else {
+            return []
+        }
+        
+        guard let lastWeekInterval = calendar.dateInterval(of: .weekOfYear, for: lastDayOfMonth),
+              let lastDayOfWeek = calendar.date(byAdding: .day, value: -1, to: lastWeekInterval.end) else {
             return []
         }
         
         var dates: [Date] = []
         var currentDate = firstDayOfWeek
         
-        // 5주치 날짜
-        for _ in 0..<35 {
+        while currentDate <= lastDayOfWeek {
             dates.append(currentDate)
-            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
+                break
+            }
+            currentDate = nextDate
         }
         
         return dates
