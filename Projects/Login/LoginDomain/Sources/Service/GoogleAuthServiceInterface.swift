@@ -12,6 +12,5 @@ public protocol GoogleAuthServiceInterface {
     @MainActor
     func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult
     
-    @MainActor
     func signOut()
 }

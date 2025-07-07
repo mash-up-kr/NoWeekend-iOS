@@ -7,11 +7,11 @@
 
 import Foundation
 
-public final class AuthUseCase: @preconcurrency AuthUseCaseInterface {
+public final class AuthUseCase: AuthUseCaseInterface {
     private let googleAuthService: GoogleAuthServiceInterface
     private let appleAuthService: AppleAuthServiceInterface
     
-    public nonisolated init(
+    public init(
         googleAuthService: GoogleAuthServiceInterface,
         appleAuthService: AppleAuthServiceInterface
     ) {
@@ -19,12 +19,10 @@ public final class AuthUseCase: @preconcurrency AuthUseCaseInterface {
         self.appleAuthService = appleAuthService
     }
     
-    @MainActor
     public func signOutGoogle() {
         googleAuthService.signOut()
     }
     
-    @MainActor
     public func signOutApple() {
         print("Apple Sign-In signed out")
     }
