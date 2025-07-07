@@ -76,9 +76,6 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         }
         
         do {
-            // Step 4: 첫 번째 서버 로그인 시도 (이름 없이)
-            print("\n4️⃣ 첫 번째 서버 로그인 시도 (이름 없이)")
-            print("📤 서버로 전송할 데이터:")
             print("   - Authorization Code 길이: \(authCode.count)자")
             print("   - Name: nil")
             
@@ -87,8 +84,6 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
                 name: nil
             )
             
-            print("✅ 첫 번째 로그인 성공!")
-            print("👤 로그인된 사용자 정보:")
             print("   - Email: \(user.email)")
             print("🎉 === Apple 로그인 완료 ===\n")
             
@@ -117,9 +112,6 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
                     
                     print("✅ 회원가입용 이름 확인됨: '\(name)'")
                     
-                    // Step 6: 회원가입 시도 (이름 포함)
-                    print("\n6️⃣ 서버 회원가입 시도 (이름 포함)")
-                    print("📤 서버로 전송할 데이터:")
                     print("   - Authorization Code 길이: \(authCode.count)자")
                     print("   - Name: '\(name)'")
                     
@@ -136,28 +128,19 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
                     return user
                     
                 case .authenticationFailed:
-                    print("❌ 인증 실패")
                     throw loginError
                 case .noPresentingViewController:
-                    print("❌ PresentingViewController 없음")
                     throw loginError
                 case .nameNotAvailable:
-                    print("❌ 이름 정보 없음")
                     throw loginError
                 case .appleSignInCancelled:
-                    print("❌ Apple 로그인 취소")
                     throw loginError
                 case .appleSignInFailed:
-                    print("❌ Apple 로그인 실패")
                     throw loginError
                 case .invalidAppleCredential:
-                    print("❌ 잘못된 Apple 자격증명")
                     throw loginError
                 }
             } else {
-                print("❌ 예상하지 못한 오류:")
-                print("   - Error: \(error)")
-                print("💥 === Apple 로그인 실패 ===\n")
                 throw LoginError.authenticationFailed(error)
             }
         }

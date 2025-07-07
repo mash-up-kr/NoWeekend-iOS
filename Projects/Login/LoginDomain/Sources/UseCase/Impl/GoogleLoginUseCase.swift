@@ -29,8 +29,6 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
     public func execute() async throws -> LoginUser {
         print("\n🎯 === Google 로그인 UseCase 실행 시작 ===")
         
-        // Step 1: PresentingViewController 확인
-        print("1️⃣ PresentingViewController 확인 중...")
         guard let presentingViewController = viewControllerProvider.getCurrentPresentingViewController() else {
             print("❌ PresentingViewController를 찾을 수 없습니다.")
             throw LoginError.noPresentingViewController
@@ -50,16 +48,11 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             print("   - Email: \(signInResult.email ?? "없음")")
             
             guard !signInResult.authorizationCode.isEmpty else {
-                print("❌ Google 인증 코드가 비어있습니다.")
                 throw LoginError.authenticationFailed(
                     NSError(domain: "GoogleSignIn", code: -1,
                            userInfo: [NSLocalizedDescriptionKey: "Google 인증 코드를 받을 수 없습니다."])
                 )
             }
-            
-            // Step 3: 첫 번째 서버 로그인 시도 (이름 없이)
-            print("\n3️⃣ 서버 로그인 시도 (이름 없이)")
-            print("📤 서버로 전송할 데이터:")
             print("   - Authorization Code 길이: \(signInResult.authorizationCode.count)자")
             print("   - Name: nil")
             
@@ -69,7 +62,6 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             )
             
             print("✅ 첫 번째 로그인 성공!")
-            print("👤 로그인된 사용자 정보:")
             print("   - Email: \(user.email)")
             print("🎉 === Google 로그인 완료 ===\n")
             
@@ -132,22 +124,16 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                     return user
                     
                 case .authenticationFailed:
-                    print("❌ 인증 실패")
                     throw loginError
                 case .noPresentingViewController:
-                    print("❌ PresentingViewController 없음")
                     throw loginError
                 case .nameNotAvailable:
-                    print("❌ 이름 정보 없음")
                     throw loginError
                 case .appleSignInCancelled:
-                    print("❌ Apple 로그인 취소")
                     throw loginError
                 case .appleSignInFailed:
-                    print("❌ Apple 로그인 실패")
                     throw loginError
                 case .invalidAppleCredential:
-                    print("❌ 잘못된 Apple 자격증명")
                     throw loginError
                 }
             } else {

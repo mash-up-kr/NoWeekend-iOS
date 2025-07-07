@@ -6,8 +6,9 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
-
 public enum Config {
+    // MARK: - API Configuration
     public static let baseURL = "https://noweekend.store/api/v1"
+    
+    
 }
