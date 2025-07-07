@@ -9,6 +9,7 @@
 import Foundation
 import GoogleSignIn
 import UIKit
+import LoginDomain
 
 public protocol GoogleAuthServiceInterface {
     @MainActor

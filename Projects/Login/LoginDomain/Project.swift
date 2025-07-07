@@ -9,6 +9,7 @@ let project = Project.make(
             bundleId: BundleID.Login.domain,
             sources: ["Sources/**"],
             dependencies: [
+                .Shared.utils
             ]
         )
     ]

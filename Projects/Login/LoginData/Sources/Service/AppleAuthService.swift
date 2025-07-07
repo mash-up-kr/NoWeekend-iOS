@@ -8,6 +8,7 @@
 
 import Foundation
 import AuthenticationServices
+import LoginDomain
 
 public protocol AppleAuthServiceInterface {
     @MainActor

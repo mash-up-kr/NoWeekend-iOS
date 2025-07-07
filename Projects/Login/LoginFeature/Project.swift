@@ -10,8 +10,10 @@ let project = Project.make(
             sources: ["Sources/**"],
             dependencies: [
                 .Login.domain,
+                .Login.data,
                 .Core.coordinator,
                 .Core.diContainer,
+                .Core.nwnetwork,
                 .Shared.designSystem,
                 .Shared.utils
             ]

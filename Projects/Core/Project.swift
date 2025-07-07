@@ -17,9 +17,7 @@ let project = Project.make(
             bundleId: BundleID.Core.nwnetwork,
             sources: ["NWNetwork/Sources/**"],
             dependencies: [
-                .External.alamofire,
-                .Core.diContainer,
-                .External.googleSignIn
+                .External.alamofire
             ],
             settings: .settings(
                 base: [

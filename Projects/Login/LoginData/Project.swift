@@ -10,7 +10,8 @@ let project = Project.make(
             sources: ["Sources/**"],
             dependencies: [
                 .Login.domain,
-                .Core.diContainer
+                .Core.nwnetwork,
+                .External.googleSignIn
             ]
         )
     ]
