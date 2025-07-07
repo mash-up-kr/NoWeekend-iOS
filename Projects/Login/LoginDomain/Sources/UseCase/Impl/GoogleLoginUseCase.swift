@@ -30,16 +30,12 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             throw LoginError.noPresentingViewController
         }
         
-        if presentingViewController.view.window == nil {
-        }
-        
         do {
             // 1단계: Google 인증
             let signInResult = try await googleAuthService.signIn(
                 presentingViewController: presentingViewController
             )
             
-            // ✅ accessToken 유효성 체크
             guard !signInResult.accessToken.isEmpty else {
                 throw LoginError.authenticationFailed(
                     NSError(domain: "GoogleSignIn", code: -1,
@@ -47,7 +43,7 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                 )
             }
             
-            // 2단계: 로그인 시도 (기존 사용자)
+            // 2단계: 로그인 시도 (name 없이 먼저 시도)
             let user = try await authRepository.loginWithGoogle(
                 authorizationCode: signInResult.accessToken,
                 name: nil
@@ -56,16 +52,14 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             return user
             
         } catch {
-            // LoginError인 경우 바로 처리
             if let loginError = error as? LoginError {
                 switch loginError {
                 case .registrationRequired:
-                    // 회원가입이 필요한 경우 - 재인증하여 signInResult 획득
+                    // exists: false인 경우 - 이름 포함해서 재시도
                     let signInResult = try await googleAuthService.signIn(
                         presentingViewController: presentingViewController
                     )
                     
-                    // ✅ 재인증 후에도 토큰 유효성 체크
                     guard !signInResult.accessToken.isEmpty else {
                         throw LoginError.authenticationFailed(
                             NSError(domain: "GoogleSignIn", code: -1,
@@ -77,7 +71,7 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                         throw LoginError.nameNotAvailable
                     }
                     
-                    // 3단계: 회원가입 시도
+                    // 3단계: 회원가입 시도 (이름 포함)
                     let user = try await authRepository.loginWithGoogle(
                         authorizationCode: signInResult.accessToken,
                         name: profileName

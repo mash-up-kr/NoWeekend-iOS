@@ -11,10 +11,10 @@ public enum LoginError: Error, LocalizedError {
     case noPresentingViewController
     case nameNotAvailable
     case authenticationFailed(Error)
+    case registrationRequired(Error)
     case appleSignInCancelled
     case appleSignInFailed
     case invalidAppleCredential
-    case registrationRequired(Error)
     
     public var errorDescription: String? {
         switch self {
@@ -24,7 +24,7 @@ public enum LoginError: Error, LocalizedError {
             return "회원가입을 위한 이름을 가져올 수 없습니다."
         case .authenticationFailed(let error):
             return "로그인에 실패했습니다: \(error.localizedDescription)"
-        case .registrationRequired(let error):  // 새로 추가
+        case .registrationRequired(let error):
             return "회원가입이 필요합니다: \(error.localizedDescription)"
         case .appleSignInCancelled:
             return "Apple 로그인이 취소되었습니다."

@@ -46,15 +46,11 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
     }
     
     public func loginWithApple(
-        identityToken: String,
-        authorizationCode: String?,
-        email: String?,
+        authorizationCode: String,
         name: String?
     ) async throws -> LoginUser {
         let requestDTO = AppleLoginRequestDTO(
-            identityToken: identityToken,
             authorizationCode: authorizationCode,
-            email: email,
             name: name
         )
         let parameters = try requestDTO.asDictionary()
@@ -78,7 +74,7 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         }
     }
     
-    // MARK: - Private Error Mapping
+    // MARK: - Error Mapping
     private func mapNetworkErrorToLoginError(_ error: Error) -> LoginError {
         if let networkError = error as? NetworkError {
             switch networkError {

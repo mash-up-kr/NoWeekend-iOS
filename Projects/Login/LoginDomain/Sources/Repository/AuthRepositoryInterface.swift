@@ -14,10 +14,7 @@ public protocol AuthRepositoryInterface {
     ) async throws -> LoginUser
     
     func loginWithApple(
-        identityToken: String,
-        authorizationCode: String?,
-        email: String?,
+        authorizationCode: String,
         name: String?
     ) async throws -> LoginUser
 }
-

@@ -52,7 +52,6 @@ public class AppState {
             self.isLoggedIn = hasValidToken
             
             if hasValidToken {
-                // 로그인되어 있으면 온보딩 상태 체크
                 self.checkOnboardingStatus()
             } else {
                 self.isLoading = false
