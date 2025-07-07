@@ -10,13 +10,6 @@ import Foundation
 import AuthenticationServices
 import LoginDomain
 
-public protocol AppleAuthServiceInterface {
-    @MainActor
-    func signIn() async throws -> AppleSignInResult
-    
-    @MainActor
-    func getCredentialState(for userID: String) async throws -> String
-}
 
 @MainActor
 public final class AppleAuthService: NSObject, ObservableObject, AppleAuthServiceInterface {

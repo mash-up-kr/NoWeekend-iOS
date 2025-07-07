@@ -13,6 +13,7 @@ import CalendarFeature
 import OnboardingFeature
 import LoginFeature
 import DataBridge
+import Utils
 
 enum AppDependencyConfiguration {
     static func configure() {
@@ -22,6 +23,7 @@ enum AppDependencyConfiguration {
         DataBridge.initialize()
         
         // 2. Feature 모듈들이 자체 UseCase 등록
+        UtilsModule.registerUtilities()
         HomeFeatureModule.registerUseCases()
         ProfileFeatureModule.registerUseCases()
         CalendarFeatureModule.registerUseCases()

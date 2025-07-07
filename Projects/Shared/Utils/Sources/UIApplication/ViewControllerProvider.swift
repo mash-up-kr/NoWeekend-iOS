@@ -8,7 +8,7 @@
 import UIKit
 
 @MainActor
-public final class ViewControllerProvider: @preconcurrency ViewControllerProviderInterface {
+public final class ViewControllerProvider: ViewControllerProviderInterface {
     
     public init() {}
     

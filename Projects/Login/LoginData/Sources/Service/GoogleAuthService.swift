@@ -11,13 +11,6 @@ import GoogleSignIn
 import UIKit
 import LoginDomain
 
-public protocol GoogleAuthServiceInterface {
-    @MainActor
-    func signIn(presentingViewController: UIViewController) async throws -> GoogleSignInResult
-    
-    @MainActor
-    func signOut()
-}
 
 public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {}
@@ -42,10 +35,11 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
                 }
                 
                 let user = result.user
-                let accessToken = user.accessToken.tokenString
+                
+                let authorizationCode = user.accessToken.tokenString
                 
                 let signInResult = GoogleSignInResult(
-                    accessToken: accessToken,
+                    authorizationCode: authorizationCode,
                     name: user.profile?.name,
                     email: user.profile?.email
                 )

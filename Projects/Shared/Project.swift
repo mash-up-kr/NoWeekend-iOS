@@ -8,7 +8,11 @@ let project = Project.make(
         .framework(
             name: "Utils",
             bundleId: BundleID.Shared.utils,
-            sources: ["Utils/Sources/**"]
+            sources: ["Utils/Sources/**"],
+            dependencies: [
+                .Core.diContainer,
+                .External.swinject
+            ]
         ),
         .framework(
             name: "DesignSystem",

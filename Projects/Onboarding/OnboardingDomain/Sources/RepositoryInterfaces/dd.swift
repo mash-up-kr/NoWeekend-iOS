@@ -1,5 +1,5 @@
 //
-//  AuthUseCaseProtocol.swift
+//  AuthRepositoryProtocol.swift
 //  OnboardingDomain
 //
 //  Created by 이지훈 on 7/3/25.
@@ -7,4 +7,3 @@
 //
 
 import Foundation
-

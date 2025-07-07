@@ -9,6 +9,7 @@ import UIKit
 import Foundation
 import Utils
 
+
 public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
     private let authRepository: AuthRepositoryInterface
     private let googleAuthService: GoogleAuthServiceInterface
@@ -36,16 +37,17 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                 presentingViewController: presentingViewController
             )
             
-            guard !signInResult.accessToken.isEmpty else {
+            // 변경: authorizationCode 체크
+            guard !signInResult.authorizationCode.isEmpty else {
                 throw LoginError.authenticationFailed(
                     NSError(domain: "GoogleSignIn", code: -1,
-                           userInfo: [NSLocalizedDescriptionKey: "Google 인증 토큰을 받을 수 없습니다."])
+                           userInfo: [NSLocalizedDescriptionKey: "Google 인증 코드를 받을 수 없습니다."])
                 )
             }
             
             // 2단계: 로그인 시도 (name 없이 먼저 시도)
             let user = try await authRepository.loginWithGoogle(
-                authorizationCode: signInResult.accessToken,
+                authorizationCode: signInResult.authorizationCode,
                 name: nil
             )
             
@@ -60,10 +62,11 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                         presentingViewController: presentingViewController
                     )
                     
-                    guard !signInResult.accessToken.isEmpty else {
+                    // 변경: authorizationCode 체크
+                    guard !signInResult.authorizationCode.isEmpty else {
                         throw LoginError.authenticationFailed(
                             NSError(domain: "GoogleSignIn", code: -1,
-                                   userInfo: [NSLocalizedDescriptionKey: "Google 재인증 토큰을 받을 수 없습니다."])
+                                   userInfo: [NSLocalizedDescriptionKey: "Google 재인증 코드를 받을 수 없습니다."])
                         )
                     }
                     
@@ -73,7 +76,7 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                     
                     // 3단계: 회원가입 시도 (이름 포함)
                     let user = try await authRepository.loginWithGoogle(
-                        authorizationCode: signInResult.accessToken,
+                        authorizationCode: signInResult.authorizationCode,
                         name: profileName
                     )
                     return user
