@@ -5,13 +5,13 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-import SwiftUI
-import HomeFeature
-import ProfileFeature
 import CalendarFeature
-import OnboardingFeature
-import LoginFeature
 import DesignSystem
+import HomeFeature
+import LoginFeature
+import OnboardingFeature
+import ProfileFeature
+import SwiftUI
 
 @MainActor
 struct ContentView: View {

@@ -9,7 +9,7 @@ let project = Project.make(
             bundleId: BundleID.Core.dicontainer,
             sources: ["DIContainer/Sources/**"],
             dependencies: [
-                .External.swinject,
+                .External.swinject
             ],
             settings: .frameworkSettings
         ),

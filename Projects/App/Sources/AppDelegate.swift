@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import UIKit
 import GoogleSignIn
 import LoginDomain
 import NWNetwork
+import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -29,6 +29,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         open url: URL,
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-        return GIDSignIn.sharedInstance.handle(url)
+        GIDSignIn.sharedInstance.handle(url)
     }
 }

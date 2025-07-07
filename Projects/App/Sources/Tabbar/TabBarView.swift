@@ -6,12 +6,11 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
+import CalendarFeature
 import DesignSystem
 import HomeFeature
-import CalendarFeature
 import ProfileFeature
-
+import SwiftUI
 
 public struct TabBarView: View {
     public enum Tab: Int, CaseIterable {

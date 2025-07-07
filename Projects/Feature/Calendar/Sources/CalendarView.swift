@@ -1,7 +1,7 @@
-import SwiftUI
 import CalendarInterface
-import Domain
 import DesignSystem
+import Domain
+import SwiftUI
 
 public struct CalendarView: View {
     @State private var selectedDate = Date()
@@ -114,7 +114,7 @@ public struct CalendarView: View {
     }
     
     private func getTodosForDate(_ date: Date) -> [TodoItem] {
-        return todoItems.prefix(2).map { $0 }
+        todoItems.prefix(2).map { $0 }
     }
     
     private func addNewTodo() {

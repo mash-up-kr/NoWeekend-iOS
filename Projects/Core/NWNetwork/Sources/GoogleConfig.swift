@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public struct GoogleConfig {
     public static var clientID: String {
         guard let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String else {

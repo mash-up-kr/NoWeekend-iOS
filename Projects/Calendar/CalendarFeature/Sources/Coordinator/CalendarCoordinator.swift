@@ -6,9 +6,9 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
-import Coordinator
 import Combine
+import Coordinator
+import SwiftUI
 
 public final class CalendarCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = CalendarRouter.Screen

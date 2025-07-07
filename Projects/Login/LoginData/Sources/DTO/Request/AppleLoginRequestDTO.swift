@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public struct AppleLoginRequestDTO: Encodable {
     public let authorizationCode: String
     public let name: String?

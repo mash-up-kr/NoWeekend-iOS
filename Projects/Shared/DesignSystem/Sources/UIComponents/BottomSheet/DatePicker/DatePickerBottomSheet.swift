@@ -52,10 +52,10 @@ public struct DatePickerBottomSheet: View {
             .frame(maxWidth: .infinity)
             .clipped()
         }
-        .onChange(of: selectedMonth) { _, newMonth in
+        .onChange(of: selectedMonth) { _, _ in
             updateSelectedDate()
         }
-        .onChange(of: selectedYear) { _, newYear in
+        .onChange(of: selectedYear) { _, _ in
             updateSelectedDate()
         }
         .onAppear {

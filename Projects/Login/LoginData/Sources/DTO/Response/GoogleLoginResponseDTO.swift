@@ -27,7 +27,7 @@ public struct ErrorMessageDTO: Decodable {
 
 extension GoogleLoginResponseDTO {
     public func toDomain() -> LoginUser {
-        return LoginUser(
+        LoginUser(
             email: self.email,
             accessToken: self.accessToken,
             isExistingUser: self.exists

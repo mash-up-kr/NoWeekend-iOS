@@ -54,7 +54,7 @@ public struct TodoCheckboxComponent: View {
         onMoreTapped: (() -> Void)? = nil
     ) {
         self.todoItem = TodoItem(
-            id: 0, //임시 ID
+            id: 0, // 임시 ID
             title: title,
             isCompleted: isCompleted,
             category: category,

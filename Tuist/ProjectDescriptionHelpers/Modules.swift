@@ -36,7 +36,7 @@ public enum ProjectPath: String, CaseIterable {
     case onboardingData = "Projects/Onboarding/OnboardingData"
     
     public var relativePath: Path {
-        return .relativeToRoot(self.rawValue)
+        .relativeToRoot(self.rawValue)
     }
 }
 

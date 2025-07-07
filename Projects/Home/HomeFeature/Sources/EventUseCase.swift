@@ -17,7 +17,7 @@ public class EventUseCase: EventUseCaseProtocol {
     }
     
     public func getEvents() async throws -> [Event] {
-        return try await eventRepository.getEvents()
+        try await eventRepository.getEvents()
     }
     
     public func getUpcomingEvents() async throws -> [Event] {

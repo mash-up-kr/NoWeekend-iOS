@@ -18,7 +18,7 @@ let project = Project.make(
                 .Login.feature,
                 .Bridge.dataBridge,
                 .Shared.designSystem,
-                .Shared.utils,
+                .Shared.utils
             ],
             settings: .appSettings(teamID: Environment.teamID)
         )

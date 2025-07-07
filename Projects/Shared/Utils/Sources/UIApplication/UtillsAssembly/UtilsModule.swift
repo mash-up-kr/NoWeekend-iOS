@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
 import DIContainer
+import Foundation
 
 public enum UtilsModule {
     public static func registerUtilities() {

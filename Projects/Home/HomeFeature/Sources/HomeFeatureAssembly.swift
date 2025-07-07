@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
-import Swinject
-import HomeDomain
 import DIContainer
+import Foundation
+import HomeDomain
+import Swinject
 
 public struct HomeFeatureAssembly: Assembly {
     public init() {}

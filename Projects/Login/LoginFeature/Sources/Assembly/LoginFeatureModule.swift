@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
 import DIContainer
-import Swinject
+import Foundation
 import LoginDomain
+import Swinject
 
 public enum LoginFeatureModule {
     public static func registerUseCases() {

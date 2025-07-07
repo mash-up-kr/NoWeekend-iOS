@@ -3,8 +3,8 @@
 //  LoginData
 //
 
-import Foundation
 import DIContainer
+import Foundation
 import LoginDomain
 import NWNetwork
 
@@ -14,7 +14,7 @@ public enum LoginDataModule {
         
         // 🌐 NetworkService 등록
         DIContainer.shared.container.register(NWNetworkServiceProtocol.self) { _ in
-            return NWNetworkService()
+            NWNetworkService()
         }.inObjectScope(.container)
         
         // 📚 AuthRepository 등록
@@ -25,14 +25,14 @@ public enum LoginDataModule {
         
         // 🍎 AppleAuthService 등록
         DIContainer.shared.container.register(AppleAuthServiceInterface.self) { _ in
-            return MainActor.assumeIsolated {
+            MainActor.assumeIsolated {
                 AppleAuthService()
             }
         }.inObjectScope(.graph)
         
         // ✅ GoogleAuthService 등록
         DIContainer.shared.container.register(GoogleAuthServiceInterface.self) { _ in
-            return GoogleAuthService()
+            GoogleAuthService()
         }.inObjectScope(.graph)
         
         print("✅ LoginData Repository 등록 완료")

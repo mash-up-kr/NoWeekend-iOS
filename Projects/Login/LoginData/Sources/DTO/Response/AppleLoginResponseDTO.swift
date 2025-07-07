@@ -23,7 +23,7 @@ public struct ApiResponseAppleLoginDTO: Decodable {
 
 extension AppleLoginResponseDTO {
     public func toDomain() -> LoginUser {
-        return LoginUser(
+        LoginUser(
             email: self.email,
             accessToken: self.accessToken,
             isExistingUser: self.exists

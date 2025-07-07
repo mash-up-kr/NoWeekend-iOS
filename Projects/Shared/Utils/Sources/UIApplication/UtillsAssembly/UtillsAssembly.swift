@@ -16,7 +16,7 @@ public struct UtillsAssembly: Assembly {
         print("🔧 CommonAssembly 등록 시작")
         
         container.register(ViewControllerProviderInterface.self) { _ in
-            return MainActor.assumeIsolated {
+            MainActor.assumeIsolated {
                 ViewControllerProvider()
             }
         }.inObjectScope(.container)

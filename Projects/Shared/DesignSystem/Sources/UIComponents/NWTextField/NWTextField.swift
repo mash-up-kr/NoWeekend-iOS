@@ -28,7 +28,7 @@ public struct NWTextField: View {
     }
     
     private var isMultiLine: Bool {
-        return textLineCount > 1
+        textLineCount > 1
     }
     
     // MARK: - Initialization
@@ -133,7 +133,7 @@ public struct NWTextField: View {
 // MARK: - Extensions
 public extension NWTextField {
     func errorMessage(_ message: String?) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: self._text,
             placeholder: self.placeholder,
             errorMessage: .constant(message),
@@ -142,7 +142,7 @@ public extension NWTextField {
     }
     
     func placeholder(_ text: String) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: self._text,
             placeholder: text,
             errorMessage: self._errorMessage,
@@ -151,7 +151,7 @@ public extension NWTextField {
     }
     
     func style(_ style: NWTextFieldStyle) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: self._text,
             placeholder: self.placeholder,
             errorMessage: self._errorMessage,
@@ -160,7 +160,7 @@ public extension NWTextField {
     }
     
     func suffix(_ text: String) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: self._text,
             placeholder: self.placeholder,
             errorMessage: self._errorMessage,
@@ -175,7 +175,7 @@ public extension NWTextField {
         placeholder: String = "",
         errorMessage: Binding<String?> = .constant(nil)
     ) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: text,
             placeholder: placeholder,
             errorMessage: errorMessage,
@@ -189,7 +189,7 @@ public extension NWTextField {
         placeholder: String = "",
         errorMessage: Binding<String?> = .constant(nil)
     ) -> NWTextField {
-        return NWTextField(
+        NWTextField(
             text: text,
             placeholder: placeholder,
             errorMessage: errorMessage,

@@ -5,14 +5,13 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-
+import CalendarFeature
+import DataBridge
 import Foundation
 import HomeFeature
-import ProfileFeature
-import CalendarFeature
-import OnboardingFeature
 import LoginFeature
-import DataBridge
+import OnboardingFeature
+import ProfileFeature
 import Utils
 
 enum AppDependencyConfiguration {

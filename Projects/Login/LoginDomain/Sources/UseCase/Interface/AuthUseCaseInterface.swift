@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public protocol AuthUseCaseInterface {
     func signOutGoogle()
     func signOutApple()

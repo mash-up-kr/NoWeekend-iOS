@@ -1,7 +1,7 @@
-import SwiftUI
-import HomeInterface
-import Domain
 import DesignSystem
+import Domain
+import HomeInterface
+import SwiftUI
 
 public struct HomeView: View {
     public init() {}

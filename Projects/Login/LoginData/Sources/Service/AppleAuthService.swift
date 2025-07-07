@@ -6,15 +6,15 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
 import AuthenticationServices
+import Foundation
 import LoginDomain
 
 @MainActor
 public final class AppleAuthService: NSObject, ObservableObject, AppleAuthServiceInterface {
     private var currentContinuation: CheckedContinuation<AppleSignInResult, Error>?
     
-    public override init() {
+    override public init() {
         super.init()
         print("🍎 AppleAuthService 초기화 완료")
     }

@@ -6,9 +6,9 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
+import DIContainer
 import Foundation
 import HomeDomain
-import DIContainer
 
 public final class EventRepositoryImpl: EventRepositoryProtocol {
     private let mockEvents: [Event] = [

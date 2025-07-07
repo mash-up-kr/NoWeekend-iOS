@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
-import Swinject
-import LoginDomain
 import DIContainer
+import Foundation
+import LoginDomain
+import Swinject
 import Utils
 
 public struct LoginFeatureAssembly: Assembly {

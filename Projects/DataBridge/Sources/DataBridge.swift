@@ -5,14 +5,14 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
+import CalendarData
+import DIContainer
 import Foundation
 import HomeData
-import ProfileData
-import CalendarData
-import OnboardingData
 import LoginData
+import OnboardingData
+import ProfileData
 import Utils
-import DIContainer
 
 // DataBridge는 모든 Data 모듈들을 한곳에 모아주는 역할
 public enum DataBridge {

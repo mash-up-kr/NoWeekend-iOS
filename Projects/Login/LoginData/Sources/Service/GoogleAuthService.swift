@@ -8,8 +8,8 @@
 
 import Foundation
 import GoogleSignIn
-import UIKit
 import LoginDomain
+import UIKit
 
 public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {

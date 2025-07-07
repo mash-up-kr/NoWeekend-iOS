@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
-import ProfileDomain
 import Coordinator
 import DIContainer
+import ProfileDomain
+import SwiftUI
 
 public struct ProfileView: View {
     @Dependency private var userUseCase: UserUseCaseProtocol

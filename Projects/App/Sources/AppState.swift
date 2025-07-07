@@ -5,11 +5,11 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-import Foundation
-import OnboardingDomain
-import LoginFeature
-import DIContainer
 import Combine
+import DIContainer
+import Foundation
+import LoginFeature
+import OnboardingDomain
 
 @MainActor
 @Observable
@@ -70,7 +70,6 @@ public class AppState {
         
         print("✅ 온보딩 상태 확인 완료: \(isOnboardingCompleted)")
     }
-    
     
     public func completeOnboarding() {
         print("✅ 온보딩 완료 처리")

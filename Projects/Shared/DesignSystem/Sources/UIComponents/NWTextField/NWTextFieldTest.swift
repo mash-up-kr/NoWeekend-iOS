@@ -15,8 +15,8 @@ public struct NWTextFieldExample: View {
     @State private var hoursText = ""
     @State private var minutesText = ""
     
-    @State private var todoError: String? = nil
-    @State private var daysError: String? = nil
+    @State private var todoError: String?
+    @State private var daysError: String?
     
     public init() {}
     
@@ -50,7 +50,6 @@ public struct NWTextFieldExample: View {
     
     private var suffixStyleSection: some View {
         VStack(alignment: .leading, spacing: 24) {
-            
             
             VStack(alignment: .leading, spacing: 16) {
                 ExampleSubSection(label: "일 단위 입력") {
