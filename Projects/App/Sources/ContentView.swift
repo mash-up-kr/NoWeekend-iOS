@@ -60,6 +60,7 @@ struct ContentView: View {
                             Text(Tab.profile.title)
                         }
                         .tag(Tab.profile)
+                    
                 }
                 .accentColor(.black)
             }

@@ -31,5 +31,17 @@ let project = Project.make(
             ],
             settings: .appSettings(teamID: Environment.teamID)
         )
+    ],
+    resourceSynthesizers: [
+        .custom(
+            name: "Fonts",
+            parser: .fonts,
+            extensions: ["ttf", "otf"]
+        ),
+        .custom(
+            name: "Strings",
+            parser: .strings,
+            extensions: ["strings"]
+        )
     ]
 )

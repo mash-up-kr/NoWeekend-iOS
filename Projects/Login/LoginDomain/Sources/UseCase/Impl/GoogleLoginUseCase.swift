@@ -7,6 +7,7 @@
 
 import UIKit
 import Foundation
+import Utils
 
 public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
     private let authRepository: AuthRepositoryInterface
