@@ -9,7 +9,8 @@ let project = Project.make(
             bundleId: BundleID.Onboarding.domain,
             sources: ["Sources/**"],
             dependencies: [
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

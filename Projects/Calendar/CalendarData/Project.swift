@@ -11,7 +11,8 @@ let project = Project.make(
             dependencies: [
                 .Calendar.domain,
                 .Core.diContainer
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

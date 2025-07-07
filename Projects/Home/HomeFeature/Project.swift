@@ -14,7 +14,8 @@ let project = Project.make(
                 .Core.coordinator,
                 .Shared.designSystem,
                 .Shared.utils
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

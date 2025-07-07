@@ -10,7 +10,8 @@ let project = Project.make(
             sources: ["Sources/**"],
             dependencies: [
                 .Shared.utils
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

@@ -10,6 +10,7 @@ import HomeData
 import ProfileData
 import CalendarData
 import OnboardingData
+import LoginData
 
 // DataBridge는 모든 Data 모듈들을 한곳에 모아주는 역할
 public enum DataBridge {
@@ -21,6 +22,7 @@ public enum DataBridge {
         ProfileDataModule.registerRepositories()
         CalendarDataModule.registerRepositories()
         OnboardingDataModule.registerRepositories()
+        LoginDataModule.registerRepositories()
         
         print("✅ DataBridge 초기화 완료")
     }

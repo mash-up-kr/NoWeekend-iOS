@@ -11,7 +11,7 @@ public final class AuthUseCase: @preconcurrency AuthUseCaseInterface {
     private let googleAuthService: GoogleAuthServiceInterface
     private let appleAuthService: AppleAuthServiceInterface
     
-    public init(
+    public nonisolated init(
         googleAuthService: GoogleAuthServiceInterface,
         appleAuthService: AppleAuthServiceInterface
     ) {

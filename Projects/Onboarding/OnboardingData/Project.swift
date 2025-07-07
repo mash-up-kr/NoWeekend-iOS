@@ -11,7 +11,8 @@ let project = Project.make(
             dependencies: [
                 .Onboarding.domain,
                 .Core.diContainer
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

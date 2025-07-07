@@ -8,12 +8,11 @@
 
 import Foundation
 
-@MainActor
 public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
     private let authRepository: AuthRepositoryInterface
     private let appleAuthService: AppleAuthServiceInterface
     
-    public init(
+    public nonisolated init(
         authRepository: AuthRepositoryInterface,
         appleAuthService: AppleAuthServiceInterface
     ) {
@@ -21,6 +20,7 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         self.appleAuthService = appleAuthService
     }
     
+    @MainActor
     public func execute() async throws -> LoginUser {
         let signInResult = try await appleAuthService.signIn()
         
@@ -42,7 +42,6 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         print("  - Email: \(signInResult.email ?? "nil")")
         
         do {
-            // 1단계: 로그인 시도 (기존 사용자)
             let user = try await authRepository.loginWithApple(
                 identityToken: signInResult.identityToken ?? "",
                 authorizationCode: signInResult.authorizationCode,
@@ -56,18 +55,16 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         } catch {
             print("❌ Apple 로그인 실패: \(error)")
             
-            // ✅ LoginError만 처리 (NetworkError 의존성 제거)
             if let loginError = error as? LoginError {
                 switch loginError {
                 case .registrationRequired:
+                    print("🔄 회원가입 시도...")
                     
-                    // 회원가입을 위해 이름이 필요
                     guard let name = nameToSend, !name.isEmpty else {
                         print("❌ 회원가입을 위한 이름이 필요합니다")
                         throw LoginError.nameNotAvailable
                     }
                     
-                    // 2단계: 회원가입 시도
                     let user = try await authRepository.loginWithApple(
                         identityToken: signInResult.identityToken ?? "",
                         authorizationCode: signInResult.authorizationCode,

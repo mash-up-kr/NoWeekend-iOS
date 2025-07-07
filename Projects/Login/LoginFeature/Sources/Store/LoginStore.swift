@@ -9,15 +9,14 @@ import Foundation
 import Combine
 import LoginDomain
 
-@MainActor
 public final class LoginStore: ObservableObject {
     @Published public private(set) var state = LoginState()
     public let effect = PassthroughSubject<LoginEffect, Never>()
-    
+
     private let loginWithGoogleUseCase: GoogleLoginUseCaseInterface
     private let loginWithAppleUseCase: AppleLoginUseCaseInterface
     private let authUseCase: AuthUseCaseInterface
-    
+
     public init(
         loginWithGoogleUseCase: GoogleLoginUseCaseInterface,
         loginWithAppleUseCase: AppleLoginUseCaseInterface,
@@ -27,64 +26,64 @@ public final class LoginStore: ObservableObject {
         self.loginWithAppleUseCase = loginWithAppleUseCase
         self.authUseCase = authUseCase
     }
-    
+
     public func send(_ intent: LoginIntent) {
         switch intent {
         case .signInWithGoogle:
-            handleGoogleSignIn()
+            Task { await handleGoogleSignIn() }
         case .signInWithApple:
-            handleAppleSignIn()
+            Task { await handleAppleSignIn() }
         case .signInSucceeded(let user):
-            handleSignInSuccess(user)
+            Task { await handleSignInSuccess(user) }
         case .signInFailed(let error):
-            handleSignInFailure(error)
+            Task { await handleSignInFailure(error) }
         case .signOut:
-            handleSignOut()
+            Task { await handleSignOut() }
         }
     }
-    
-    // MARK: - Private Methods
-    private func handleGoogleSignIn() {
+
+    @MainActor
+    private func handleGoogleSignIn() async {
         state.errorMessage = ""
         state.isLoading = true
-        
-        Task {
-            do {
-                let user = try await loginWithGoogleUseCase.execute()
-                send(.signInSucceeded(user: user))
-            } catch {
-                send(.signInFailed(error: error))
-            }
+
+        do {
+            let user = try await loginWithGoogleUseCase.execute()
+            send(.signInSucceeded(user: user))
+        } catch {
+            send(.signInFailed(error: error))
         }
     }
-    
-    private func handleAppleSignIn() {
+
+    @MainActor
+    private func handleAppleSignIn() async {
         state.errorMessage = ""
         state.isLoading = true
-        
-        Task {
-            do {
-                let user = try await loginWithAppleUseCase.execute()
-                send(.signInSucceeded(user: user))
-            } catch {
-                send(.signInFailed(error: error))
-            }
+
+        do {
+            let user = try await loginWithAppleUseCase.execute()
+            send(.signInSucceeded(user: user))
+        } catch {
+            send(.signInFailed(error: error))
         }
     }
-    
+
+    @MainActor
     private func handleSignInSuccess(_ user: LoginUser) {
         state.isSignedIn = true
         state.userEmail = user.email
         state.isLoading = false
         effect.send(.navigateToHome)
     }
-    
+
+    @MainActor
     private func handleSignInFailure(_ error: Error) {
         state.errorMessage = error.localizedDescription
         state.isLoading = false
         effect.send(.showError(message: error.localizedDescription))
     }
-    
+
+    @MainActor
     private func handleSignOut() {
         authUseCase.signOutGoogle()
         state = LoginState()

@@ -15,7 +15,8 @@ let project = Project.make(
                 .Onboarding.data,
                 .Login.data,
                 .Core.diContainer
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

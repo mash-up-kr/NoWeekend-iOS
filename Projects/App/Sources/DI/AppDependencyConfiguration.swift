@@ -11,6 +11,7 @@ import HomeFeature
 import ProfileFeature
 import CalendarFeature
 import OnboardingFeature
+import LoginFeature
 import DataBridge
 
 enum AppDependencyConfiguration {
@@ -25,6 +26,7 @@ enum AppDependencyConfiguration {
         ProfileFeatureModule.registerUseCases()
         CalendarFeatureModule.registerUseCases()
         OnboardingFeatureModule.registerUseCases()
+        LoginFeatureModule.registerUseCases()
         
         print("✅ DI Container 설정 완료")
     }

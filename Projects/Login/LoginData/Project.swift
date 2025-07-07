@@ -12,7 +12,8 @@ let project = Project.make(
                 .Login.domain,
                 .Core.nwnetwork,
                 .External.googleSignIn
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

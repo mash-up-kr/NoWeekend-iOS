@@ -26,19 +26,16 @@ struct ContentView: View {
     var body: some View {
         Group {
             if appState.isLoading {
-                // 로딩 화면
                 VStack {
                     ProgressView()
                     Text("로딩 중...")
                         .padding(.top)
                 }
             } else if !appState.isOnboardingCompleted {
-                // 온보딩 화면
                 OnboardingView {
                     appState.completeOnboarding()
                 }
             } else {
-                // 메인 탭뷰
                 TabView(selection: $selectedTab) {
                     // 홈 탭
                     coordinatorFactory.homeCoordinatorRootView

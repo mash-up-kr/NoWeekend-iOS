@@ -13,10 +13,10 @@ let project = Project.make(
                 .Login.data,
                 .Core.coordinator,
                 .Core.diContainer,
-                .Core.nwnetwork,
                 .Shared.designSystem,
                 .Shared.utils
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

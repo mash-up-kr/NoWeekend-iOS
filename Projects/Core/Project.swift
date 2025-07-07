@@ -10,7 +10,8 @@ let project = Project.make(
             sources: ["DIContainer/Sources/**"],
             dependencies: [
                 .External.swinject,
-            ]
+            ],
+            settings: .frameworkSettings
         ),
         .framework(
             name: "NWNetwork",
@@ -20,9 +21,9 @@ let project = Project.make(
                 .External.alamofire
             ],
             settings: .settings(
-                base: [
+                base: Settings.frameworkSettings.base.merging([
                     "OTHER_LDFLAGS": ["-ObjC"]
-                ]
+                ]) { current, _ in current }
             )
         ),
         .framework(
@@ -31,7 +32,8 @@ let project = Project.make(
             sources: ["Coordinator/Sources/**"],
             dependencies: [
                 .Core.diContainer
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )
