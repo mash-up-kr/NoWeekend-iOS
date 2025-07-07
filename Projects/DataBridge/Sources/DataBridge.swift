@@ -24,7 +24,6 @@ public enum DataBridge {
         
         LoginDataModule.registerRepositories()
         
-        // 모든 Data 모듈의 Repository 등록
         HomeDataModule.registerRepositories()
         ProfileDataModule.registerRepositories()
         CalendarDataModule.registerRepositories()

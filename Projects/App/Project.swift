@@ -7,16 +7,7 @@ let project = Project.make(
         .app(
             name: "App",
             bundleId: BundleID.app,
-            infoPlist: .extendingDefault(
-                with: [
-                    "CFBundleDisplayName": "NoWeekend",
-                    "CFBundleName": "NoWeekend",
-                    "UILaunchScreen": [
-                        "UIColorName": "",
-                        "UIImageName": "",
-                    ],
-                ]
-            ),
+            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
@@ -29,11 +20,7 @@ let project = Project.make(
                 .Shared.designSystem,
                 .Shared.utils,
             ],
-            settings: .settings(
-                base: [
-                    "OTHER_LDFLAGS": "$(inherited) -ObjC"
-                ]
-            )
+            settings: .appSettings(teamID: Environment.teamID)
         )
     ],
     resourceSynthesizers: [
