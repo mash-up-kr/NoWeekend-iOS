@@ -17,7 +17,7 @@ extension Target {
         dependencies: [TargetDependency] = [],
         settings: Settings? = .frameworkSettings
     ) -> Target {
-        return .target(
+        .target(
             name: name,
             destinations: .iOS,
             product: .framework,
@@ -41,7 +41,7 @@ extension Target {
         dependencies: [TargetDependency] = [],
         settings: Settings? = .appSettings()
     ) -> Target {
-        return .target(
+        .target(
             name: name,
             destinations: .iOS,
             product: .app,

@@ -12,7 +12,17 @@ let packageSettings = PackageSettings(
         "GTMSessionFetcherCore": .framework,
         "AppCheckCore": .framework,
         "Swinject": .framework
-    ]
+    ],
+    baseSettings: .settings(
+        configurations: [
+            .debug(name: .debug, settings: [
+                "OTHER_LDFLAGS": ["-ObjC", "-all_load"]
+            ]),
+            .release(name: .release, settings: [
+                "OTHER_LDFLAGS": ["-ObjC", "-all_load"]
+            ])
+        ]
+    )
 )
 #endif
 

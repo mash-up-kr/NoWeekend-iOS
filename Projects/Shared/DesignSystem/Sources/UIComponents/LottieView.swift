@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SwiftUI
 import Lottie
+import SwiftUI
 
 public protocol LottieFileRepresentable {
     static var name: String { get }

@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import Coordinator
+import SwiftUI
 
 public final class ProfileCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = ProfileRouter.Screen

@@ -5,8 +5,8 @@
 //  Created by 김시종 on 6/19/25.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 public final class NWTextViewCoordinator: NSObject, UITextViewDelegate {
     @Binding private var text: String

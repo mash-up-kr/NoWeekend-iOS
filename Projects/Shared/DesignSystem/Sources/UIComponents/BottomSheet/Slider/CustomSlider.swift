@@ -116,7 +116,7 @@ extension CustomSlider {
     
     // 현재 값을 0~1 사이의 진행률로 변환
     private func calculateProgress() -> Double {
-        return (value - range.lowerBound) / (range.upperBound - range.lowerBound)
+        (value - range.lowerBound) / (range.upperBound - range.lowerBound)
     }
     
     // 라벨 위치 계산

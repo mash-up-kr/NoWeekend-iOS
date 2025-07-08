@@ -6,9 +6,9 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
-import OnboardingDomain
 import DesignSystem
+import OnboardingDomain
+import SwiftUI
 import Utils
 
 public struct OnboardingView: View {

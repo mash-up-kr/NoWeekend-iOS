@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import CalendarDomain
-import DIContainer
 import DesignSystem
+import DIContainer
+import SwiftUI
 
 public struct CalendarView: View {
     @State private var selectedDate = Date()
@@ -122,7 +122,7 @@ public struct CalendarView: View {
     }
     
     private func getTodosForDate(_ date: Date) -> [TodoItem] {
-        return todoItems.prefix(2).map { $0 }
+        todoItems.prefix(2).map { $0 }
     }
     
     private func addNewTodo() {

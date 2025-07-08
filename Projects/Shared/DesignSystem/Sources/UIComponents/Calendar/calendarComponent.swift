@@ -89,13 +89,13 @@ public struct WeekCalendarView<Content: View>: View {
     }
     
     private var weekdaySymbols: [String] {
-        return ["월", "화", "수", "목", "금", "토", "일"]
+        ["월", "화", "수", "목", "금", "토", "일"]
     }
 }
 
 struct WeekCalendarExampleView: View {
     var body: some View {
-        WeekCalendarView { date in
+        WeekCalendarView { _ in
             DS.Images.imgToastVacation
                 .resizable()
                 .scaledToFit()

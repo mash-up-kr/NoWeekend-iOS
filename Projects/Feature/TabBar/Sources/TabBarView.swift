@@ -1,8 +1,8 @@
-import SwiftUI
-import Home
-import Profile
 import Calendar
 import DesignSystem
+import Home
+import Profile
+import SwiftUI
 
 public struct TabBarView: View {
     public enum Tab: Int, CaseIterable {

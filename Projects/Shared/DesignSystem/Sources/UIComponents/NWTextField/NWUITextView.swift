@@ -10,24 +10,24 @@ import UIKit
 public final class NWUITextView: UITextView {
     private var needsContentSizeUpdate = false
     
-    public override var intrinsicContentSize: CGSize {
+    override public var intrinsicContentSize: CGSize {
         let size = sizeThatFits(CGSize(width: frame.width, height: CGFloat.greatestFiniteMagnitude))
         let height = max(24, size.height)
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
     
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         updateContentSizeIfNeeded()
     }
     
-    public override var text: String? {
+    override public var text: String? {
         didSet {
             scheduleContentSizeUpdate()
         }
     }
     
-    public override var font: UIFont? {
+    override public var font: UIFont? {
         didSet {
             scheduleContentSizeUpdate()
         }

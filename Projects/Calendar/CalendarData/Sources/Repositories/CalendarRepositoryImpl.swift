@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
 import CalendarDomain
+import Foundation
 
 public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
     private let mockEvents: [CalendarEvent] = [
@@ -27,7 +27,7 @@ public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
     }
     
     public func getEventsForDate(_ date: Date) async throws -> [CalendarEvent] {
-        return mockEvents.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
+        mockEvents.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
     }
     
     public func createCalendarEvent(_ event: CalendarEvent) async throws {
