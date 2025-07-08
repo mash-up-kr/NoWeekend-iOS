@@ -5,10 +5,10 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-import Foundation
-import ProfileDomain
 import Combine
 import DIContainer
+import Foundation
+import ProfileDomain
 
 public final class ProfileViewModel: ObservableObject {
     @Dependency private var userUseCase: UserUseCaseProtocol

@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import Coordinator
+import SwiftUI
 
 public final class HomeCoordinator: ObservableObject, Coordinatorable {
     public typealias Screen = HomeRouter.Screen

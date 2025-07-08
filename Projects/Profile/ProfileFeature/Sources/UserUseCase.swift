@@ -17,7 +17,7 @@ public class UserUseCase: UserUseCaseProtocol {
     }
     
     public func getCurrentUser() async throws -> User {
-        return try await userRepository.getCurrentUser()
+        try await userRepository.getCurrentUser()
     }
     
     public func updateUser(_ user: User) async throws {

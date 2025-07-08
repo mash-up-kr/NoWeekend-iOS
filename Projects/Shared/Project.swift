@@ -1,14 +1,17 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-
 let project = Project.make(
     name: "Shared",
     targets: [
         .framework(
             name: "Utils",
             bundleId: BundleID.Shared.utils,
-            sources: ["Utils/Sources/**"]
+            sources: ["Utils/Sources/**"],
+            dependencies: [
+                .Core.diContainer,
+                .External.swinject
+            ]
         ),
         .framework(
             name: "DesignSystem",

@@ -8,12 +8,12 @@
 import Foundation
 
 public struct GoogleSignInResult {
-    public let accessToken: String
+    public let authorizationCode: String
     public let name: String?
     public let email: String?
     
-    public init(accessToken: String, name: String?, email: String?) {
-        self.accessToken = accessToken
+    public init(authorizationCode: String, name: String?, email: String?) {
+        self.authorizationCode = authorizationCode
         self.name = name
         self.email = email
     }

@@ -13,7 +13,7 @@ public extension InfoPlist {
         version: String = Environment.App.version,
         buildNumber: String = Environment.App.buildNumber
     ) -> InfoPlist {
-        return .extendingDefault(with: [
+        .extendingDefault(with: [
             "CFBundleDisplayName": .string(displayName),
             "CFBundleShortVersionString": .string(version),
             "CFBundleVersion": .string(buildNumber),

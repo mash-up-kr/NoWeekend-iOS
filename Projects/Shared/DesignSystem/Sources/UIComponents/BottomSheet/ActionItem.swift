@@ -44,7 +44,7 @@ public struct ActionList: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+            ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 Button(action: {
                     item.action()
                     isPresented = false

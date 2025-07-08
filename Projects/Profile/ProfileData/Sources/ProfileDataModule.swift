@@ -5,8 +5,8 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-import Foundation
 import DIContainer
+import Foundation
 import ProfileDomain
 
 public enum ProfileDataModule {
@@ -15,7 +15,7 @@ public enum ProfileDataModule {
         
         // Domain Protocol을 Data 모듈에서 등록
         DIContainer.shared.container.register(UserRepositoryProtocol.self) { _ in
-            return UserRepositoryImpl()
+            UserRepositoryImpl()
         }.inObjectScope(.container)
         
         print("✅ ProfileData Repository 등록 완료")

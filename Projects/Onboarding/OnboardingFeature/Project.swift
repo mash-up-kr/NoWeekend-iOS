@@ -12,7 +12,8 @@ let project = Project.make(
                 .Onboarding.domain,
                 .Shared.designSystem,
                 .Shared.utils
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

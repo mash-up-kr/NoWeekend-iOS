@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
-import Swinject
-import OnboardingDomain
 import DIContainer
+import Foundation
+import OnboardingDomain
+import Swinject
 
 public struct OnboardingFeatureAssembly: Assembly {
     public init() {}

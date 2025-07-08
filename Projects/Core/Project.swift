@@ -9,22 +9,21 @@ let project = Project.make(
             bundleId: BundleID.Core.dicontainer,
             sources: ["DIContainer/Sources/**"],
             dependencies: [
-                .External.swinject,
-            ]
+                .External.swinject
+            ],
+            settings: .frameworkSettings
         ),
         .framework(
             name: "NWNetwork",
             bundleId: BundleID.Core.nwnetwork,
             sources: ["NWNetwork/Sources/**"],
             dependencies: [
-                .External.alamofire,
-                .Core.diContainer,
-                .External.googleSignIn
+                .External.alamofire
             ],
             settings: .settings(
-                base: [
+                base: Settings.frameworkSettings.base.merging([
                     "OTHER_LDFLAGS": ["-ObjC"]
-                ]
+                ]) { current, _ in current }
             )
         ),
         .framework(
@@ -33,7 +32,8 @@ let project = Project.make(
             sources: ["Coordinator/Sources/**"],
             dependencies: [
                 .Core.diContainer
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )
