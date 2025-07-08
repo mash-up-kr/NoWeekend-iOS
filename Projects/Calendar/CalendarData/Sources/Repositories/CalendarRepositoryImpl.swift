@@ -29,20 +29,17 @@ public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
             "end_date": endDate
         ]
         
-        do {
-            let response: ScheduleResponse = try await networkService.get(
-                endpoint: "/schedule",
-                parameters: parameters
-            )
-            
-            guard response.result == "SUCCESS" else {
-                throw NetworkError.serverError(response.error?.message ?? "Unknown error")
-            }
-            
-            return response.data.map { $0.toDomain() }
-        } catch {
-            print("네트워크 에러: \(error)")
-            throw error
+        let response: ScheduleResponseDTO = try await networkService.get(
+            endpoint: "/schedule",
+            parameters: parameters
+        )
+        
+        guard response.result == "SUCCESS" else {
+            let errorMessage = response.error?.message ?? "API 실패"
+            throw NetworkError.serverError(errorMessage)
         }
+        
+        return response.data.map { $0.toDomain() }
     }
+
 }
