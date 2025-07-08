@@ -12,22 +12,22 @@ public extension TargetDependency {
     
     // MARK: - External Dependencies
     static func external(_ dependency: ExternalDependency) -> TargetDependency {
-        return .external(name: dependency.rawValue)
+        .external(name: dependency.rawValue)
     }
     
     // MARK: - Core Modules
     static func core(_ module: CoreModule) -> TargetDependency {
-        return .project(target: module.rawValue, path: ProjectPath.core.relativePath)
+        .project(target: module.rawValue, path: ProjectPath.core.relativePath)
     }
     
     // MARK: - Shared Modules
     static func shared(_ module: SharedModule) -> TargetDependency {
-        return .project(target: module.rawValue, path: ProjectPath.shared.relativePath)
+        .project(target: module.rawValue, path: ProjectPath.shared.relativePath)
     }
     
     // MARK: - Plugin Modules
     static func plugin(_ module: PluginModule) -> TargetDependency {
-        return .project(target: module.rawValue, path: ProjectPath.plugin.relativePath)
+        .project(target: module.rawValue, path: ProjectPath.plugin.relativePath)
     }
     
     // MARK: - Feature Modules

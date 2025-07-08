@@ -5,13 +5,14 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-
+import CalendarFeature
+import DataBridge
 import Foundation
 import HomeFeature
-import ProfileFeature
-import CalendarFeature
+import LoginFeature
 import OnboardingFeature
-import DataBridge
+import ProfileFeature
+import Utils
 
 enum AppDependencyConfiguration {
     static func configure() {
@@ -21,10 +22,12 @@ enum AppDependencyConfiguration {
         DataBridge.initialize()
         
         // 2. Feature 모듈들이 자체 UseCase 등록
+        UtilsModule.registerUtilities()
         HomeFeatureModule.registerUseCases()
         ProfileFeatureModule.registerUseCases()
         CalendarFeatureModule.registerUseCases()
         OnboardingFeatureModule.registerUseCases()
+        LoginFeatureModule.registerUseCases()
         
         print("✅ DI Container 설정 완료")
     }

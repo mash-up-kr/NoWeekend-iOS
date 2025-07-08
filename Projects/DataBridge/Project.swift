@@ -14,8 +14,10 @@ let project = Project.make(
                 .Calendar.data,
                 .Onboarding.data,
                 .Login.data,
-                .Core.diContainer
-            ]
+                .Core.diContainer,
+                .Shared.utils
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

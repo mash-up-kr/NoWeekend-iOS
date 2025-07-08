@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
-import HomeDomain
 import Coordinator
 import DIContainer
+import HomeDomain
+import SwiftUI
 
 public struct HomeView: View {
     @Dependency private var eventUseCase: EventUseCaseProtocol

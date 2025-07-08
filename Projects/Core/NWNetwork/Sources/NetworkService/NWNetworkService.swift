@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 public protocol NWNetworkServiceProtocol {
     func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T
@@ -29,19 +29,19 @@ public class NWNetworkService: NWNetworkServiceProtocol {
     }
     
     public func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T {
-        return try await request(endpoint: endpoint, method: .get, parameters: parameters)
+        try await request(endpoint: endpoint, method: .get, parameters: parameters)
     }
     
     public func post<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T {
-        return try await request(endpoint: endpoint, method: .post, parameters: parameters)
+        try await request(endpoint: endpoint, method: .post, parameters: parameters)
     }
     
     public func put<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T {
-        return try await request(endpoint: endpoint, method: .put, parameters: parameters)
+        try await request(endpoint: endpoint, method: .put, parameters: parameters)
     }
     
     public func delete<T: Decodable>(endpoint: String) async throws -> T {
-        return try await request(endpoint: endpoint, method: .delete, parameters: nil)
+        try await request(endpoint: endpoint, method: .delete, parameters: nil)
     }
     
     private func request<T: Decodable>(

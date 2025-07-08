@@ -16,11 +16,11 @@ public class CalendarUseCase: CalendarUseCaseProtocol {
     }
     
     public func getCalendarEvents() async throws -> [CalendarEvent] {
-        return try await calendarRepository.getCalendarEvents()
+        try await calendarRepository.getCalendarEvents()
     }
     
     public func getEventsForDate(_ date: Date) async throws -> [CalendarEvent] {
-        return try await calendarRepository.getEventsForDate(date)
+        try await calendarRepository.getEventsForDate(date)
     }
     
     public func createCalendarEvent(_ event: CalendarEvent) async throws {

@@ -7,16 +7,7 @@ let project = Project.make(
         .app(
             name: "App",
             bundleId: BundleID.app,
-            infoPlist: .extendingDefault(
-                with: [
-                    "CFBundleDisplayName": "NoWeekend",
-                    "CFBundleName": "NoWeekend",
-                    "UILaunchScreen": [
-                        "UIColorName": "",
-                        "UIImageName": "",
-                    ],
-                ]
-            ),
+            infoPlist: .file(path: .relativeToRoot("Projects/App/Info.plist")),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
@@ -27,9 +18,21 @@ let project = Project.make(
                 .Login.feature,
                 .Bridge.dataBridge,
                 .Shared.designSystem,
-                .Shared.utils,
+                .Shared.utils
             ],
             settings: .appSettings(teamID: Environment.teamID)
+        )
+    ],
+    resourceSynthesizers: [
+        .custom(
+            name: "Fonts",
+            parser: .fonts,
+            extensions: ["ttf", "otf"]
+        ),
+        .custom(
+            name: "Strings",
+            parser: .strings,
+            extensions: ["strings"]
         )
     ]
 )

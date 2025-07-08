@@ -56,16 +56,16 @@ public struct Environment {
         public static let buildNumber = "1"
         
         public static func bundleId(for configuration: BuildConfiguration = .release) -> String {
-            return baseBundleId + configuration.bundleIdSuffix
+            baseBundleId + configuration.bundleIdSuffix
         }
     }
     
     public static func bundleId(for module: String, configuration: BuildConfiguration = .release) -> String {
-        return "\(organizationName).\(module.lowercased())\(configuration.bundleIdSuffix)"
+        "\(organizationName).\(module.lowercased())\(configuration.bundleIdSuffix)"
     }
     
     public static func bundleId(category: ModuleCategory, module: String, configuration: BuildConfiguration = .release) -> String {
-        return "\(organizationName).\(category.rawValue).\(module.lowercased())\(configuration.bundleIdSuffix)"
+        "\(organizationName).\(category.rawValue).\(module.lowercased())\(configuration.bundleIdSuffix)"
     }
 }
 

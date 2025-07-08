@@ -15,7 +15,8 @@ let project = Project.make(
                 .Core.diContainer,
                 .Shared.designSystem,
                 .Shared.utils
-            ]
+            ],
+            settings: .frameworkSettings
         )
     ]
 )

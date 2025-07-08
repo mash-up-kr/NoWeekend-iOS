@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct MonthCalendarView: View {
     let selectedDate: Date
@@ -48,7 +48,7 @@ struct MonthCalendarView: View {
     }
     
     private var weekdaySymbols: [String] {
-        return ["월", "화", "수", "목", "금", "토", "일"]
+        ["월", "화", "수", "목", "금", "토", "일"]
     }
     
     init(
@@ -124,12 +124,11 @@ struct MonthCalendarView: View {
     }
 }
 
-
 #Preview {
     MonthCalendarView(
         selectedDate: Date(),
         onDateTap: { _ in },
-        calendarCellContent: { date in
+        calendarCellContent: { _ in
             DS.Images.imgToastVacation
                 .resizable()
                 .scaledToFit()

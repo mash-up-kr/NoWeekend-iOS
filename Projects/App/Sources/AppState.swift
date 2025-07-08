@@ -5,24 +5,65 @@
 //  Created by 이지훈 on 7/3/25.
 //
 
-import Foundation
-import OnboardingDomain
+import Combine
 import DIContainer
+import Foundation
+import LoginFeature
+import OnboardingDomain
 
 @MainActor
 @Observable
 public class AppState {
+    public var isLoggedIn: Bool = false
     public var isOnboardingCompleted: Bool = false
     public var isLoading: Bool = true
     
+    private var cancellables = Set<AnyCancellable>()
+    
     public init() {
         print("🌐 AppState 초기화")
+        setupLoginBinding()
+    }
+    
+    private func setupLoginBinding() {
+        let loginStore: LoginStore = DIContainer.shared.resolve(LoginStore.self)
+        
+        loginStore.effect
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] effect in
+                switch effect {
+                case .navigateToHome:
+                    self?.handleLoginSuccess()
+                case .showError(let message):
+                    print("로그인 에러: \(message)")
+                @unknown default:
+                    print("알 수 없는 Effect: \(effect)")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    public func checkLoginStatus() {
+        print("🔍 로그인 상태 확인")
+        isLoading = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let hasValidToken = self.hasValidAccessToken()
+            self.isLoggedIn = hasValidToken
+            
+            if hasValidToken {
+                self.checkOnboardingStatus()
+            } else {
+                self.isLoading = false
+            }
+            
+            print("✅ 로그인 상태: \(hasValidToken)")
+        }
     }
     
     public func checkOnboardingStatus() {
         print("🔍 온보딩 상태 확인")
         
-        // Repository에서 온보딩 완료 상태 확인
         let repository = DIContainer.shared.resolve(OnboardingRepositoryProtocol.self)
         isOnboardingCompleted = repository.isOnboardingCompleted()
         isLoading = false
@@ -33,5 +74,31 @@ public class AppState {
     public func completeOnboarding() {
         print("✅ 온보딩 완료 처리")
         isOnboardingCompleted = true
+    }
+    
+    // MARK: - Login
+    
+    private func handleLoginSuccess() {
+        isLoggedIn = true
+        checkOnboardingStatus()
+    }
+    
+    public func logout() {
+        print("🚪 로그아웃 처리")
+        
+        // 토큰 삭제
+        UserDefaults.standard.removeObject(forKey: "access_token")
+        UserDefaults.standard.removeObject(forKey: "refresh_token")
+        
+        // 상태 초기화
+        isLoggedIn = false
+    }
+    
+    private func hasValidAccessToken() -> Bool {
+        guard let token = UserDefaults.standard.string(forKey: "access_token"),
+              !token.isEmpty else {
+            return false
+        }
+        return true
     }
 }

@@ -20,11 +20,11 @@ public enum NWButtonSize {
     }
     
     var filledButtonFont: Font {
-        return .heading6
+        .heading6
     }
     
     var outlineButtonFont: Font {
-        return .body1
+        .body1
     }
 }
 

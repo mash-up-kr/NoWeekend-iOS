@@ -3,13 +3,10 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-
 # Icon must end with two
 Icon
-
 # Thumbnails
 ._*
-
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
@@ -18,7 +15,6 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
@@ -30,14 +26,11 @@ Temporary Items
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
-
 ## User settings
 xcuserdata/
-
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
 *.xccheckout
-
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
 build/
 DerivedData/
@@ -69,16 +62,16 @@ Derived/
 ### Tuist managed dependencies ###
 Tuist/.build
 
-### Fastlane
+### Fastlane ###
 key.json
 .env
-
 # fastlane build output - *.ipa, *.dSYM.zip 파일
 build_output/
-
 # fastlane test output
 fastlane/test_output/
 fastlane/report.xml
 
-# network
+### Configuration Files ###
+# Network configuration containing sensitive data
 Projects/Core/NWNetwork/Sources/Config.swift
+**/Config.swift

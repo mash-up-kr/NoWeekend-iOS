@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct TodoScrollSection: View {
     @Binding var todoItems: [TodoItem]

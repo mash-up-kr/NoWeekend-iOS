@@ -1,10 +1,22 @@
 //
-//  Event.swift
-//  HomeDomain
+//  LoginEntity.swift
+//  CalendarInterface
 //
-//  Created by 이지훈 on 7/3/25.
-//  Copyright © 2025 com.noweekend. All rights reserved.
+//  Created by SiJongKim on 6/11/25.
 //
 
 import Foundation
 
+public struct LoginUser {
+    public let email: String
+    public let accessToken: String?
+    public let isExistingUser: Bool?
+    public let isOnboardingCompleted: Bool
+    
+    public init(email: String, accessToken: String?, isExistingUser: Bool?, isOnboardingCompleted: Bool = false) {
+        self.email = email
+        self.accessToken = accessToken
+        self.isExistingUser = isExistingUser
+        self.isOnboardingCompleted = isOnboardingCompleted
+    }
+}

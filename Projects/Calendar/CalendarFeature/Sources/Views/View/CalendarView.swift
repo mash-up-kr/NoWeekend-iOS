@@ -6,11 +6,11 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import SwiftUI
 import CalendarDomain
-import DIContainer
 import DesignSystem
 import Utils
+import DIContainer
+import SwiftUI
 
 public struct CalendarView: View {
     @Dependency private var calendarUseCase: CalendarUseCaseProtocol
@@ -137,7 +137,11 @@ public struct CalendarView: View {
         return formatter.string(from: date)
     }
     
-    private func addNewTodo() {
+    private func getTodosForDate(_ date: Date) -> [TodoItem] {
+        todoItems.prefix(2).map { $0 }
+    }
+    
+  private func addNewTodo() {
         let newTodo = TodoItem(
             id: todoItems.count + 1,
             title: "새로운 할 일",
