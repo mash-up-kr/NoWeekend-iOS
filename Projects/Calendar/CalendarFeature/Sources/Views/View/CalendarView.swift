@@ -10,8 +10,11 @@ import SwiftUI
 import CalendarDomain
 import DIContainer
 import DesignSystem
+import Utils
 
 public struct CalendarView: View {
+    @Dependency private var calendarUseCase: CalendarUseCaseProtocol
+
     @State private var selectedDate = Date()
     @State private var selectedToggle: CalendarNavigationBar.ToggleOption = .week
     @State private var showDatePicker = false
@@ -28,9 +31,8 @@ public struct CalendarView: View {
         TodoItem(id: 5, title: "할 일 제목이 들어갑니다.", isCompleted: false, category: DesignSystem.TodoCategory(name: "회사", color: DS.Colors.TaskItem.orange), time: "오전 10:00")
     ]
     
-    // 플로팅 버튼 상태 계산
     private var isFloatingButtonExpanded: Bool {
-        scrollOffset < 50 && !isScrolling
+        scrollOffset == 0 && !isScrolling
     }
     
     public init() {}
@@ -91,19 +93,33 @@ public struct CalendarView: View {
             DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
         .sheet(isPresented: $showTaskEditSheet) {
-            TaskEditSheetView(
-                todoItems: $todoItems,
-                selectedTaskIndex: $selectedTaskIndex,
-                showTaskEditSheet: $showTaskEditSheet
+            TaskEditBottomSheet(
+                onEditAction: {
+                    showTaskEditSheet = false
+                },
+                onTomorrowAction: {
+                    showTaskEditSheet = false
+                },
+                onDeleteAction: {
+                    if let index = selectedTaskIndex {
+                        todoItems.remove(at: index)
+                    }
+                    selectedTaskIndex = nil
+                    showTaskEditSheet = false
+                },
+                isPresented: $showTaskEditSheet
             )
         }
+        .onAppear {
+            scrollOffset = 0
+        }
     }
-    
+        
     @ViewBuilder
     private func calendarCellContent(for date: Date) -> some View {
-        let todosForDate = getTodosForDate(date)
+        let schedulesForDate = formatSelectedDate(date)
         
-        if !todosForDate.isEmpty {
+        if !schedulesForDate.isEmpty {
             DS.Images.imgToastDefault
                 .resizable()
                 .scaledToFit()
@@ -119,10 +135,6 @@ public struct CalendarView: View {
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy년 M월"
         return formatter.string(from: date)
-    }
-    
-    private func getTodosForDate(_ date: Date) -> [TodoItem] {
-        return todoItems.prefix(2).map { $0 }
     }
     
     private func addNewTodo() {
