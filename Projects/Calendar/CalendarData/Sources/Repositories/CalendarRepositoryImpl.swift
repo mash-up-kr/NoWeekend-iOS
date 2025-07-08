@@ -8,37 +8,41 @@
 
 import Foundation
 import CalendarDomain
+import NWNetwork
+
+public enum NetworkError: Error {
+    case serverError(String)
+    case networkError(String)
+    case unknown
+}
 
 public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
-    private let mockEvents: [CalendarEvent] = [
-        CalendarEvent(
-            id: "1", 
-            title: "샘플 캘린더 이벤트", 
-            startDate: Date(), 
-            endDate: Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
-        )
-    ]
+    private let networkService: NWNetworkServiceProtocol
     
-    public init() {}
-    
-    public func getCalendarEvents() async throws -> [CalendarEvent] {
-        try await Task.sleep(nanoseconds: 100_000_000)
-        return mockEvents
+    public init(networkService: NWNetworkServiceProtocol) {
+        self.networkService = networkService
     }
     
-    public func getEventsForDate(_ date: Date) async throws -> [CalendarEvent] {
-        return mockEvents.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
-    }
-    
-    public func createCalendarEvent(_ event: CalendarEvent) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
-    }
-    
-    public func updateCalendarEvent(_ event: CalendarEvent) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
-    }
-    
-    public func deleteCalendarEvent(id: String) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
+    public func getSchedules(startDate: String, endDate: String) async throws -> [DailySchedule] {
+        let parameters = [
+            "start_date": startDate,
+            "end_date": endDate
+        ]
+        
+        do {
+            let response: ScheduleResponse = try await networkService.get(
+                endpoint: "/schedule",
+                parameters: parameters
+            )
+            
+            guard response.result == "SUCCESS" else {
+                throw NetworkError.serverError(response.error?.message ?? "Unknown error")
+            }
+            
+            return response.data.map { $0.toDomain() }
+        } catch {
+            print("네트워크 에러: \(error)")
+            throw error
+        }
     }
 }

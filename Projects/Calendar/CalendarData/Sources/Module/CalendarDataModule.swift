@@ -8,13 +8,15 @@
 import Foundation
 import DIContainer
 import CalendarDomain
+import NWNetwork
 
 public enum CalendarDataModule {
     public static func registerRepositories() {
         print("📅 CalendarData Repository 등록")
         
-        DIContainer.shared.container.register(CalendarRepositoryProtocol.self) { _ in
-            return CalendarRepositoryImpl()
+        DIContainer.shared.container.register(CalendarRepositoryProtocol.self) { resolver in
+            let networkService = resolver.resolve(NWNetworkServiceProtocol.self)!
+            return CalendarRepositoryImpl(networkService: networkService)
         }.inObjectScope(.container)
         
         print("✅ CalendarData Repository 등록 완료")
