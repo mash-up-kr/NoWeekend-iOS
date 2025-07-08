@@ -13,6 +13,7 @@ import OnboardingFeature
 import DataBridge
 import NWNetwork
 import DIContainer
+import LoginFeature
 
 enum AppDependencyConfiguration {
     static func configure() {
@@ -26,6 +27,7 @@ enum AppDependencyConfiguration {
         ProfileFeatureModule.registerUseCases()
         CalendarFeatureModule.registerUseCases()
         OnboardingFeatureModule.registerUseCases()
+        LoginFeatureModule.registerUseCases()  
         
         print("✅ DI Container 설정 완료")
     }

@@ -29,7 +29,7 @@ public enum DataBridge {
         CalendarDataModule.registerRepositories()
         OnboardingDataModule.registerRepositories()
         LoginDataModule.registerRepositories()
-        
+
         print("✅ DataBridge 초기화 완료")
     }
 }
