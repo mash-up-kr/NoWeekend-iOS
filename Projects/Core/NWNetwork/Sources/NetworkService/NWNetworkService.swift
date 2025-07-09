@@ -20,14 +20,22 @@ public class NWNetworkService: NWNetworkServiceProtocol {
     private let baseURL: String
     private let session: Session
     
-    public init(baseURL: String = Config.baseURL, headers: [String: String] = [:]) {
-        self.baseURL = baseURL
-        
-        let configuration = URLSessionConfiguration.default
-        configuration.httpAdditionalHeaders = headers
-        self.session = Session(configuration: configuration)
-    }
-    
+    public init(baseURL: String = Config.baseURL, authToken: String? = nil) {
+           self.baseURL = baseURL
+           
+           var headers: [String: String] = [
+               "Content-Type": "application/json",
+               "Accept": "application/json"
+           ]
+           
+           if let token = authToken {
+               headers["Authorization"] = "Bearer \(token)"
+           }
+           
+           let configuration = URLSessionConfiguration.default
+           configuration.httpAdditionalHeaders = headers
+           self.session = Session(configuration: configuration)
+       }
     public func get<T: Decodable>(endpoint: String, parameters: [String: Any]?) async throws -> T {
         try await request(endpoint: endpoint, method: .get, parameters: parameters)
     }
