@@ -9,11 +9,13 @@
 import Foundation
 import GoogleSignIn
 import LoginDomain
+import NWNetwork
 import UIKit
 
 public final class GoogleAuthService: GoogleAuthServiceInterface {
     public init() {
         print("🔐 GoogleAuthService 초기화 완료")
+        ensureGoogleSignInConfiguration()
     }
     
     @MainActor
@@ -21,9 +23,11 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
         print("🚀 Google 로그인 시작")
         print("📱 PresentingViewController: \(type(of: presentingViewController))")
         
-        // Google Sign-In 설정 상태 확인
+        // Google Sign-In 설정 상태 재확인 및 필요시 재설정
+        ensureGoogleSignInConfiguration()
+        
         guard let configuration = GIDSignIn.sharedInstance.configuration else {
-            print("❌ Google Sign-In 설정이 없습니다.")
+            print("❌ Google Sign-In 설정 실패")
             throw NSError(domain: "GoogleSignIn", code: -1,
                          userInfo: [NSLocalizedDescriptionKey: "Google Sign-In 설정이 누락되었습니다."])
         }
@@ -31,6 +35,8 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
         print("✅ Google Sign-In 설정 확인:")
         print("   - Client ID: \(configuration.clientID)")
         print("   - Server Client ID: \(configuration.serverClientID ?? "없음")")
+        print("   - Config Client ID: \(GoogleConfig.clientID)")
+        print("   - Config Server Client ID: \(GoogleConfig.serverClientID)")
         
         return try await withCheckedThrowingContinuation { continuation in
             print("🔄 GIDSignIn.signIn 호출 시작")
@@ -122,10 +128,33 @@ public final class GoogleAuthService: GoogleAuthServiceInterface {
         }
     }
 
-    @MainActor
     public func signOut() {
         print("🚪 Google 로그아웃 시작")
         GIDSignIn.sharedInstance.signOut()
         print("✅ Google 로그아웃 완료")
+    }
+    
+    // MARK: - Private Methods
+    
+    /// Google Sign-In 설정이 제대로 되어 있는지 확인하고, 필요시 재설정
+    private func ensureGoogleSignInConfiguration() {
+        if GIDSignIn.sharedInstance.configuration == nil {
+            print("⚠️ Google Sign-In 설정이 없습니다. Config에서 재설정합니다.")
+            
+            let clientID = GoogleConfig.clientID
+            print("🔧 Google Sign-In 재설정:")
+            print("   - Client ID: \(clientID)")
+            
+            guard !clientID.isEmpty else {
+                print("❌ Google Client ID가 비어있습니다. Config.swift를 확인하세요.")
+                return
+            }
+            
+            let config = GIDConfiguration(clientID: clientID)
+            GIDSignIn.sharedInstance.configuration = config
+            print("✅ Google Sign-In 재설정 완료")
+        } else {
+            print("✅ Google Sign-In 설정이 이미 존재합니다.")
+        }
     }
 }

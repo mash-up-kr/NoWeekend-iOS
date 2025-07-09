@@ -13,6 +13,10 @@ public protocol AppleAuthServiceInterface {
     @MainActor
     func signIn() async throws -> AppleSignInResult
     
-    @MainActor
     func getCredentialState(for userID: String) async throws -> String
+    
+    @MainActor
+    func requestWithdrawalAuthorization() async throws -> String
+    
+    func signOut()
 }

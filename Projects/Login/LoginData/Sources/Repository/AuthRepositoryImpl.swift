@@ -5,6 +5,13 @@
 //  Created by SiJongKim on 6/11/25.
 //
 
+//
+//  AuthRepositoryImpl.swift
+//  LoginData
+//
+//  Created by SiJongKim on 6/11/25.
+//
+
 import Foundation
 import LoginDomain
 import NWNetwork
@@ -16,10 +23,8 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         self.networkService = networkService
     }
     
-    public func loginWithGoogle(
-        authorizationCode: String,
-        name: String?
-    ) async throws -> LoginUser {
+    // MARK: - 로그인
+    public func loginWithGoogle(authorizationCode: String, name: String?) async throws -> LoginUser {
         let requestDTO = GoogleLoginRequestDTO(
             authorizationCode: authorizationCode,
             name: name
@@ -45,10 +50,7 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         }
     }
     
-    public func loginWithApple(
-        authorizationCode: String,
-        name: String?
-    ) async throws -> LoginUser {
+    public func loginWithApple(authorizationCode: String, name: String?) async throws -> LoginUser {
         let requestDTO = AppleLoginRequestDTO(
             authorizationCode: authorizationCode,
             name: name
@@ -74,6 +76,36 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         }
     }
     
+    // MARK: - Apple 회원탈퇴
+    public func withdrawAppleAccount(identityToken: String) async throws {
+        print("📤 Apple 회원탈퇴 API 호출")
+        
+        let requestDTO = AppleWithdrawalRequestDTO(identityToken: identityToken)
+        let parameters = try requestDTO.asDictionary()
+        // 아직 API 요청 안함
+        let endpoint = "/withdrawal/APPLE"
+        
+        do {
+            let apiDTO: ApiResponseWithdrawalDTO = try await networkService.post(
+                endpoint: endpoint,
+                parameters: parameters
+            )
+            
+            guard apiDTO.result == "SUCCESS" else {
+                let errorMessage = apiDTO.error?.message ?? "Server Error"
+                throw LoginError.withdrawalFailed(
+                    NSError(domain: "WithdrawalError", code: 500,
+                           userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                )
+            }
+            
+            print("✅ Apple 회원탈퇴 API 성공")
+            
+        } catch {
+            throw mapNetworkErrorToWithdrawalError(error)
+        }
+    }
+    
     // MARK: - Error Mapping
     private func mapNetworkErrorToLoginError(_ error: Error) -> LoginError {
         if let networkError = error as? NetworkError {
@@ -86,9 +118,29 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
                 }
             case .decodingError, .notImplemented, .unknown:
                 return .authenticationFailed(networkError)
+            @unknown default:
+                return .authenticationFailed(networkError)
             }
         } else {
             return .authenticationFailed(error)
+        }
+    }
+    
+    private func mapNetworkErrorToWithdrawalError(_ error: Error) -> LoginError {
+        if let networkError = error as? NetworkError {
+            switch networkError {
+            case .serverError(let message):
+                return .withdrawalFailed(
+                    NSError(domain: "WithdrawalError", code: 500,
+                           userInfo: [NSLocalizedDescriptionKey: message])
+                )
+            case .decodingError, .notImplemented, .unknown:
+                return .withdrawalFailed(networkError)
+            @unknown default:
+                return .withdrawalFailed(networkError)
+            }
+        } else {
+            return .withdrawalFailed(error)
         }
     }
     
@@ -104,6 +156,7 @@ public final class AuthRepositoryImpl: AuthRepositoryInterface {
         }
     }
 }
+
 
 // MARK: - Encodable Extension
 extension Encodable {

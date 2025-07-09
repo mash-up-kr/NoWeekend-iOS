@@ -10,4 +10,7 @@ import Foundation
 public protocol AuthUseCaseInterface {
     func signOutGoogle()
     func signOutApple()
+    
+    @MainActor
+    func withdrawAppleAccount() async throws
 }

@@ -16,11 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        let clientID = GoogleConfig.clientID
-        
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
-        
+        configureGoogleSignIn()
         return true
     }
     
@@ -29,6 +25,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         open url: URL,
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-        GIDSignIn.sharedInstance.handle(url)
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+    
+    // MARK: - Private Methods
+    private func configureGoogleSignIn() {
+        print("🔐 Google Sign-In 설정 시작")
+        
+        let clientID = GoogleConfig.clientID
+        print("📋 Google Client ID: \(clientID)")
+        
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        print("   - Client ID: \(GoogleConfig.clientID)")
+        print("   - Server Client ID: \(GoogleConfig.serverClientID)")
     }
 }

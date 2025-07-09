@@ -36,8 +36,8 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
         print("✅ PresentingViewController 찾음: \(type(of: presentingViewController))")
         
         do {
-            // Step 2: 첫 번째 Google 인증 시도
-            print("\n2️⃣ 첫 번째 Google 인증 시도 (이름 없이)")
+            // Step 1: 첫 번째 Google 인증 시도
+            print("\n1️⃣ 첫 번째 Google 인증 시도 (이름 없이)")
             let signInResult = try await googleAuthService.signIn(
                 presentingViewController: presentingViewController
             )
@@ -48,13 +48,22 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             print("   - Email: \(signInResult.email ?? "없음")")
             
             guard !signInResult.authorizationCode.isEmpty else {
+                print("❌ Google 인증 코드가 비어있습니다.")
                 throw LoginError.authenticationFailed(
                     NSError(domain: "GoogleSignIn", code: -1,
                            userInfo: [NSLocalizedDescriptionKey: "Google 인증 코드를 받을 수 없습니다."])
                 )
             }
+            
+            // Step 2: 첫 번째 서버 API 호출 시도
+            print("\n2️⃣ 첫 번째 서버 API 호출 시도")
+            print("📤 서버로 전송할 데이터:")
             print("   - Authorization Code 길이: \(signInResult.authorizationCode.count)자")
-            print("   - Name: nil")
+            print("   - Authorization Code 앞 20자: \(String(signInResult.authorizationCode.prefix(20)))...")
+            print("   - Name: nil (첫 번째 시도)")
+            print("   - Email: \(signInResult.email ?? "없음")")
+            
+            print("🌐 AuthRepository.loginWithGoogle 호출 중...")
             
             let user = try await authRepository.loginWithGoogle(
                 authorizationCode: signInResult.authorizationCode,
@@ -62,34 +71,38 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
             )
             
             print("✅ 첫 번째 로그인 성공!")
+            print("👤 로그인된 사용자 정보:")
             print("   - Email: \(user.email)")
+            
+            print("   - 기존 사용자 여부: \(user.isExistingUser)")
             print("🎉 === Google 로그인 완료 ===\n")
             
             return user
             
         } catch {
-            print("⚠️ 첫 번째 로그인 시도 실패:")
+            print("\n⚠️ 첫 번째 로그인 시도 실패:")
             print("   - Error Type: \(type(of: error))")
-            print("   - Error: \(error)")
+            print("   - Error Description: \(error.localizedDescription)")
             
             if let loginError = error as? LoginError {
-                print("🔍 LoginError 분석:")
+                print("🔍 LoginError 세부 분석:")
                 switch loginError {
-                case .registrationRequired:
+                case .registrationRequired(let underlyingError):
                     print("📝 회원가입이 필요한 상황 (exists: false)")
+                    print("   - Underlying Error: \(underlyingError)")
                     
-                    // Step 4: 두 번째 Google 인증 시도 (회원가입용)
-                    print("\n4️⃣ 회원가입을 위한 두 번째 Google 인증 시도")
-                    let signInResult = try await googleAuthService.signIn(
+                    // Step 3: 두 번째 Google 인증 시도 (회원가입용)
+                    print("\n3️⃣ 회원가입을 위한 두 번째 Google 인증 시도")
+                    let secondSignInResult = try await googleAuthService.signIn(
                         presentingViewController: presentingViewController
                     )
                     
                     print("🔍 두 번째 Google 인증 결과 검증:")
-                    print("   - Authorization Code 비어있음: \(signInResult.authorizationCode.isEmpty)")
-                    print("   - Name: \(signInResult.name ?? "없음")")
-                    print("   - Email: \(signInResult.email ?? "없음")")
+                    print("   - Authorization Code 비어있음: \(secondSignInResult.authorizationCode.isEmpty)")
+                    print("   - Name: \(secondSignInResult.name ?? "없음")")
+                    print("   - Email: \(secondSignInResult.email ?? "없음")")
                     
-                    guard !signInResult.authorizationCode.isEmpty else {
+                    guard !secondSignInResult.authorizationCode.isEmpty else {
                         print("❌ Google 재인증 코드가 비어있습니다.")
                         throw LoginError.authenticationFailed(
                             NSError(domain: "GoogleSignIn", code: -1,
@@ -97,49 +110,43 @@ public final class GoogleLoginUseCase: GoogleLoginUseCaseInterface {
                         )
                     }
                     
-                    guard let profileName = signInResult.name, !profileName.isEmpty else {
+                    guard let profileName = secondSignInResult.name, !profileName.isEmpty else {
                         print("❌ 프로필 이름을 가져올 수 없습니다.")
-                        print("   - Name 값: \(signInResult.name ?? "nil")")
+                        print("   - Name 값: \(secondSignInResult.name ?? "nil")")
                         throw LoginError.nameNotAvailable
                     }
                     
-                    print("✅ 프로필 이름 확인됨: \(profileName)")
                     
-                    // Step 5: 회원가입 시도 (이름 포함)
-                    print("\n5️⃣ 서버 회원가입 시도 (이름 포함)")
-                    print("📤 서버로 전송할 데이터:")
-                    print("   - Authorization Code 길이: \(signInResult.authorizationCode.count)자")
-                    print("   - Name: \(profileName)")
-                    
-                    let user = try await authRepository.loginWithGoogle(
-                        authorizationCode: signInResult.authorizationCode,
+                    let newUser = try await authRepository.loginWithGoogle(
+                        authorizationCode: secondSignInResult.authorizationCode,
                         name: profileName
                     )
                     
                     print("✅ 회원가입 후 로그인 성공!")
                     print("👤 신규 사용자 정보:")
-                    print("   - Email: \(user.email)")
+                    print("   - Email: \(newUser.email)")
+                    print("   - 기존 사용자 여부: \(newUser.isExistingUser)")
                     print("🎉 === Google 회원가입 및 로그인 완료 ===\n")
                     
-                    return user
+                    return newUser
                     
-                case .authenticationFailed:
+                case .authenticationFailed(let underlyingError):
+                    print("   - 인증 실패: \(underlyingError)")
                     throw loginError
                 case .noPresentingViewController:
+                    print("   - PresentingViewController 없음")
                     throw loginError
                 case .nameNotAvailable:
+                    print("   - 이름 정보 없음")
                     throw loginError
-                case .appleSignInCancelled:
+                case .appleSignInCancelled, .appleSignInFailed, .invalidAppleCredential:
+                    print("   - Apple 관련 오류 (Google 로그인에서 발생)")
                     throw loginError
-                case .appleSignInFailed:
-                    throw loginError
-                case .invalidAppleCredential:
+                case .withdrawalFailed, .withdrawalCancelled:
+                    print("   - 탈퇴 관련 오류 (Google 로그인에서 발생)")
                     throw loginError
                 }
             } else {
-                print("❌ 예상하지 못한 오류:")
-                print("   - Error: \(error)")
-                print("💥 === Google 로그인 실패 ===\n")
                 throw LoginError.authenticationFailed(error)
             }
         }

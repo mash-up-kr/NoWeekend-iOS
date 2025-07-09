@@ -44,10 +44,9 @@ public class AppState {
     }
     
     public func checkLoginStatus() {
-        print("🔍 로그인 상태 확인")
         isLoading = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.async {
             let hasValidToken = self.hasValidAccessToken()
             self.isLoggedIn = hasValidToken
             
@@ -62,8 +61,6 @@ public class AppState {
     }
     
     public func checkOnboardingStatus() {
-        print("🔍 온보딩 상태 확인")
-        
         let repository = DIContainer.shared.resolve(OnboardingRepositoryProtocol.self)
         isOnboardingCompleted = repository.isOnboardingCompleted()
         isLoading = false
@@ -85,10 +82,8 @@ public class AppState {
     
     public func logout() {
         print("🚪 로그아웃 처리")
-        
-        // 토큰 삭제
+    
         UserDefaults.standard.removeObject(forKey: "access_token")
-        UserDefaults.standard.removeObject(forKey: "refresh_token")
         
         // 상태 초기화
         isLoggedIn = false

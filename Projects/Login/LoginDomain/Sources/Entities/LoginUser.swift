@@ -10,10 +10,10 @@ import Foundation
 public struct LoginUser {
     public let email: String
     public let accessToken: String?
-    public let isExistingUser: Bool?
+    public let isExistingUser: Bool
     public let isOnboardingCompleted: Bool
     
-    public init(email: String, accessToken: String?, isExistingUser: Bool?, isOnboardingCompleted: Bool = false) {
+    public init(email: String, accessToken: String?, isExistingUser: Bool, isOnboardingCompleted: Bool = false) {
         self.email = email
         self.accessToken = accessToken
         self.isExistingUser = isExistingUser

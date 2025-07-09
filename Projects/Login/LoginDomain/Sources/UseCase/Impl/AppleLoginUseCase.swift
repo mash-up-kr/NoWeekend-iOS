@@ -44,31 +44,16 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         
         let nameToSend = fullName.isEmpty ? nil : fullName
         
-        print("📝 이름 처리 결과:")
-        print("   - Given Name: \(signInResult.fullName?.givenName ?? "없음")")
-        print("   - Family Name: \(signInResult.fullName?.familyName ?? "없음")")
-        print("   - 결합된 이름: '\(fullName)'")
         print("   - 서버로 전송할 이름: \(nameToSend ?? "nil")")
         
         // Step 3: 인증 코드 준비
         print("\n3️⃣ 인증 코드 준비")
-        print("🔍 토큰 우선순위 체크:")
         print("   - Identity Token: \(signInResult.identityToken != nil ? "있음" : "없음")")
         print("   - Authorization Code: \(signInResult.authorizationCode != nil ? "있음" : "없음")")
         
-        // identityToken을 authorizationCode로 사용
         let authCode = signInResult.identityToken ?? ""
         
-        print("📤 최종 선택된 인증 코드:")
-        if !authCode.isEmpty {
-            print("   - 길이: \(authCode.count)자")
-            print("   - 앞 30자: \(String(authCode.prefix(30)))...")
-        } else {
-            print("   - 상태: 비어있음")
-        }
-        
         guard !authCode.isEmpty else {
-            print("❌ Apple 인증 토큰이 비어있습니다.")
             throw LoginError.authenticationFailed(
                 NSError(domain: "AppleSignIn", code: -1,
                        userInfo: [NSLocalizedDescriptionKey: "Apple 인증 토큰을 받을 수 없습니다."])
@@ -76,9 +61,6 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
         }
         
         do {
-            print("   - Authorization Code 길이: \(authCode.count)자")
-            print("   - Name: nil")
-            
             let user = try await authRepository.loginWithApple(
                 authorizationCode: authCode,
                 name: nil
@@ -91,29 +73,16 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
             
         } catch {
             print("⚠️ 첫 번째 로그인 시도 실패:")
-            print("   - Error Type: \(type(of: error))")
             print("   - Error: \(error)")
             
             if let loginError = error as? LoginError {
-                print("🔍 LoginError 분석:")
                 switch loginError {
                 case .registrationRequired:
-                    print("📝 회원가입이 필요한 상황 (exists: false)")
-                    
-                    // Step 5: 이름 검증
-                    print("\n5️⃣ 회원가입을 위한 이름 검증")
                     guard let name = nameToSend, !name.isEmpty else {
-                        print("❌ 회원가입에 필요한 이름 정보가 없습니다.")
-                        print("   - nameToSend: \(nameToSend ?? "nil")")
-                        print("   - Apple에서 이름 정보를 제공하지 않았을 가능성")
-                        print("   - 해결방법: 사용자에게 이름 입력 요청 필요")
                         throw LoginError.nameNotAvailable
                     }
                     
                     print("✅ 회원가입용 이름 확인됨: '\(name)'")
-                    
-                    print("   - Authorization Code 길이: \(authCode.count)자")
-                    print("   - Name: '\(name)'")
                     
                     let user = try await authRepository.loginWithApple(
                         authorizationCode: authCode,
@@ -138,6 +107,10 @@ public final class AppleLoginUseCase: AppleLoginUseCaseInterface {
                 case .appleSignInFailed:
                     throw loginError
                 case .invalidAppleCredential:
+                    throw loginError
+                case .withdrawalFailed(_):
+                    throw loginError
+                case .withdrawalCancelled:
                     throw loginError
                 }
             } else {

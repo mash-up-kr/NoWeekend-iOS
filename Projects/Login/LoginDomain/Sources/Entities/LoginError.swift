@@ -15,6 +15,8 @@ public enum LoginError: Error, LocalizedError {
     case appleSignInCancelled
     case appleSignInFailed
     case invalidAppleCredential
+    case withdrawalFailed(Error)
+    case withdrawalCancelled
     
     public var errorDescription: String? {
         switch self {
@@ -32,6 +34,10 @@ public enum LoginError: Error, LocalizedError {
             return "Apple 로그인에 실패했습니다."
         case .invalidAppleCredential:
             return "유효하지 않은 Apple 인증 정보입니다."
+        case .withdrawalFailed(let error):
+            return "회원탈퇴에 실패했습니다: \(error.localizedDescription)"
+        case .withdrawalCancelled:
+            return "회원탈퇴가 취소되었습니다."
         }
     }
 }

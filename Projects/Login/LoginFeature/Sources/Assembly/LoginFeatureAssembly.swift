@@ -38,12 +38,23 @@ public struct LoginFeatureAssembly: Assembly {
             )
         }.inObjectScope(.graph)
         
+        container.register(AppleWithdrawalUseCaseInterface.self) { resolver in
+            let authRepository = resolver.resolve(AuthRepositoryInterface.self)!
+            let appleAuthService = resolver.resolve(AppleAuthServiceInterface.self)!
+            return AppleWithdrawalUseCase(
+                authRepository: authRepository,
+                appleAuthService: appleAuthService
+            )
+        }.inObjectScope(.graph)
+        
         container.register(AuthUseCaseInterface.self) { resolver in
             let googleAuthService = resolver.resolve(GoogleAuthServiceInterface.self)!
             let appleAuthService = resolver.resolve(AppleAuthServiceInterface.self)!
+            let appleWithdrawalUseCase = resolver.resolve(AppleWithdrawalUseCaseInterface.self)!
             return AuthUseCase(
                 googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
+                appleAuthService: appleAuthService,
+                appleWithdrawalUseCase: appleWithdrawalUseCase
             )
         }.inObjectScope(.graph)
         

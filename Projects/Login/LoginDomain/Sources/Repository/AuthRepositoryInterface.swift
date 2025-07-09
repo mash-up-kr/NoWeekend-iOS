@@ -8,13 +8,9 @@
 import Foundation
 
 public protocol AuthRepositoryInterface {
-    func loginWithGoogle(
-        authorizationCode: String,
-        name: String?
-    ) async throws -> LoginUser
+    func loginWithGoogle(authorizationCode: String, name: String?) async throws -> LoginUser
     
-    func loginWithApple(
-        authorizationCode: String,
-        name: String?
-    ) async throws -> LoginUser
+    func loginWithApple(authorizationCode: String, name: String?) async throws -> LoginUser
+    
+    func withdrawAppleAccount(identityToken: String) async throws
 }

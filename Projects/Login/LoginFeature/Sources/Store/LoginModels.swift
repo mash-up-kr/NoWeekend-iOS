@@ -14,6 +14,10 @@ public enum LoginIntent {
     case signInSucceeded(user: LoginUser)
     case signInFailed(error: Error)
     case signOut
+    
+    case withdrawAppleAccount
+    case withdrawalSucceeded
+    case withdrawalFailed(error: Error)
 }
 
 public struct LoginState {
@@ -21,6 +25,7 @@ public struct LoginState {
     public var userEmail: String = ""
     public var errorMessage: String = ""
     public var isLoading: Bool = false
+    public var isWithdrawing: Bool = false
     
     public init() {}
 }
@@ -28,4 +33,7 @@ public struct LoginState {
 public enum LoginEffect {
     case showError(message: String)
     case navigateToHome
+    case navigateToOnboarding
+    case showWithdrawalSuccess
+    case navigateToLogin
 }
