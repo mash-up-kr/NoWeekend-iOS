@@ -10,9 +10,9 @@ let project = Project.make(
             sources: ["Sources/**"],
             dependencies: [
                 .Calendar.domain,
+                .Core.nwnetwork,
                 .Core.diContainer
-            ],
-            settings: .frameworkSettings
+            ]
         )
     ]
 )

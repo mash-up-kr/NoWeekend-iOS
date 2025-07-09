@@ -9,9 +9,7 @@
 import Foundation
 
 public protocol CalendarUseCaseProtocol {
-    func getCalendarEvents() async throws -> [CalendarEvent]
-    func getEventsForDate(_ date: Date) async throws -> [CalendarEvent]
-    func createCalendarEvent(_ event: CalendarEvent) async throws
-    func updateCalendarEvent(_ event: CalendarEvent) async throws
-    func deleteCalendarEvent(id: String) async throws
+    func getWeeklySchedules(for date: Date) async throws -> [DailySchedule]
+    func getMonthlySchedules(for date: Date) async throws -> [DailySchedule]
+    func getSchedulesForDateRange(startDate: Date, endDate: Date) async throws -> [DailySchedule]
 }

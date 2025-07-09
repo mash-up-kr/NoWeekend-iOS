@@ -9,8 +9,8 @@ let project = Project.make(
             bundleId: BundleID.Calendar.domain,
             sources: ["Sources/**"],
             dependencies: [
-            ],
-            settings: .frameworkSettings
+                .Shared.utils
+            ]
         )
     ]
 )

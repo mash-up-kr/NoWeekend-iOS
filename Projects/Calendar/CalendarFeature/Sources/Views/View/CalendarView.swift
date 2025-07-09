@@ -10,8 +10,11 @@ import CalendarDomain
 import DesignSystem
 import DIContainer
 import SwiftUI
+import Utils
 
 public struct CalendarView: View {
+    @Dependency private var calendarUseCase: CalendarUseCaseProtocol
+
     @State private var selectedDate = Date()
     @State private var selectedToggle: CalendarNavigationBar.ToggleOption = .week
     @State private var showDatePicker = false
@@ -19,6 +22,10 @@ public struct CalendarView: View {
     @State private var selectedTaskIndex: Int?
     @State private var scrollOffset: CGFloat = 0
     @State private var isScrolling = false
+    
+    @State private var dailySchedules: [DailySchedule] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
     
     @State private var todoItems = [
         TodoItem(id: 1, title: "할 일 제목이 들어갑니다.", isCompleted: false, category: DesignSystem.TodoCategory(name: "회사", color: DS.Colors.TaskItem.orange), time: "오전 10:00"),
@@ -98,21 +105,47 @@ public struct CalendarView: View {
             )
         }
     }
-    
-    @ViewBuilder
-    private func calendarCellContent(for date: Date) -> some View {
-        let todosForDate = getTodosForDate(date)
-        
-        if !todosForDate.isEmpty {
-            DS.Images.imgToastDefault
-                .resizable()
-                .scaledToFit()
-        } else {
-            DS.Images.imgFlour
-                .resizable()
-                .scaledToFit()
+
+    private func loadSchedules() async {
+            isLoading = true
+            errorMessage = nil
+            
+            do {
+                switch selectedToggle {
+                case .week:
+                    dailySchedules = try await calendarUseCase.getWeeklySchedules(for: selectedDate)
+                case .month:
+                    dailySchedules = try await calendarUseCase.getMonthlySchedules(for: selectedDate)
+                }
+            } catch {
+                errorMessage = "일정을 불러오는데 실패했습니다: \(error.localizedDescription)"
+                print("일정 로드 실패: \(error)")
+            }
+            
+            isLoading = false
         }
-    }
+        
+        @ViewBuilder
+        private func calendarCellContent(for date: Date) -> some View {
+            let schedulesForDate = getSchedulesForDate(date)
+            
+            if !schedulesForDate.isEmpty {
+                DS.Images.imgToastDefault
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                DS.Images.imgFlour
+                    .resizable()
+                    .scaledToFit()
+            }
+        }
+        
+        private func getSchedulesForDate(_ date: Date) -> [Schedule] {
+            let dateString = date.toString(format: "yyyy-MM-dd")
+            return dailySchedules
+                .first { $0.date == dateString }?
+                .schedules ?? []
+        }
     
     private func formatSelectedDate(_ date: Date) -> String {
         let formatter = DateFormatter()

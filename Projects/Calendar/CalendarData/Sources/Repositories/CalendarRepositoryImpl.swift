@@ -7,38 +7,38 @@
 //
 
 import CalendarDomain
-import Foundation
+import NWNetwork
+
+public enum NetworkError: Error {
+    case serverError(String)
+    case networkError(String)
+    case unknown
+}
 
 public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
-    private let mockEvents: [CalendarEvent] = [
-        CalendarEvent(
-            id: "1", 
-            title: "샘플 캘린더 이벤트", 
-            startDate: Date(), 
-            endDate: Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
+    private let networkService: NWNetworkServiceProtocol
+    
+    public init(networkService: NWNetworkServiceProtocol) {
+        self.networkService = networkService
+    }
+    
+    public func getSchedules(startDate: String, endDate: String) async throws -> [DailySchedule] {
+        let parameters = [
+            "start_date": startDate,
+            "end_date": endDate
+        ]
+        
+        let response: ScheduleResponseDTO = try await networkService.get(
+            endpoint: "/schedule",
+            parameters: parameters
         )
-    ]
-    
-    public init() {}
-    
-    public func getCalendarEvents() async throws -> [CalendarEvent] {
-        try await Task.sleep(nanoseconds: 100_000_000)
-        return mockEvents
+        
+        guard response.result == "SUCCESS" else {
+            let errorMessage = response.error?.message ?? "API 실패"
+            throw NetworkError.serverError(errorMessage)
+        }
+        
+        return response.data.map { $0.toDomain() }
     }
-    
-    public func getEventsForDate(_ date: Date) async throws -> [CalendarEvent] {
-        mockEvents.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
-    }
-    
-    public func createCalendarEvent(_ event: CalendarEvent) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
-    }
-    
-    public func updateCalendarEvent(_ event: CalendarEvent) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
-    }
-    
-    public func deleteCalendarEvent(id: String) async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
-    }
+
 }
