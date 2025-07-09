@@ -189,10 +189,6 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
                 loginError = LoginError.appleSignInFailed
             case .matchedExcludedCredential:
                 loginError = LoginError.appleSignInFailed
-            case .credentialImport:
-                loginError = LoginError.appleSignInFailed
-            case .credentialExport:
-                loginError = LoginError.appleSignInFailed
             @unknown default:
                 loginError = LoginError.appleSignInFailed
             }
