@@ -21,35 +21,46 @@ struct TodoScrollSection: View {
     }
     
     var body: some View {
-        ScrollViewReader { _ in
-            ScrollView {
-                todoSection
-                    .background(
-                        GeometryReader { geometry in
-                            Color.clear
-                                .preference(key: ScrollOffsetPreferenceKey.self,
-                                          value: geometry.frame(in: .named("scroll")).minY)
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(height: 1)
+                    .id("topIndicator")
+                    .onAppear {
+                        scrollOffset = 0
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if scrollOffset == 0 {
+                                isScrolling = false
+                            }
                         }
-                    )
+                    }
+                    .onDisappear {
+                        scrollOffset = 100
+                    }
+                
+                todoSection
+                
             }
-            .coordinateSpace(name: "scroll")
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    scrollOffset = -value
-                }
-            }
-            .simultaneousGesture(
-                DragGesture()
-                    .onChanged { _ in
+        }
+        .onAppear {
+            scrollOffset = 0
+            isScrolling = false
+        }
+        .gesture(
+            DragGesture()
+                .onChanged { _ in
+                    if !isScrolling {
                         isScrolling = true
                     }
-                    .onEnded { _ in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            isScrolling = false
-                        }
+                }
+                .onEnded { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        isScrolling = false
                     }
-            )
-        }
+                }
+        )
     }
     
     private var todoSection: some View {
@@ -86,19 +97,22 @@ struct TodoScrollSection: View {
             LazyVStack(spacing: 0) {
                 ForEach(Array(todoItems.enumerated()), id: \.element.id) { index, todo in
                     TodoCheckboxComponent(
-                        isCompleted: todo.isCompleted,
-                        title: todo.title,
-                        category: todo.category,
-                        time: todo.time,
+                        todoItem: DesignSystem.TodoItem(
+                            id: todo.id,
+                            title: todo.title,
+                            isCompleted: todo.isCompleted,
+                            category: todo.category,
+                            time: todo.time
+                        ),
                         onToggle: {
                             todoItems[index].isCompleted.toggle()
+                        },
+                        onMoreTapped: {
+                            selectedTaskIndex = index
+                            showTaskEditSheet = true
                         }
                     )
                     .contentShape(Rectangle())
-                    .onLongPressGesture {
-                        selectedTaskIndex = index
-                        showTaskEditSheet = true
-                    }
                 }
             }
         }
