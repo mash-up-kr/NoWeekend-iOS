@@ -35,7 +35,7 @@
       <a href="https://github.com/SijongKim93"><i>SijongKim93</i></a>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/b6062bcc-56cd-407f-a097-d8dc91147ddf?size=100" width="100" height="100"><br>
+      <img src="https://github.com/user-attachments/assets/1f30a4ba-5e6b-42ab-abaf-357f0cfb5d73" width="200" height="100"><br>
       <a href="https://github.com/k-nh"><i>Nahee</i></a>
     </td>
     <td>
@@ -45,7 +45,7 @@
   </tr>
 </table>
 
-<br>
+
 <br>
 <br>
 <div align="center">
