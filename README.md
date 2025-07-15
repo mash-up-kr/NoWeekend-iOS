@@ -35,7 +35,7 @@
       <a href="https://github.com/SijongKim93"><i>SijongKim93</i></a>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/1f30a4ba-5e6b-42ab-abaf-357f0cfb5d73" width="200" height="100"><br>
+      <img src="https://github.com/user-attachments/assets/9a4627ee-b30a-474c-958b-7d3c3a942d0b" width="200" height="100"><br>
       <a href="https://github.com/k-nh"><i>Nahee</i></a>
     </td>
     <td>
