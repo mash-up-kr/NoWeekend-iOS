@@ -1,5 +1,5 @@
 //
-//  ProfileEditStore.swift (개선된 버전)
+//  ProfileEditStore.swift
 //  ProfileFeature
 //
 //  Created by 김시종 on 7/12/25.

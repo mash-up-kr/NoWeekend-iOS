@@ -137,9 +137,6 @@ public struct ProfileView: View {
                             rightText: "개인",
                             color: DS.Colors.TaskItem.orange
                         )
-                        
-                        SettingDivider()
-                        
                     }
                 
                 SettingSection(

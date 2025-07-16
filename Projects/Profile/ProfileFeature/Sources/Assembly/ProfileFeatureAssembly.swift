@@ -1,5 +1,5 @@
 //
-//  ProfileFeatureAssembly.swift (업데이트된 버전)
+//  ProfileFeatureAssembly.swift
 //  ProfileFeature
 //
 //  Created by SijongKim on 7/4/25.
