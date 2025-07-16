@@ -112,6 +112,7 @@ private extension CalendarView {
             )
             
             contentSection
+            Spacer()
         }
         .background(.white)
     }
