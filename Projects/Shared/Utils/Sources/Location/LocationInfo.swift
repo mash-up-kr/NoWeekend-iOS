@@ -27,15 +27,18 @@ public struct LocationCoordinate: Equatable {
 public struct LocationInfo: Equatable {
     public let coordinate: LocationCoordinate
     public let timestamp: Date
+    public let address: String?
     
-    public init(coordinate: LocationCoordinate, timestamp: Date = Date()) {
+    public init(coordinate: LocationCoordinate, timestamp: Date = Date(), address: String? = nil) {
         self.coordinate = coordinate
         self.timestamp = timestamp
+        self.address = address
     }
     
     init(from clLocation: CLLocation) {
         self.coordinate = LocationCoordinate(from: clLocation)
         self.timestamp = clLocation.timestamp
+        self.address = nil
     }
 }
 

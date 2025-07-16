@@ -30,6 +30,7 @@ struct HomeState: Equatable {
     var isLocationRegistered: Bool = false
     var isWeatherLoading: Bool = false
     var weatherRecommendations: [Weather] = []
+    var currentLocationAddress: String? = nil
     
     // 샌드위치 휴일 및 공휴일 관련 상태
     var sandwichHoliday: [SandwichHoliday] = []

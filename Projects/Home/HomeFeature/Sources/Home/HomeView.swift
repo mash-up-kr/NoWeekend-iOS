@@ -103,6 +103,7 @@ public struct HomeView: View {
                                 inputText = ""
                                 showTextInputBottomSheet = true
                             },
+                            locationAddress: store.state.currentLocationAddress,
                             store: store
                         )
                         
