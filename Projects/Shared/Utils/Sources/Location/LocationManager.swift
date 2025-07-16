@@ -101,7 +101,78 @@ public final class LocationManager: NSObject, ObservableObject {
     
     public func getDefaultLocation() -> LocationInfo {
         let coordinate = LocationCoordinate(latitude: 37.5665, longitude: 126.9780)
-        return LocationInfo(coordinate: coordinate)
+        return LocationInfo(coordinate: coordinate, address: "서울특별시 중구 명동")
+    }
+    
+    // MARK: - 주소 변환 기능
+    
+    public func getAddressFromCoordinate(_ coordinate: LocationCoordinate) async -> String? {
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let geocoder = CLGeocoder()
+        
+        do {
+            let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            guard let placemark = placemarks.first else { return nil }
+            
+            // FormattedAddressLines에서 주소 추출
+            if let addressDict = placemark.addressDictionary,
+               let formattedLines = addressDict["FormattedAddressLines"] as? [String],
+               formattedLines.count > 1 {
+                
+                let addressLine = formattedLines[1]
+                // 시/구 추출
+                let pattern = "([가-힣]+(?:특별시|광역시|시))\\s+([가-힣]+구)"
+                
+                if let regex = try? NSRegularExpression(pattern: pattern),
+                   let match = regex.firstMatch(in: addressLine, range: NSRange(addressLine.startIndex..., in: addressLine)) {
+                    
+                    let cityRange = Range(match.range(at: 1), in: addressLine)!
+                    let guRange = Range(match.range(at: 2), in: addressLine)!
+                    
+                    let city = String(addressLine[cityRange])
+                    let gu = String(addressLine[guRange])
+                    
+                    // 동 정보는 subLocality에서 가져오기
+                    let dong = placemark.subLocality ?? ""
+                    
+                    let result = "\(city) \(gu) \(dong)"
+                    return result
+                } else {
+                    print("주소 정규식 매칭 실패")
+                }
+            }
+            
+            // 정규식 매칭이 실패한 경우 기본 로직 사용
+            var addressComponents: [String] = []
+            
+            if let administrativeArea = placemark.administrativeArea {
+                addressComponents.append(administrativeArea)
+            }
+            
+            if let subLocality = placemark.subLocality {
+                addressComponents.append(subLocality)
+            }
+            
+            let result = addressComponents.joined(separator: " ")
+            print("📍 최종 주소 (기본): \(result)")
+            return result.isEmpty ? nil : result
+        } catch {
+            print("❌ 주소 변환 실패: \(error)")
+            return nil
+        }
+    }
+    
+    public func updateLocationWithAddress(_ location: LocationInfo) async -> LocationInfo {
+        if let address = location.address {
+            return location
+        }
+        
+        let address = await getAddressFromCoordinate(location.coordinate)
+        return LocationInfo(
+            coordinate: location.coordinate,
+            timestamp: location.timestamp,
+            address: address
+        )
     }
     
     // MARK: - Private Methods

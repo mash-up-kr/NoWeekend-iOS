@@ -181,10 +181,8 @@ final class HomeStore: ObservableObject {
         // 권한이 거부된 경우 알림 표시 (이전 상태가 notDetermined일 때만)
         if (status == .denied || status == .restricted) && previousStatus == .notDetermined {
             effect.send(.showLocationPermissionDeniedAlert)
-            // 권한이 거부되면 디폴트 위치로 등록
-            if !state.isLocationRegistered {
-                send(.registerLocation)
-            }
+            // 권한이 거부되면 위치 등록 확인
+            ensureLocationRegistered()
         }
     }
     
@@ -197,29 +195,11 @@ final class HomeStore: ObservableObject {
             locationToRegister = locationManager.getDefaultLocation()
         }
         
-        Task {
-            do {
-                try await homeUseCase.registerLocation(
-                    latitude: locationToRegister.coordinate.latitude,
-                    longitude: locationToRegister.coordinate.longitude
-                )
-                state.isLocationRegistered = true
-                // 위치 등록 성공 시 추천 데이터 요청
-                send(.loadWeatherRecommendations)
-            } catch {
-                effect.send(.showError("위치 등록에 실패했습니다."))
-            }
-        }
+        registerLocationAndLoadWeather(location: locationToRegister)
     }
 
     private func handleLoadWeatherRecommendations() {
-        // 위치가 등록되어 있으면 날씨 데이터 요청
-        if state.isLocationRegistered {
-            loadWeatherData()
-        } else {
-            // 위치가 등록되어 있지 않으면 디폴트 위치로 등록 후 날씨 데이터 요청
-            send(.registerLocation)
-        }
+        loadWeatherDataWithLocationCheck()
     }
     
     private func loadWeatherData() {
@@ -270,13 +250,7 @@ final class HomeStore: ObservableObject {
     // MARK: - Async Loading Methods for Pull-to-Refresh
     
     private func loadWeatherRecommendationsAsync() async {
-        // 위치가 등록되어 있으면 날씨 데이터 요청
-        if state.isLocationRegistered {
-            await loadWeatherDataAsync()
-        } else {
-            // 위치가 등록되어 있지 않으면 디폴트 위치로 등록 후 날씨 데이터 요청
-            send(.registerLocation)
-        }
+        await loadWeatherDataWithLocationCheckAsync()
     }
     
     private func loadWeatherDataAsync() async {
@@ -422,13 +396,16 @@ final class HomeStore: ObservableObject {
         // 저장된 위치 정보 불러오기
         state.savedLocation = locationManager.getSavedLocation()
         
-        // 저장된 위치가 있으면 위치 등록 상태만 설정
+        // 저장된 위치가 있으면 위치 등록 상태 설정 및 날씨 데이터 요청
         if let savedLocation = state.savedLocation {
             state.currentLocation = savedLocation
             state.isLocationRegistered = true
+            state.currentLocationAddress = savedLocation.address
+            // 저장된 위치가 있으면 바로 날씨 데이터 요청
+            loadWeatherData()
         } else {
-            // 저장된 위치가 없으면 디폴트 위치로 등록
-            send(.registerLocation)
+            // 저장된 위치가 없으면 위치 등록 확인
+            ensureLocationRegistered()
         }
         
         // 위치 권한 상태 변경 감지
@@ -439,15 +416,25 @@ final class HomeStore: ObservableObject {
             }
             .store(in: &cancellables)
         
-        // 현재 위치 변경 감지
+        // 현재 위치 변경 감지 (사용자가 위치 아이콘을 탭했을 때만)
         locationManager.$currentLocation
             .receive(on: DispatchQueue.main)
             .sink { [weak self] location in
                 if let location = location {
                     self?.state.currentLocation = location
                     self?.state.savedLocation = location
-                    // 위치가 저장되면 자동으로 위치 등록
-                    self?.send(.registerLocation)
+                    
+                    // 위치가 등록되어 있지 않을 때만 등록
+                    if !(self?.state.isLocationRegistered ?? false) {
+                        self?.registerLocationAndLoadWeather(location: location)
+                    } else {
+                        // 위치가 이미 등록되어 있으면 주소만 업데이트하고 날씨 데이터 새로고침
+                        Task {
+                            let updatedLocation = await self?.locationManager.updateLocationWithAddress(location)
+                            self?.state.currentLocationAddress = updatedLocation?.address
+                            self?.loadWeatherData()
+                        }
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -461,6 +448,59 @@ final class HomeStore: ObservableObject {
             if state.savedLocation == nil {
                 locationManager.requestLocationOnce()
             }
+        }
+    }
+
+    // MARK: - 위치 등록 및 날씨 데이터 로딩 통합 메서드
+    
+    private func registerLocationAndLoadWeather(location: LocationInfo) {
+        Task {
+            do {
+                try await homeUseCase.registerLocation(
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude
+                )
+                state.isLocationRegistered = true
+                
+                // 주소 정보 업데이트
+                let updatedLocation = await locationManager.updateLocationWithAddress(location)
+                state.currentLocationAddress = updatedLocation.address
+                
+                // 위치 등록 완료 후 바로 날씨 데이터 로딩
+                loadWeatherData()
+            } catch {
+                effect.send(.showError("위치 등록에 실패했습니다."))
+            }
+        }
+    }
+    
+    // MARK: - 위치 및 날씨 데이터 통합 관리
+    
+    /// 위치 등록이 필요한지 확인하고 필요시 디폴트 위치로 등록
+    private func ensureLocationRegistered() {
+        guard !state.isLocationRegistered else { return }
+        
+        let locationToRegister = state.currentLocation ?? locationManager.getDefaultLocation()
+        state.currentLocation = locationToRegister
+        state.currentLocationAddress = locationToRegister.address
+        registerLocationAndLoadWeather(location: locationToRegister)
+    }
+    
+    /// 날씨 데이터 로딩 (위치 등록 상태 확인 포함)
+    private func loadWeatherDataWithLocationCheck() {
+        if state.isLocationRegistered {
+            loadWeatherData()
+        } else {
+            ensureLocationRegistered()
+        }
+    }
+    
+    /// 날씨 데이터 로딩 (Async 버전)
+    private func loadWeatherDataWithLocationCheckAsync() async {
+        if state.isLocationRegistered {
+            await loadWeatherDataAsync()
+        } else {
+            ensureLocationRegistered()
         }
     }
 }
