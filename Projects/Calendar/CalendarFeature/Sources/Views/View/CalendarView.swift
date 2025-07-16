@@ -135,15 +135,12 @@ private extension CalendarView {
                             store.send(.taskCompletionToggled(index))
                         },
                         onMoreTapped: { index in
-                            store.send(.taskEditRequested(index))
+                            store.send(.taskMoreTapped(index))
                         }
                     )
                     .padding(.top, 24)
                     
                     Spacer(minLength: 100)
-                }
-                .scrollTrackingModifier { offset, isScrolling in
-                    store.send(.scrollOffsetChanged(offset, isScrolling))
                 }
                 .background(.white)
             }

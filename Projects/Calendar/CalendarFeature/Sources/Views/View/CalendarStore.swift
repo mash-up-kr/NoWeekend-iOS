@@ -40,34 +40,36 @@ public final class CalendarStore: ObservableObject {
     @MainActor
     private func handle(_ intent: CalendarIntent) async {
         switch intent {
-               case .viewDidAppear:
-                   await handleViewDidAppear()
-               case .toggleChanged(let toggle):
-                   await handleToggleChanged(toggle)
-               case .dateSelected(let date):
-                   await handleDateSelected(date)
-               case .dateDetailRequested(let date):
-                   handleDateDetailRequested(date)
-               case .categorySelected(let category):
-                   handleCategorySelected(category)
-               case .directInputTapped:
-                   handleDirectInputTapped()
-               case .taskEditRequested(let index):
-                   handleTaskEditRequested(index)
-               case .taskTomorrowRequested(let index):
-                   await handleTaskTomorrowRequested(index)
-               case .taskDeleteRequested(let index):
-                   await handleTaskDeleteRequested(index)
-               case .taskTitleChanged(let index, let newTitle):
-                   await handleTaskTitleChanged(index: index, newTitle: newTitle)
-               case .categorySelectionToggled:
-                   handleCategorySelectionToggled()
-               case .scrollOffsetChanged(let offset, let isScrolling):
-                   handleScrollOffsetChanged(offset: offset, isScrolling: isScrolling)
-               case .taskCompletionToggled(let index):
-                   await handleTaskCompletionToggled(index)
-               }
-           }
+        case .viewDidAppear:
+            await handleViewDidAppear()
+        case .toggleChanged(let toggle):
+            await handleToggleChanged(toggle)
+        case .dateSelected(let date):
+            await handleDateSelected(date)
+        case .dateDetailRequested(let date):
+            handleDateDetailRequested(date)
+        case .categorySelected(let category):
+            handleCategorySelected(category)
+        case .directInputTapped:
+            handleDirectInputTapped()
+        case .taskEditRequested(let index):
+            handleTaskEditRequested(index)
+        case .taskTomorrowRequested(let index):
+            await handleTaskTomorrowRequested(index)
+        case .taskDeleteRequested(let index):
+            await handleTaskDeleteRequested(index)
+        case .taskTitleChanged(let index, let newTitle):
+            await handleTaskTitleChanged(index: index, newTitle: newTitle)
+        case .categorySelectionToggled:
+            handleCategorySelectionToggled()
+        case .scrollOffsetChanged(let offset, let isScrolling):
+            handleScrollOffsetChanged(offset: offset, isScrolling: isScrolling)
+        case .taskCompletionToggled(let index):
+            await handleTaskCompletionToggled(index)
+        case .taskMoreTapped(let index):
+            handleTaskMoreTapped(index)
+        }
+    }
 }
 
 // MARK: - Intent Handlers
@@ -117,6 +119,14 @@ private extension CalendarStore {
     func handleDirectInputTapped() {
         state.showCategorySelection = false
         effectSubject.send(.navigateToTaskCreate(state.selectedDate))
+    }
+    
+    @MainActor
+    func handleTaskMoreTapped(_ index: Int) {
+        guard index < state.todoItems.count else { return }
+        
+        state.selectedTaskIndex = index
+        state.showTaskEditSheet = true
     }
     
     @MainActor
