@@ -657,3 +657,34 @@ extension HomeStore {
         return totalTemperature / schedules.count
     }
 }
+
+extension HomeStore {
+    
+    func getNextUpcomingHoliday() -> Holiday? {
+        let today = Date()
+        let calendar = Calendar.current
+        
+        return state.holidays
+            .filter { holiday in
+                calendar.compare(holiday.date, to: today, toGranularity: .day) != .orderedAscending
+            }
+            .sorted { $0.date < $1.date }
+            .first
+    }
+    
+    func getNextUpcomingSandwichHoliday() -> SandwichHoliday? {
+        let today = Date()
+        let calendar = Calendar.current
+        
+        return state.sandwichHoliday
+            .filter { sandwichHoliday in
+                calendar.compare(sandwichHoliday.endDate, to: today, toGranularity: .day) != .orderedAscending
+            }
+            .sorted { $0.startDate < $1.startDate }
+            .first
+    }
+    
+    var nextBirthday: Date? {
+        return state.nextBirthday
+    }
+}

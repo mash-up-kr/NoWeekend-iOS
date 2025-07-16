@@ -9,6 +9,9 @@
 import SwiftUI
 import DesignSystem
 import Utils
+import CalendarDomain
+import DIContainer
+import HomeDomain
 
 public struct HomeView: View {
     @StateObject private var store = HomeStore()
@@ -29,6 +32,14 @@ public struct HomeView: View {
     @State private var showTextInputBottomSheet = false
     @State private var inputText = ""
     
+    // 선택된 항목 정보 저장
+    @State private var selectedHoliday: Holiday?
+    @State private var selectedWeatherDate: String?
+    @State private var selectedCardType: VacationCardType?
+    
+    // 에러 상태 추가
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     public var body: some View {
         ZStack(alignment: .top) {
@@ -63,6 +74,10 @@ public struct HomeView: View {
                             HolidayCardSection(
                                 holidays: store.state.holidays,
                                 onAddTapped: { holiday in
+                                    selectedHoliday = holiday
+                                    selectedWeatherDate = nil
+                                    selectedCardType = nil
+                                    inputText = ""
                                     showTextInputBottomSheet = true
                                 }
                             )
@@ -81,7 +96,11 @@ public struct HomeView: View {
                             onWeatherRefresh: {
                                 store.send(.loadWeatherRecommendations)
                             },
-                            onWeatherPlusTapped: {
+                            onWeatherPlusTapped: { weather in
+                                selectedHoliday = nil
+                                selectedWeatherDate = weather.localDate
+                                selectedCardType = nil
+                                inputText = ""
                                 showTextInputBottomSheet = true
                             },
                             store: store
@@ -99,6 +118,10 @@ public struct HomeView: View {
                                 showDatePickerBottomSheet = true
                             },
                             onAddTapped: { cardType in
+                                selectedHoliday = nil
+                                selectedWeatherDate = nil
+                                selectedCardType = cardType
+                                inputText = ""
                                 showTextInputBottomSheet = true
                             }
                         )
@@ -151,15 +174,134 @@ public struct HomeView: View {
                 text: $inputText,
                 isPresented: $showTextInputBottomSheet,
                 onAddButtonTapped: {
-                    print("할 일 추가됨: \(inputText)")
-                    // TODO: 실제 할 일 추가 로직 구현
-                    showTextInputBottomSheet = false
-                    inputText = ""
-                    switchToCalendarTab()
+                    Task {
+                        await addScheduleToCalendar()
+                    }
                 }
             )
         }
-
+    }
+    
+    // MARK: - 캘린더 일정 추가 메서드
+    
+    private func addScheduleToCalendar() async {
+        guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            await MainActor.run {
+                errorMessage = "제목을 입력해주세요"
+                showErrorAlert = true
+            }
+            return
+        }
+        
+        
+        let calendarUseCase: CalendarUseCaseProtocol = DIContainer.shared.resolve(CalendarUseCaseProtocol.self)
+        
+        let targetDate = determineTargetDate()
+        let scheduleCategory = determineScheduleCategory()
+        
+        do {
+            let calendar = Calendar.current
+            
+            let startTime = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: targetDate) ?? targetDate
+            let endTime = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: targetDate) ?? targetDate
+            
+            let createdSchedule = try await calendarUseCase.createSchedule(
+                title: inputText.trimmingCharacters(in: .whitespacesAndNewlines),
+                date: targetDate,
+                startTime: startTime,
+                endTime: endTime,
+                category: scheduleCategory,
+                temperature: 70,
+                allDay: true,
+                alarmOption: .none
+            )
+            
+            await MainActor.run {
+                
+                showTextInputBottomSheet = false
+                inputText = ""
+                resetSelectedItems()
+                
+                switchToCalendarTab()
+            }
+            
+        } catch {
+            await MainActor.run {
+                errorMessage = "일정 추가에 실패했습니다: \(error.localizedDescription)"
+                showErrorAlert = true
+            }
+        }
+    }
+    
+    private func determineTargetDate() -> Date {
+        let calendar = Calendar.current
+        
+        if let holiday = selectedHoliday {
+            return holiday.date
+        }
+        
+        if let weatherDateString = selectedWeatherDate {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            if let date = dateFormatter.date(from: weatherDateString) {
+                return date
+            }
+        }
+        
+        if let cardType = selectedCardType {
+            switch cardType {
+            case .sandwich:
+                if let sandwichHoliday = store.state.sandwichHoliday.first {
+                    return sandwichHoliday.startDate
+                }
+            case .birthday:
+                if let nextBirthday = store.state.nextBirthday {
+                    return nextBirthday
+                }
+            case .holiday:
+                if let holiday = store.state.holidays.first {
+                    return holiday.date
+                }
+            default:
+                break
+            }
+        }
+        
+        let today = Date()
+        return today
+    }
+    
+    private func determineScheduleCategory() -> ScheduleCategory {
+        if let cardType = selectedCardType {
+            switch cardType {
+            case .birthday:
+                return .personal
+            case .holiday, .sandwich:
+                return .leave
+            default:
+                return .personal
+            }
+        }
+        
+        if selectedHoliday != nil {
+            return .leave
+        }
+        
+        if selectedWeatherDate != nil {
+            return .personal
+        }
+        
+        return .personal
+    }
+    
+    private func getDefaultTitleForCardType(_ cardType: VacationCardType) -> String {
+        return ""
+    }
+    
+    private func resetSelectedItems() {
+        selectedHoliday = nil
+        selectedWeatherDate = nil
+        selectedCardType = nil
     }
     
     private func handleEffect(_ effect: HomeEffect) {
@@ -177,6 +319,8 @@ public struct HomeView: View {
         case .showError(let message):
             print("Error: \(message)")
         case .navigateToDetail(let cardType):
+            selectedCardType = cardType
+            inputText = ""
             showTextInputBottomSheet = true
         case .showLoading:
             break

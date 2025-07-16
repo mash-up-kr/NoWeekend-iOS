@@ -15,7 +15,7 @@ struct ShortCardSection: View {
     let cards: [VacationCardItem]
     var onCardTapped: ((VacationCardType) -> Void)? = nil
     var onDateButtonTapped: (() -> Void)? = nil
-    let onAddTapped: (VacationCardType) -> Void 
+    let onAddTapped: (VacationCardType) -> Void
     
     private var dateString: String {
         let formatter = DateFormatter()
@@ -39,7 +39,7 @@ struct ShortCardSection: View {
                         variableText: cardData.dateString,
                         attributedText: cardData.attributedText,
                         onTap: {
-                            onCardTapped?(cardData.type)
+                            onAddTapped(cardData.type)
                         }
                     )
                 }

@@ -12,7 +12,7 @@ import HomeDomain
 struct WeatherSection: View {
     let weatherData: [Weather]
     let isLoading: Bool
-    let onPlusTapped: () -> Void
+    let onPlusTapped: (Weather) -> Void
     let formatDate: (String) -> String
 
     var body: some View {
@@ -26,8 +26,12 @@ struct WeatherSection: View {
             } else {
                 LazyVStack(spacing: 0) {
                     ForEach(weatherData) { weather in
-                        WeatherItemView(weather: weather, onPlusTapped: onPlusTapped, formatDate: formatDate)
-                            .padding(.horizontal, 20)
+                        WeatherItemView(
+                            weather: weather,
+                            onPlusTapped: { onPlusTapped(weather) },
+                            formatDate: formatDate
+                        )
+                        .padding(.horizontal, 20)
                     }
                 }
             }
@@ -80,7 +84,7 @@ struct WeatherItemView: View {
             Weather(id: "2", localDate: "2025-07-17", recommendContent: "오전 7시부터 오후 5시까지 총 10시간 동안 비가 와요. 연차 쓰는 게 좋을 것 같아요.")
         ],
         isLoading: false,
-        onPlusTapped: {},
+        onPlusTapped: { _ in },
         formatDate: { dateString in
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
