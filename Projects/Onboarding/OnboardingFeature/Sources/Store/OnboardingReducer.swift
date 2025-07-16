@@ -1,5 +1,5 @@
 //
-//  OnboardingReducer.swift (확장된 버전)
+//  OnboardingReducer.swift (수정된 버전)
 //  Onboarding
 //
 //  Created by SiJongKim on 7/2/25.
@@ -73,6 +73,7 @@ public struct OnboardingReducer {
             
         case .stepChanged(let step):
             newState.currentStep = max(0, step)
+            newState.isNextButtonEnabled = newState.isCurrentStepValid && !newState.isLoading
             
         case .onboardingCompleted:
             newState.isOnboardingCompleted = true

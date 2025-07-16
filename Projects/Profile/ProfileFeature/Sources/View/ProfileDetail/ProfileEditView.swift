@@ -36,15 +36,6 @@ public struct ProfileEditView: View {
         .onReceive(editStore.effect) { effect in
             handleEffect(effect)
         }
-        .alert("오류", isPresented: .constant(editStore.state.generalError != nil)) {
-            Button("확인") {
-                editStore.clearErrors()
-            }
-        } message: {
-            if let error = editStore.state.generalError {
-                Text(error)
-            }
-        }
     }
     
     // MARK: - UI Components

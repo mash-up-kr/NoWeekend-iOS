@@ -15,7 +15,6 @@ public class OnboardingFeatureAssembly: Assembly {
     public init() {}
     
     public func assemble(container: Container) {
-        print("🎭 OnboardingFeature Assembly 등록 시작 (Domain + Feature)")
         
         // MARK: - Domain Layer: Save UseCases 등록
         container.register(SaveProfileUseCaseInterface.self) { resolver in

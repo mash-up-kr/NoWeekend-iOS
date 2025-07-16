@@ -20,7 +20,6 @@ struct ProfileInfoDetailView: View {
     public init() {
         self.store = DIContainer.shared.resolve(ProfileStore.self)
         self.loginStore = DIContainer.shared.resolve(LoginStore.self)
-        print("🏗️ ProfileInfoDetailView - LoginStore 주입 완료")
     }
     
     public var body: some View {
@@ -116,7 +115,7 @@ private struct InfoDetailSettingSection: View {
         VStack(spacing: 16) {
             SettingRow.withRightText(
                 title: "계정",
-                rightText: "",//displayName
+                rightText: "",
                 action: {
                     coordinator.push(.edit)
                 }

@@ -9,15 +9,28 @@
 import Foundation
 import ProfileDomain
 
-public struct ApiResponse<T: Codable>: Codable {
-    public let result: String
-    public let data: T?
-    public let error: String?
-    
-    public init(result: String, data: T? = nil, error: String? = nil) {
-        self.result = result
-        self.data = data
-        self.error = error
+struct ApiResponse<T: Decodable>: Decodable {
+    let result: String
+    let data: DataOrString<T>?
+    let error: String?
+}
+
+enum DataOrString<T: Decodable>: Decodable {
+    case data(T)
+    case string(String)
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let data = try? container.decode(T.self) {
+            self = .data(data)
+        } else if let string = try? container.decode(String.self) {
+            self = .string(string)
+        } else {
+            throw DecodingError.typeMismatch(
+                DataOrString.self,
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "data is not T or String")
+            )
+        }
     }
 }
 

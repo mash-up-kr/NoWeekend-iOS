@@ -61,6 +61,7 @@ public struct NWTextField: View {
             textViewRepresentable
             
             rightContentView
+                .allowsHitTesting(true)
         }
         .background(Color.clear)
         .overlay(borderView, alignment: .bottom)
@@ -72,9 +73,8 @@ public struct NWTextField: View {
     private var rightContentView: some View {
         switch style {
         case .todoMultiLine:
-            if !text.isEmpty {
-                clearButton
-            }
+            clearButton
+                .opacity(text.isEmpty ? 0 : 1)
         case .userInputTextField(let suffixText):
             Text(suffixText)
                 .font(.body1)
@@ -102,13 +102,20 @@ public struct NWTextField: View {
     
     @ViewBuilder
     private var clearButton: some View {
-        if !text.isEmpty {
-            Button(action: clearText) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(DS.Colors.Neutral.gray400)
-                    .font(.system(size: 20))
-            }
+        Button(action: clearText) {
+            Image(systemName: "xmark.circle.fill")
+                .foregroundColor(DS.Colors.Neutral.gray400)
+                .contentShape(Rectangle())
+                .font(.system(size: 20))
         }
+        .buttonStyle(PlainButtonStyle())
+        .highPriorityGesture(
+            TapGesture()
+                .onEnded { _ in
+                    clearText()
+                }
+        )
+        .allowsHitTesting(true)
     }
     
     private var borderView: some View {
@@ -122,7 +129,7 @@ public struct NWTextField: View {
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
             Text(errorMessage)
                 .font(.body2)
-                .foregroundColor(DS.Colors.TaskItem.orange) // 추후 색상 수정 예정
+                .foregroundColor(DS.Colors.Toast._500)
                 .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
