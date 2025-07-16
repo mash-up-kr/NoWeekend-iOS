@@ -24,11 +24,16 @@ public final class ProfileNetworkService: ProfileNetworkServiceInterface {
             parameters: nil
         )
         
-        guard let data = response.data else {
+        guard let dataOrString = response.data else {
             throw ProfileNetworkError.noData(endpoint: "/user")
         }
         
-        return data
+        switch dataOrString {
+        case .data(let dto):
+            return dto
+        case .string(let errorMessage):
+            throw ProfileNetworkError.invalidResponse(endpoint: "/user")
+        }
     }
     
     public func updateUserProfile(_ request: UserProfileUpdateRequestDTO) async throws -> UserProfileDTO {
@@ -39,11 +44,16 @@ public final class ProfileNetworkService: ProfileNetworkServiceInterface {
             parameters: parameters
         )
         
-        guard let data = response.data else {
+        guard let dataOrString = response.data else {
             throw ProfileNetworkError.updateFailed(endpoint: "/user/profile")
         }
         
-        return data
+        switch dataOrString {
+        case .data(let dto):
+            return dto
+        case .string(let errorMessage):
+            throw ProfileNetworkError.invalidResponse(endpoint: "/user/profile")
+        }
     }
     
     public func getUserTags() async throws -> UserTagsResponseDTO {
@@ -52,11 +62,16 @@ public final class ProfileNetworkService: ProfileNetworkServiceInterface {
             parameters: nil
         )
         
-        guard let data = response.data else {
+        guard let dataOrString = response.data else {
             throw ProfileNetworkError.noData(endpoint: "/user/tags")
         }
         
-        return data
+        switch dataOrString {
+        case .data(let dto):
+            return dto
+        case .string(let errorMessage):
+            throw ProfileNetworkError.invalidResponse(endpoint: "/user/tags")
+        }
     }
     
     public func updateUserTags(_ request: UserTagsUpdateRequestDTO) async throws -> UserTagsResponseDTO {
@@ -67,11 +82,16 @@ public final class ProfileNetworkService: ProfileNetworkServiceInterface {
             parameters: parameters
         )
         
-        guard let data = response.data else {
+        guard let dataOrString = response.data else {
             throw ProfileNetworkError.updateFailed(endpoint: "/user/tags")
         }
         
-        return data
+        switch dataOrString {
+        case .data(let dto):
+            return dto
+        case .string(let errorMessage):
+            throw ProfileNetworkError.invalidResponse(endpoint: "/user/tags")
+        }
     }
     
     public func updateVacationLeave(_ request: VacationLeaveDTO) async throws -> VacationLeaveDTO {
@@ -82,11 +102,16 @@ public final class ProfileNetworkService: ProfileNetworkServiceInterface {
             parameters: parameters
         )
         
-        guard let data = response.data else {
+        guard let dataOrString = response.data else {
             throw ProfileNetworkError.updateFailed(endpoint: "/user/leave")
         }
         
-        return data
+        switch dataOrString {
+        case .data(let dto):
+            return dto
+        case .string(let errorMessage):
+            throw ProfileNetworkError.invalidResponse(endpoint: "/user/leave")
+        }
     }
     
     public func getAITagRecommendation(selectedTags: [String]) async throws -> AIRecommendationResponse {

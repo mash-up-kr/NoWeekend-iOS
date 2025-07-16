@@ -67,6 +67,7 @@ public final class ProfileStore: ObservableObject {
     }
     
     private func handleUserProfileLoaded(_ profile: UserProfile) {
+        print("✅ userProfile loaded: \(profile)")
         state.isLoading = false
         state.userProfile = profile
     }
@@ -90,8 +91,7 @@ public final class ProfileStore: ObservableObject {
             return "15"
         }
         
-        let remainingHours = profile.remainingAnnualLeave
-        return formatLeaveHours(remainingHours)
+        return String(profile.remainingAnnualLeave)
     }
     
     public var usedLeaveText: String {
@@ -104,22 +104,17 @@ public final class ProfileStore: ObservableObject {
     }
     
     private func formatLeaveHours(_ hours: Double) -> String {
-        let days = Int(hours) / 8
-        let remainingHours = Int(hours) % 8
-        
-        if remainingHours == 0 {
-            return "\(days)"
-        } else if remainingHours == 4 {
-            return "\(days).5"
-        } else {
-            let halfDay = remainingHours >= 4 ? 0.5 : 0.0
-            if halfDay > 0 {
-                return "\(days).5"
-            } else {
-                return "\(days)"
-            }
-        }
+    let days = Int(hours) / 8
+    let remainingHours = Int(hours) % 8
+
+    if remainingHours == 0 {
+        return "\(days)"
+    } else if remainingHours == 4 {
+        return "\(days).5"
+    } else {
+        return "\(days)"
     }
+}
     
     public var appVersion: String {
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
