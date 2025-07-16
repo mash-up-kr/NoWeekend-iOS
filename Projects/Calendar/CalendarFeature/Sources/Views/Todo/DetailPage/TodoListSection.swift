@@ -62,7 +62,9 @@ struct TodoListSection: View {
                     ForEach(Array(todoItems.enumerated()), id: \.element.id) { index, todo in
                         TodoCheckboxComponent(
                             todoItem: todo,
-                            onToggle: { onToggle(index) },
+                            onToggle: {
+                                onToggle(index)
+                            },
                             onMoreTapped: { onMoreTapped(index) }
                         )
                         .contentShape(Rectangle())

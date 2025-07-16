@@ -127,63 +127,26 @@ private extension CalendarView {
                 }
                 .background(.white)
             } else {
-                TodoScrollSection(
-                    todoItems: Binding(
-                        get: { store.state.todoItems },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { $0.todoItems = newValue }
-                            }
+                ScrollView {
+                    TodoListSection(
+                        todoItems: store.state.todoItems,
+                        incompleteTodoCount: store.state.todoItems.filter { !$0.isCompleted }.count,
+                        onToggle: { index in
+                            store.send(.taskCompletionToggled(index))
+                        },
+                        onMoreTapped: { index in
+                            store.send(.taskEditRequested(index))
                         }
-                    ),
-                    selectedTaskIndex: Binding(
-                        get: { store.state.selectedTaskIndex },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { state in
-                                    state.selectedTaskIndex = newValue
-                                    if newValue != nil {
-                                        state.showTaskEditSheet = true
-                                    }
-                                }
-                            }
-                        }
-                    ),
-                    showTaskEditSheet: Binding(
-                        get: { showTaskEditSheet },
-                        set: { newValue in
-                            showTaskEditSheet = newValue
-                        }
-                    ),
-                    scrollOffset: Binding(
-                        get: { store.state.scrollOffset },
-                        set: { newValue in
-                            store.send(.scrollOffsetChanged(newValue, store.state.isScrolling))
-                        }
-                    ),
-                    isScrolling: Binding(
-                        get: { store.state.isScrolling },
-                        set: { newValue in
-                            store.send(.scrollOffsetChanged(store.state.scrollOffset, newValue))
-                        }
-                    ),
-                    editingTaskIndex: Binding(
-                        get: { store.state.editingTaskIndex },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { $0.editingTaskIndex = newValue }
-                            }
-                        }
-                    ),
-                    onTitleChanged: { index, newTitle in
-                        store.send(.taskTitleChanged(index, newTitle))
-                    }
-                )
+                    )
+                    .padding(.top, 24)
+                    
+                    Spacer(minLength: 100)
+                }
+                .scrollTrackingModifier { offset, isScrolling in
+                    store.send(.scrollOffsetChanged(offset, isScrolling))
+                }
                 .background(.white)
             }
-        } else {
-            Spacer()
-                .background(.white)
         }
     }
     
@@ -275,5 +238,22 @@ private extension CalendarView {
         case .showSuccess(let message):
             print("✅ Success: \(message)")
         }
+    }
+}
+
+extension ScrollView {
+    func scrollTrackingModifier(onScrollChanged: @escaping (CGFloat, Bool) -> Void) -> some View {
+        self.background(
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: ScrollOffsetPreferenceKey.self,
+                    value: geometry.frame(in: .named("scroll")).minY
+                )
+            }
+        )
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+            onScrollChanged(value, abs(value) > 1)
+        }
+        .coordinateSpace(name: "scroll")
     }
 }

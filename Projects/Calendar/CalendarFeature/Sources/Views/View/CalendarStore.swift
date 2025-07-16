@@ -40,32 +40,34 @@ public final class CalendarStore: ObservableObject {
     @MainActor
     private func handle(_ intent: CalendarIntent) async {
         switch intent {
-        case .viewDidAppear:
-            await handleViewDidAppear()
-        case .toggleChanged(let toggle):
-            await handleToggleChanged(toggle)
-        case .dateSelected(let date):
-            await handleDateSelected(date)
-        case .dateDetailRequested(let date):
-            handleDateDetailRequested(date)
-        case .categorySelected(let category):
-            handleCategorySelected(category)
-        case .directInputTapped:
-            handleDirectInputTapped()
-        case .taskEditRequested(let index):
-            handleTaskEditRequested(index)
-        case .taskTomorrowRequested(let index):
-            await handleTaskTomorrowRequested(index)
-        case .taskDeleteRequested(let index):
-            await handleTaskDeleteRequested(index)
-        case .taskTitleChanged(let index, let newTitle):
-            await handleTaskTitleChanged(index: index, newTitle: newTitle)
-        case .categorySelectionToggled:
-            handleCategorySelectionToggled()
-        case .scrollOffsetChanged(let offset, let isScrolling):
-            handleScrollOffsetChanged(offset: offset, isScrolling: isScrolling)
-        }
-    }
+               case .viewDidAppear:
+                   await handleViewDidAppear()
+               case .toggleChanged(let toggle):
+                   await handleToggleChanged(toggle)
+               case .dateSelected(let date):
+                   await handleDateSelected(date)
+               case .dateDetailRequested(let date):
+                   handleDateDetailRequested(date)
+               case .categorySelected(let category):
+                   handleCategorySelected(category)
+               case .directInputTapped:
+                   handleDirectInputTapped()
+               case .taskEditRequested(let index):
+                   handleTaskEditRequested(index)
+               case .taskTomorrowRequested(let index):
+                   await handleTaskTomorrowRequested(index)
+               case .taskDeleteRequested(let index):
+                   await handleTaskDeleteRequested(index)
+               case .taskTitleChanged(let index, let newTitle):
+                   await handleTaskTitleChanged(index: index, newTitle: newTitle)
+               case .categorySelectionToggled:
+                   handleCategorySelectionToggled()
+               case .scrollOffsetChanged(let offset, let isScrolling):
+                   handleScrollOffsetChanged(offset: offset, isScrolling: isScrolling)
+               case .taskCompletionToggled(let index):
+                   await handleTaskCompletionToggled(index)
+               }
+           }
 }
 
 // MARK: - Intent Handlers
@@ -467,4 +469,34 @@ extension CalendarStore {
             return DS.Images.imgToastDefault
         }
     }
+    @MainActor
+        func handleTaskCompletionToggled(_ index: Int) async {
+            guard index < state.todoItems.count else { return }
+            
+            let todoItem = state.todoItems[index]
+            
+            guard let scheduleId = todoItem.scheduleId else {
+                state.todoItems[index].isCompleted.toggle()
+                return
+            }
+            
+            let previousState = state.todoItems[index].isCompleted
+            state.todoItems[index].isCompleted = !previousState
+            
+            do {
+                let updatedSchedule = try await calendarUseCase.updateScheduleState(
+                    id: scheduleId,
+                    isComplete: !previousState
+                )
+                
+                state.todoItems[index].isCompleted = updatedSchedule.completed
+                
+                let message = updatedSchedule.completed ? "할일을 완료했습니다" : "할일을 미완료로 변경했습니다"
+                effectSubject.send(.showSuccess(message))
+                
+            } catch {
+                state.todoItems[index].isCompleted = previousState
+                effectSubject.send(.showError("할일 상태 변경에 실패했습니다: \(error.localizedDescription)"))
+            }
+        }
 }

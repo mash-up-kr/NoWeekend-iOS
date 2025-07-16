@@ -126,4 +126,8 @@ private extension CalendarUseCase {
         
         return (firstWeekStart, lastWeekEnd)
     }
+    
+    public func updateScheduleState(id: String, isComplete: Bool) async throws -> Schedule {
+        return try await calendarRepository.updateScheduleState(id: id, isComplete: isComplete)
+    }
 }

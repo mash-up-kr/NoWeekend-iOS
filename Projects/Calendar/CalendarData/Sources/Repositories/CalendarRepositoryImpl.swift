@@ -140,4 +140,23 @@ public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
         
         return response
     }
+    
+    public func updateScheduleState(id: String, isComplete: Bool) async throws -> Schedule {
+        let endpoint = "/schedule/\(id)/state?is_complete=\(isComplete)"
+        
+        let response: UpdateScheduleStateResponseDTO = try await networkService.put(
+            endpoint: endpoint,
+            parameters: nil  
+        )
+        
+        guard response.result == "SUCCESS", let data = response.data else {
+            let errorMessage = response.error?.message ?? "일정 상태 업데이트 실패"
+            print("❌ 일정 상태 업데이트 실패: \(errorMessage)")
+            throw NetworkError.serverError(errorMessage)
+        }
+        
+        let schedule = data.toDomain()
+        print("✅ 일정 상태 업데이트 성공: \(schedule.title), 완료: \(schedule.completed)")
+        return schedule
+    }
 }
