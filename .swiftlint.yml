@@ -33,5 +33,10 @@ line_length:
  warning: 120
  error: 300
 
+# 타입 본문 길이 설정
+type_body_length:
+ warning: 400
+ error: 500
+
 analyzer_rules:
  - unused_import # 사용하지 않는 import
