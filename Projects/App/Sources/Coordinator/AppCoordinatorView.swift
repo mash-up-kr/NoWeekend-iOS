@@ -22,7 +22,6 @@ public struct AppCoordinatorView: View {
                     coordinator.view(screen)
                         .environmentObject(coordinator)
                         .navigationBarHidden(true)
-                        // 🎯 NavigationStack 기본 애니메이션 유지 (오른쪽→왼쪽)
                 }
                 .sheet(item: $coordinator.sheet) { sheet in
                     NavigationView {
@@ -36,7 +35,6 @@ public struct AppCoordinatorView: View {
                 }
         }
         .navigationBarHidden(true)
-        // 🎬 방향에 따른 정확한 전환
         .transition(
             coordinator.transitionDirection == .forward
                 ? .rightToLeft
@@ -47,23 +45,18 @@ public struct AppCoordinatorView: View {
     }
 }
 
-// MARK: - 🎬 명확한 방향성 Transitions
-
 extension AnyTransition {
-    
-    // 🎯 오른쪽→왼쪽 진행 (모든 forward 이동)
     static var rightToLeft: AnyTransition {
         .asymmetric(
-            insertion: .move(edge: .trailing).combined(with: .opacity), // 오른쪽에서 들어옴
-            removal: .move(edge: .leading).combined(with: .opacity)     // 왼쪽으로 사라짐
+            insertion: .move(edge: .trailing).combined(with: .opacity),
+            removal: .move(edge: .leading).combined(with: .opacity)
         )
     }
     
-    // 🔄 왼쪽→오른쪽 되돌아가기 (모든 backward 이동)
     static var leftToRight: AnyTransition {
         .asymmetric(
-            insertion: .move(edge: .leading).combined(with: .opacity),  // 왼쪽에서 들어옴
-            removal: .move(edge: .trailing).combined(with: .opacity)    // 오른쪽으로 사라짐
+            insertion: .move(edge: .leading).combined(with: .opacity),
+            removal: .move(edge: .trailing).combined(with: .opacity)
         )
     }
 }

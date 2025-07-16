@@ -39,6 +39,7 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
         self.tokenManager = DIContainer.shared.resolve(TokenManagerInterface.self)
         
         setupLoginEffectBinding()
+        
         checkInitialFlow()
     }
 

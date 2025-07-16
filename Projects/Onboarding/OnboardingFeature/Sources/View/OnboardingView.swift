@@ -84,7 +84,7 @@ public struct OnboardingView: View {
                             store.send(.updateBirthDate(filtered))
                         }
                     ),
-                    birthDateError: store.state.birthDateError
+                    birthDateError: store.state.birthDate.count >= 8 ? store.state.birthDateError : nil
                 )
             }
             .padding(.top, 40)
