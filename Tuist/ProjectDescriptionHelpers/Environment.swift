@@ -21,8 +21,8 @@ public enum BuildConfiguration: String, CaseIterable {
     
     public var appName: String {
         switch self {
-        case .debug: return "NoWeekend-Debug"
-        case .release: return "NoWeekend"
+        case .debug: return "쓸래말래T"
+        case .release: return "쓸래말래"
         }
     }
     
