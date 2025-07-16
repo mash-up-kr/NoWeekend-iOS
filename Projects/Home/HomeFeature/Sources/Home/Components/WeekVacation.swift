@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  WeekVacation.swift
 //  HomeFeature
 //
 //  Created by 김나희 on 7/9/25.
@@ -17,7 +17,7 @@ struct WeekVacation: View {
     let isWeatherLoading: Bool
     let onLocationIconTapped: () -> Void
     let onWeatherRefresh: () -> Void
-    let onWeatherPlusTapped: () -> Void
+    let onWeatherPlusTapped: (Weather) -> Void
 
     @ObservedObject var store: HomeStore
     
@@ -36,11 +36,10 @@ struct WeekVacation: View {
             .padding(.horizontal, 24)
             
             WeekCalendarView(cellContent: { date in
-                store.calendarCellContent(for: date) 
+                store.calendarCellContent(for: date)
                     .frame(width: 38)
             })
             
-            // 날씨 데이터가 있을 때만 WeatherSection 표시
             if !weatherData.isEmpty || isWeatherLoading {
                 WeatherSection(
                     weatherData: weatherData,
