@@ -9,22 +9,11 @@
 import Foundation
 import Swinject
 
-public enum NWObjectScope {
-    case graph
-    case container
-    
-    var swinjectScope: ObjectScope {
-        switch self {
-        case .graph: return .graph
-        case .container: return .container
-        }
-    }
-}
-
 public final class DIContainer {
     public static let shared: DIContainer = DIContainer()
     public let container: Container = Container()
-    private let queue = DispatchQueue(label: "DIContainer.resolve", attributes: .concurrent)
+    
+    private let queue = DispatchQueue(label: "DIContainer.resolve", qos: .userInitiated)
     
     private init() {
         print("📦 DIContainer 초기화 (Feature별 통합 DI)")
@@ -41,19 +30,22 @@ public final class DIContainer {
     
     public func register<T>(
         _ serviceType: T.Type,
-        scope: NWObjectScope = .graph,
         factory: @escaping (DIResolver) -> T
     ) {
-        container.register(serviceType) { resolver in
-            let diResolver = DIResolver(resolver: resolver)
-            return factory(diResolver)
-        }.inObjectScope(scope.swinjectScope)
-        print("✅ \(serviceType) 등록 완료 (Scope: \(scope))")
+        queue.sync {
+            container.register(serviceType) { resolver in
+                let diResolver = DIResolver(resolver: resolver)
+                return factory(diResolver)
+            }
+            print("✅ \(serviceType) 등록 완료")
+        }
     }
     
     public func registerAssembly(assembly: [Assembly]) {
-        _ = Assembler(assembly, container: container)
-        print("🔧 Assembly 등록 완료: \(assembly.count)개")
+        queue.sync {
+            _ = Assembler(assembly, container: container)
+            print("🔧 Assembly 등록 완료: \(assembly.count)개")
+        }
     }
 }
 
@@ -90,12 +82,16 @@ public struct Dependency<T> {
 private class Lazy<T> {
     private var _value: T?
     private let _factory: () -> T
+    private let lock = NSLock()
     
     init(factory: @escaping () -> T) {
         self._factory = factory
     }
     
     var value: T {
+        lock.lock()
+        defer { lock.unlock() }
+        
         if let value = _value {
             return value
         }
