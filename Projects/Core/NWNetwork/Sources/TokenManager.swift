@@ -21,7 +21,7 @@ public final class TokenManager: TokenManagerInterface {
     
     // 토큰 저장 키
     private enum TokenKey {
-        static let accessToken = "ACCESS_TOKEN"
+        static let accessToken = "access_token"
     }
     
     public init() {}

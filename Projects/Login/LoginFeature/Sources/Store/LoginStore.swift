@@ -1,5 +1,5 @@
 //
-//  LoginStore.swift (로그아웃 Effect 수정)
+//  LoginStore.swift
 //  Calendar
 //
 //  Created by SiJongKim on 6/12/25.
@@ -113,15 +113,12 @@ public final class LoginStore: ObservableObject {
 
     @MainActor
     private func handleSignOut() async {
-        print("🚪 LoginStore - 로그아웃 처리 시작")
-        
         authUseCase.signOutGoogle()
         authUseCase.signOutApple()
         
         UserDefaults.standard.removeObject(forKey: "access_token")
         
         state = LoginState()
-        
         
         effect.send(.navigateToLogin)
     }

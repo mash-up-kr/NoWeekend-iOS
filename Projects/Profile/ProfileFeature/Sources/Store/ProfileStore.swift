@@ -1,5 +1,5 @@
 //
-//  ProfileStore.swift (연차 계산 로직 추가)
+//  ProfileStore.swift
 //  ProfileFeature
 //
 //  Created by SiJongKim on 7/11/25.
