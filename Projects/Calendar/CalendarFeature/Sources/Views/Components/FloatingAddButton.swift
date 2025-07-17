@@ -49,10 +49,8 @@ struct FloatingAddButton: View {
             HStack(spacing: 8) {
                 ZStack {
                     DS.Images.icnPlus
-                        .foregroundStyle(.white)
-                        .rotationEffect(.degrees(isShowingCategory ? 45 : (isPressed ? 45 : 0)))
-                        .scaleEffect(isShowingCategory ? 0 : 1)
-                        .opacity(isShowingCategory ? 0 : 1)
+                        .resizable()
+                        .frame(width: 24, height: 24)
                     
                     DS.Images.icnXmark
                         .font(.system(size: 24, weight: .medium))
