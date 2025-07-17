@@ -42,98 +42,90 @@ public struct HomeView: View {
     @State private var errorMessage = ""
     
     public var body: some View {
-        ZStack(alignment: .top) {
-            DS.Images.imgGradient
-                .resizable()
-                .frame(height: 260)
-                .ignoresSafeArea(edges: .top)
-                .zIndex(0)
-
-            ScrollView {
-                VStack(spacing: 0) {
-                    MainTopView(
-                        vacationBakingStatus: store.state.vacationBakingStatus,
-                        averageTemperature: store.state.averageTemperature,
-                        remainingAnnualLeave: store.state.remainingAnnualLeave,
-                        onVacationBakingTapped: {
-                            switch store.state.vacationBakingStatus {
-                            case .notStarted:
-                                coordinator.push(.bakingVacation)
-                            case .completed:
-                                coordinator.push(.recommendVaction)
-                            case .processing:
-                                break
-                            }
+        ScrollView {
+            VStack(spacing: 0) {
+                MainTopView(
+                    vacationBakingStatus: store.state.vacationBakingStatus,
+                    averageTemperature: store.state.averageTemperature,
+                    remainingAnnualLeave: store.state.remainingAnnualLeave,
+                    onVacationBakingTapped: {
+                        switch store.state.vacationBakingStatus {
+                        case .notStarted:
+                            coordinator.push(.bakingVacation)
+                        case .completed:
+                            coordinator.push(.recommendVaction)
+                        case .processing:
+                            break
                         }
-                    )
-                    .zIndex(1)
-                    
-                    VStack {
-                        Spacer(minLength: 48)
-                        if !store.state.holidays.isEmpty {
-                            HolidayCardSection(
-                                holidays: store.state.holidays,
-                                onAddTapped: { holiday in
-                                    selectedHoliday = holiday
-                                    selectedWeatherDate = nil
-                                    selectedCardType = nil
-                                    inputText = ""
-                                    showTextInputBottomSheet = true
-                                }
-                            )
-                            .background(DS.Colors.Background.alternative01)
-                        }
-                        
-                        Spacer(minLength: 48)
-                        WeekVacation(
-                            currentMonth: store.state.currentMonth,
-                            currentWeekOfMonth: store.state.currentWeekOfMonth,
-                            weatherData: store.state.weatherRecommendations,
-                            isWeatherLoading: store.state.isWeatherLoading,
-                            onLocationIconTapped: {
-                                store.send(.locationIconTapped)
-                            },
-                            onWeatherRefresh: {
-                                store.send(.loadWeatherRecommendations)
-                            },
-                            onWeatherPlusTapped: { weather in
-                                selectedHoliday = nil
-                                selectedWeatherDate = weather.localDate
+                    }
+                )
+                
+                VStack {
+                    Spacer(minLength: 48)
+                    if !store.state.holidays.isEmpty {
+                        HolidayCardSection(
+                            holidays: store.state.holidays,
+                            onAddTapped: { holiday in
+                                selectedHoliday = holiday
+                                selectedWeatherDate = nil
                                 selectedCardType = nil
                                 inputText = ""
                                 showTextInputBottomSheet = true
-                            },
-                            locationAddress: store.state.currentLocationAddress,
-                            store: store
-                        )
-                        
-                        Spacer(minLength: 48)
-                        ShortCardSection(
-                            currentPage: $currentShortCardPage,
-                            selectedDate: $selectedDate,
-                            cards: store.state.shortCards,
-                            onCardTapped: { cardType in
-                                store.send(.vacationCardTapped(cardType))
-                            },
-                            onDateButtonTapped: {
-                                showDatePickerBottomSheet = true
-                            },
-                            onAddTapped: { cardType in
-                                selectedHoliday = nil
-                                selectedWeatherDate = nil
-                                selectedCardType = cardType
-                                inputText = ""
-                                showTextInputBottomSheet = true
                             }
                         )
-                        Spacer()
+                        .background(DS.Colors.Background.alternative01)
                     }
-                    .background(DS.Colors.Background.normal)
+                    
+                    Spacer(minLength: 48)
+                    WeekVacation(
+                        currentMonth: store.state.currentMonth,
+                        currentWeekOfMonth: store.state.currentWeekOfMonth,
+                        weatherData: store.state.weatherRecommendations,
+                        isWeatherLoading: store.state.isWeatherLoading,
+                        onLocationIconTapped: {
+                            store.send(.locationIconTapped)
+                        },
+                        onWeatherRefresh: {
+                            store.send(.loadWeatherRecommendations)
+                        },
+                        onWeatherPlusTapped: { weather in
+                            selectedHoliday = nil
+                            selectedWeatherDate = weather.localDate
+                            selectedCardType = nil
+                            inputText = ""
+                            showTextInputBottomSheet = true
+                        },
+                        locationAddress: store.state.currentLocationAddress,
+                        store: store
+                    )
+                    
+                    Spacer(minLength: 48)
+                    ShortCardSection(
+                        currentPage: $currentShortCardPage,
+                        selectedDate: $selectedDate,
+                        cards: store.state.shortCards,
+                        onCardTapped: { cardType in
+                            store.send(.vacationCardTapped(cardType))
+                        },
+                        onDateButtonTapped: {
+                            showDatePickerBottomSheet = true
+                        },
+                        onAddTapped: { cardType in
+                            selectedHoliday = nil
+                            selectedWeatherDate = nil
+                            selectedCardType = cardType
+                            inputText = ""
+                            showTextInputBottomSheet = true
+                        }
+                    )
+                    Spacer()
                 }
+                .background(DS.Colors.Background.normal)
             }
-            .refreshable {
-                await refreshData()
-            }
+        }
+        .ignoresSafeArea(edges: .top)
+        .refreshable {
+            await refreshData()
         }
         .onAppear {
             store.send(.viewDidLoad)

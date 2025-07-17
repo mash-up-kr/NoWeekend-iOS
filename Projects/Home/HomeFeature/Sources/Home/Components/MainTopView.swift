@@ -17,50 +17,68 @@ struct MainTopView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("오늘 연차쓸래?")
-                    .font(.heading4)
-                    .foregroundColor(DS.Colors.Text.netural)
-                    .padding(.leading, 26)
-                    .padding(.bottom, 8)
-                Spacer()
+            ZStack(alignment: .top) {
+                DS.Images.imgGradient
+                    .resizable()
+                    .frame(height: 310)
+                    .ignoresSafeArea(edges: .top)
+                    .zIndex(0)
+                
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("오늘 연차쓸래?")
+                            .font(.heading4)
+                            .foregroundColor(DS.Colors.Text.netural)
+                            .padding(.leading, 26)
+                            .padding(.bottom, 8)
+                        Spacer()
+                    }
+                    .padding(.top, getSafeAreaTop() + 16)
+                    .padding(.bottom, 32)
+                    
+                    HStack(spacing: 4) {
+                        Text("평균 열정온도:")
+                            .font(.body1)
+                            .foregroundColor(DS.Colors.Text.body)
+                        Text("\(Int(averageTemperature))°C")
+                            .font(.body1)
+                            .foregroundColor(DS.Colors.Toast._600)
+                    }
+                    .padding(.bottom, 4)
+                    
+                    Text(vacationBakingStatus.titleText)
+                        .font(.heading4)
+                        .foregroundColor(DS.Colors.Text.netural)
+                    
+                    let mainImage = vacationBakingStatus == .processing ? DS.Images.imgMainToasting : DS.Images.imageMain
+                    mainImage
+                        .resizable()
+                        .frame(width: 140, height: 140)
+                        .padding(.vertical, 16)
+                    
+                    Button(action: onVacationBakingTapped) {
+                        Text(getButtonText())
+                            .font(.body1)
+                            .foregroundColor(vacationBakingStatus.isButtonEnabled ? .white : DS.Colors.Text.body)
+                            .frame(width: 200, height: 60)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(vacationBakingStatus.isButtonEnabled ? DS.Colors.Toast._600 : DS.Colors.Neutral.gray700)
+                            )
+                    }
+                    .disabled(!vacationBakingStatus.isButtonEnabled)
+                    .buttonStyle(PlainButtonStyle())
+                }
             }
-            .padding(.top, 16)
-            .padding(.bottom, 32)
-            
-            HStack(spacing: 4) {
-                Text("평균 열정온도:")
-                    .font(.body1)
-                    .foregroundColor(DS.Colors.Text.body)
-                Text("\(Int(averageTemperature))°C")
-                    .font(.body1)
-                    .foregroundColor(DS.Colors.Toast._600)
-            }
-            .padding(.bottom, 4)
-            
-            Text(vacationBakingStatus.titleText)
-                .font(.heading4)
-                .foregroundColor(DS.Colors.Text.netural)
-            
-            let mainImage = vacationBakingStatus == .processing ? DS.Images.imgMainToasting : DS.Images.imageMain
-            mainImage
-                .resizable()
-                .frame(width: 140, height: 140)
-                .padding(.vertical, 16)
-            
-            Button(action: onVacationBakingTapped) {
-                Text(getButtonText())
-                    .font(.body1)
-                    .foregroundColor(vacationBakingStatus.isButtonEnabled ? .white : DS.Colors.Text.body)
-                    .frame(width: 200, height: 60)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(vacationBakingStatus.isButtonEnabled ? DS.Colors.Toast._600 : DS.Colors.Neutral.gray700)
-                    )
-            }
-            .disabled(!vacationBakingStatus.isButtonEnabled)
-            .buttonStyle(PlainButtonStyle())
         }
+    }
+    
+    private func getSafeAreaTop() -> CGFloat {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return 47
+        }
+        return window.safeAreaInsets.top
     }
     
     private func getButtonText() -> String {
