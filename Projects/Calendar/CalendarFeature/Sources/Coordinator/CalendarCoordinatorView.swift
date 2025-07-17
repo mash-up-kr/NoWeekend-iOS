@@ -11,13 +11,16 @@ import SwiftUI
 public struct CalendarCoordinatorView: View {
     @StateObject private var coordinator = CalendarCoordinator()
     
-    public init() {
-        print("📅 CalendarCoordinatorView 초기화")
+    private let initialDate: Date?
+
+    public init(initialDate: Date? = nil) {
+        self.initialDate = initialDate
+        print("📅 CalendarCoordinatorView 초기화 - initialDate: \(initialDate?.description ?? "nil")")
     }
     
     public var body: some View {
         NavigationStack(path: $coordinator.path) {
-            coordinator.view(.main)
+            coordinator.view(.main(initialDate: initialDate))
                 .navigationDestination(for: CalendarRouter.Screen.self) { screen in
                     coordinator.view(screen)
                         .environmentObject(coordinator)

@@ -222,7 +222,7 @@ public struct HomeView: View {
                 inputText = ""
                 resetSelectedItems()
                 
-                switchToCalendarTab()
+                switchToCalendarTab(with: targetDate)
             }
             
         } catch {
@@ -334,10 +334,17 @@ public struct HomeView: View {
         store.send(.refreshData)
     }
     
-    private func switchToCalendarTab() {
+    private func switchToCalendarTab(with date: Date? = nil) {
+        var userInfo: [String: Any] = [:]
+        
+        if let date = date {
+            userInfo["selectedDate"] = date
+        }
+        
         NotificationCenter.default.post(
             name: NSNotification.Name("SwitchToCalendarTab"),
-            object: nil
+            object: nil,
+            userInfo: userInfo
         )
     }
 }

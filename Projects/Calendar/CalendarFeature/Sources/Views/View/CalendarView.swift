@@ -21,7 +21,10 @@ public struct CalendarView: View {
     @State private var showTaskEditSheet = false
     @State private var datePickerSelectedDate = Date()
     
-    public init() {}
+    private let initialDate: Date?
+    public init(initialDate: Date? = nil) {
+        self.initialDate = initialDate
+    }
     
     public var body: some View {
         ZStack {
@@ -74,10 +77,12 @@ public struct CalendarView: View {
                 }
             }
         }
-        .onChange(of: store.state.showTaskEditSheet) { _, newValue in
-            if newValue != showTaskEditSheet {
-                showTaskEditSheet = newValue
+        .onAppear {
+            // 수정된 부분: 초기 날짜가 있으면 해당 날짜로 설정
+            if let initialDate = initialDate {
+                store.send(.dateSelected(initialDate))
             }
+            store.send(.viewDidAppear)
         }
         .onReceive(store.effect) { effect in
             handleEffect(effect)
