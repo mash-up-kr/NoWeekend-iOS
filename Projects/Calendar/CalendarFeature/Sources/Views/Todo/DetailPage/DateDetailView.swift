@@ -13,7 +13,6 @@ import SwiftUI
 public struct DateDetailView: View {
     @EnvironmentObject private var coordinator: CalendarCoordinator
     @State private var store: DateDetailStore
-    @Environment(\.presentationMode) private var presentationMode
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -71,7 +70,7 @@ private extension DateDetailView {
         CustomNavigationBar(
             type: .backWithLabel(dateFormatter.string(from: store.selectedDate)),
             onBackTapped: {
-                presentationMode.wrappedValue.dismiss()
+                coordinator.pop()
             }
         )
     }
@@ -107,7 +106,10 @@ private extension DateDetailView {
                 TodoListSection(
                     todoItems: store.state.todoItems,
                     incompleteTodoCount: store.state.incompleteTodoCount,
-                    onToggle: { index in store.send(.toggleTask(index: index)) },
+                    onToggle: { index in
+                        // 올바른 API 연동 Intent 호출
+                        store.send(.taskCompletionToggled(index))
+                    },
                     onMoreTapped: { index in store.send(.showTaskEditSheet(index: index)) }
                 )
                 .padding(.top, 24)
@@ -116,7 +118,6 @@ private extension DateDetailView {
             }
         }
     }
-    
     @ViewBuilder
     var overlayContent: some View {
         if store.state.showCategorySelection {

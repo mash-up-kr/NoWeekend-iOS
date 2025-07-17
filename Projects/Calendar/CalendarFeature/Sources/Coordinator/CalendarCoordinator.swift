@@ -24,8 +24,8 @@ public final class CalendarCoordinator: ObservableObject, Coordinatorable {
     @ViewBuilder
     public func view(_ screen: Screen) -> some View {
         switch screen {
-        case .main:
-            CalendarView()
+        case .main(let initialDate):
+            CalendarView(initialDate: initialDate)
         case .taskCreate(let selectedDate):
             TaskCreateView(selectedDate: selectedDate)
         case .taskEdit(let todoId, let title, let category, let scheduleId, let selectedDate):
@@ -60,7 +60,7 @@ public final class CalendarCoordinator: ObservableObject, Coordinatorable {
 
 public enum CalendarRouter {
     public enum Screen: Hashable {
-        case main
+        case main(initialDate: Date?)
         case taskCreate(selectedDate: Date)
         case taskEdit(todoId: Int, title: String, category: String?, scheduleId: String?, selectedDate: Date)
         case dateDetail(selectedDate: Date)

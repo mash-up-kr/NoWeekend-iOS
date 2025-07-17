@@ -17,7 +17,7 @@ public struct TabBarView: View {
         case home = 0
         case calendar
         case profile
-
+        
         var title: String {
             switch self {
             case .home: return "홈"
@@ -25,7 +25,7 @@ public struct TabBarView: View {
             case .profile: return "내 정보"
             }
         }
-
+        
         var iconOn: Image {
             switch self {
             case .home:
@@ -36,7 +36,7 @@ public struct TabBarView: View {
                 return DS.Images.icnPersonOn
             }
         }
-
+        
         var iconOff: Image {
             switch self {
             case .home:
@@ -48,12 +48,13 @@ public struct TabBarView: View {
             }
         }
     }
-
+    
     @State private var selectedTab: Tab = .home
     @EnvironmentObject var appCoordinator: AppCoordinator
-
+    @State private var calendarTargetDate: Date?
+    
     public init() {}
-
+    
     public var body: some View {
         TabView(selection: $selectedTab) {
             // 홈 탭
@@ -63,9 +64,9 @@ public struct TabBarView: View {
                     Text(Tab.home.title)
                 }
                 .tag(Tab.home)
-
+            
             // 캘린더 탭
-            CalendarCoordinatorView()
+            CalendarCoordinatorView(initialDate: calendarTargetDate)
                 .tabItem {
                     (selectedTab == .calendar ? Tab.calendar.iconOn : Tab.calendar.iconOff)
                     Text(Tab.calendar.title)
@@ -81,8 +82,14 @@ public struct TabBarView: View {
                 .tag(Tab.profile)
         }
         .accentColor(DS.Colors.Neutral.gray900)
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToCalendarTab"))) { _ in
-            selectedTab = .calendar
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToCalendarTab"))) { notification in
+                    selectedTab = .calendar
+            if let userInfo = notification.userInfo,
+                           let selectedDate = userInfo["selectedDate"] as? Date {
+                            calendarTargetDate = selectedDate
+                        } else {
+                            calendarTargetDate = nil
+                        }
         }
     }
 }

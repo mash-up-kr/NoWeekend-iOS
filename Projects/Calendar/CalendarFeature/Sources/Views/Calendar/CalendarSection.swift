@@ -33,6 +33,7 @@ struct CalendarSection: View {
             case .week:
                 WeekCalendarView(
                     baseDate: selectedDate,
+                    selectedDate: selectedDate,  
                     onDateTap: onDateTap
                 ) { date in
                     calendarCellContent(date)

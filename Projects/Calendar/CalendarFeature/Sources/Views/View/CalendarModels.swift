@@ -26,6 +26,8 @@ public enum CalendarIntent {
     case taskTitleChanged(Int, String)
     case categorySelectionToggled
     case scrollOffsetChanged(CGFloat, Bool)
+    case taskCompletionToggled(Int)
+    case taskMoreTapped(Int)
 }
 
 // MARK: - State (UI 상태)

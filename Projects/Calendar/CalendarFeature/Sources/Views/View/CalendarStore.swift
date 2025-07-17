@@ -64,6 +64,10 @@ public final class CalendarStore: ObservableObject {
             handleCategorySelectionToggled()
         case .scrollOffsetChanged(let offset, let isScrolling):
             handleScrollOffsetChanged(offset: offset, isScrolling: isScrolling)
+        case .taskCompletionToggled(let index):
+            await handleTaskCompletionToggled(index)
+        case .taskMoreTapped(let index):
+            handleTaskMoreTapped(index)
         }
     }
 }
@@ -115,6 +119,14 @@ private extension CalendarStore {
     func handleDirectInputTapped() {
         state.showCategorySelection = false
         effectSubject.send(.navigateToTaskCreate(state.selectedDate))
+    }
+    
+    @MainActor
+    func handleTaskMoreTapped(_ index: Int) {
+        guard index < state.todoItems.count else { return }
+        
+        state.selectedTaskIndex = index
+        state.showTaskEditSheet = true
     }
     
     @MainActor
@@ -467,4 +479,34 @@ extension CalendarStore {
             return DS.Images.imgToastDefault
         }
     }
+    @MainActor
+        func handleTaskCompletionToggled(_ index: Int) async {
+            guard index < state.todoItems.count else { return }
+            
+            let todoItem = state.todoItems[index]
+            
+            guard let scheduleId = todoItem.scheduleId else {
+                state.todoItems[index].isCompleted.toggle()
+                return
+            }
+            
+            let previousState = state.todoItems[index].isCompleted
+            state.todoItems[index].isCompleted = !previousState
+            
+            do {
+                let updatedSchedule = try await calendarUseCase.updateScheduleState(
+                    id: scheduleId,
+                    isComplete: !previousState
+                )
+                
+                state.todoItems[index].isCompleted = updatedSchedule.completed
+                
+                let message = updatedSchedule.completed ? "할일을 완료했습니다" : "할일을 미완료로 변경했습니다"
+                effectSubject.send(.showSuccess(message))
+                
+            } catch {
+                state.todoItems[index].isCompleted = previousState
+                effectSubject.send(.showError("할일 상태 변경에 실패했습니다: \(error.localizedDescription)"))
+            }
+        }
 }

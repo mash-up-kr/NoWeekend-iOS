@@ -31,8 +31,11 @@ public class DateDetailStore {
             Task { await loadSchedules() }
             
         case .toggleTask(let index):
-            guard index < state.todoItems.count else { return }
-            state.todoItems[index].isCompleted.toggle()
+            // 기존의 로컬 토글을 API 연동으로 변경
+            Task { await handleTaskCompletionToggled(index) }
+            
+        case .taskCompletionToggled(let index):
+            Task { await handleTaskCompletionToggled(index) }
             
         case .showTaskEditSheet(let index):
             state.selectedTaskIndex = index
@@ -53,8 +56,7 @@ public class DateDetailStore {
         case .deleteTask:
             state.showTaskEditSheet = false
             if let index = state.selectedTaskIndex {
-                state.todoItems.remove(at: index)
-                state.selectedTaskIndex = nil
+                Task { await handleTaskDelete(index) }
             }
             
         case .showCategorySelection:
@@ -170,4 +172,60 @@ private extension DateDetailStore {
             scheduleId: schedule.id
         )
     }
+
+    @MainActor
+    func handleTaskCompletionToggled(_ index: Int) async {
+        guard index < state.todoItems.count else { return }
+        
+        let todoItem = state.todoItems[index]
+        
+        guard let scheduleId = todoItem.scheduleId else {
+            state.todoItems[index].isCompleted.toggle()
+            return
+        }
+        
+        let previousState = state.todoItems[index].isCompleted
+        state.todoItems[index].isCompleted = !previousState
+        
+        do {
+            let updatedSchedule = try await calendarUseCase?.updateScheduleState(
+                id: scheduleId,
+                isComplete: !previousState
+            )
+            
+            state.todoItems[index].isCompleted = ((updatedSchedule?.completed) != nil)
+            
+        
+            await loadSchedules()
+            
+        } catch {
+            state.todoItems[index].isCompleted = previousState
+        }
+    }
+
+    @MainActor
+      func handleTaskDelete(_ index: Int) async {
+          guard index < state.todoItems.count else { return }
+          
+          let todoItem = state.todoItems[index]
+          
+          guard let scheduleId = todoItem.scheduleId else {
+              state.todoItems.remove(at: index)
+              state.selectedTaskIndex = nil
+              return
+          }
+          
+          do {
+              let useCase = calendarUseCase ?? DIContainer.shared.resolve(CalendarUseCaseProtocol.self)
+              try await useCase.deleteSchedule(id: scheduleId)
+              
+              state.todoItems.remove(at: index)
+              state.selectedTaskIndex = nil
+              
+              await loadSchedules()
+              
+          } catch {
+              state.errorMessage = "일정 삭제에 실패했습니다: \(error.localizedDescription)"
+          }
+      }
 }

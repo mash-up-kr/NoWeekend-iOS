@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct WeekCalendarView<Content: View>: View {
     let baseDate: Date
+    let selectedDate: Date
     let onDateTap: ((Date) -> Void)?
     let cellContent: (Date) -> Content
     
@@ -33,10 +34,12 @@ public struct WeekCalendarView<Content: View>: View {
     
     public init(
         baseDate: Date = Date(),
+        selectedDate: Date = Date(),
         onDateTap: ((Date) -> Void)? = nil,
         @ViewBuilder cellContent: @escaping (Date) -> Content
     ) {
         self.baseDate = baseDate
+        self.selectedDate = selectedDate
         self.onDateTap = onDateTap
         self.cellContent = cellContent
     }
@@ -69,7 +72,10 @@ public struct WeekCalendarView<Content: View>: View {
                 }) {
                     VStack(spacing: 1) {
                         ZStack {
-                            if calendar.isDateInToday(date) {
+                            let isToday = calendar.isDateInToday(date)
+                            let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+                            
+                            if isSelected {
                                 Circle()
                                     .fill(DS.Colors.Toast._100)
                                     .frame(width: 32, height: 32)
@@ -77,7 +83,10 @@ public struct WeekCalendarView<Content: View>: View {
                             
                             Text("\(calendar.component(.day, from: date))")
                                 .font(.subtitle2)
-                                .foregroundColor(calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
+                                .foregroundColor(
+                                    isSelected ? DS.Colors.Toast._700 :
+                                    (isToday ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
+                                )
                         }
                         .frame(height: 41)
                         

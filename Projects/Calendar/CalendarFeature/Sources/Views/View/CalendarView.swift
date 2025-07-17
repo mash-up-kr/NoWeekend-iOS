@@ -21,7 +21,10 @@ public struct CalendarView: View {
     @State private var showTaskEditSheet = false
     @State private var datePickerSelectedDate = Date()
     
-    public init() {}
+    private let initialDate: Date?
+    public init(initialDate: Date? = nil) {
+        self.initialDate = initialDate
+    }
     
     public var body: some View {
         ZStack {
@@ -74,10 +77,12 @@ public struct CalendarView: View {
                 }
             }
         }
-        .onChange(of: store.state.showTaskEditSheet) { _, newValue in
-            if newValue != showTaskEditSheet {
-                showTaskEditSheet = newValue
+        .onAppear {
+            // 수정된 부분: 초기 날짜가 있으면 해당 날짜로 설정
+            if let initialDate = initialDate {
+                store.send(.dateSelected(initialDate))
             }
+            store.send(.viewDidAppear)
         }
         .onReceive(store.effect) { effect in
             handleEffect(effect)
@@ -112,6 +117,7 @@ private extension CalendarView {
             )
             
             contentSection
+            Spacer()
         }
         .background(.white)
     }
@@ -127,63 +133,23 @@ private extension CalendarView {
                 }
                 .background(.white)
             } else {
-                TodoScrollSection(
-                    todoItems: Binding(
-                        get: { store.state.todoItems },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { $0.todoItems = newValue }
-                            }
+                ScrollView {
+                    TodoListSection(
+                        todoItems: store.state.todoItems,
+                        incompleteTodoCount: store.state.todoItems.filter { !$0.isCompleted }.count,
+                        onToggle: { index in
+                            store.send(.taskCompletionToggled(index))
+                        },
+                        onMoreTapped: { index in
+                            store.send(.taskMoreTapped(index))
                         }
-                    ),
-                    selectedTaskIndex: Binding(
-                        get: { store.state.selectedTaskIndex },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { state in
-                                    state.selectedTaskIndex = newValue
-                                    if newValue != nil {
-                                        state.showTaskEditSheet = true
-                                    }
-                                }
-                            }
-                        }
-                    ),
-                    showTaskEditSheet: Binding(
-                        get: { showTaskEditSheet },
-                        set: { newValue in
-                            showTaskEditSheet = newValue
-                        }
-                    ),
-                    scrollOffset: Binding(
-                        get: { store.state.scrollOffset },
-                        set: { newValue in
-                            store.send(.scrollOffsetChanged(newValue, store.state.isScrolling))
-                        }
-                    ),
-                    isScrolling: Binding(
-                        get: { store.state.isScrolling },
-                        set: { newValue in
-                            store.send(.scrollOffsetChanged(store.state.scrollOffset, newValue))
-                        }
-                    ),
-                    editingTaskIndex: Binding(
-                        get: { store.state.editingTaskIndex },
-                        set: { newValue in
-                            Task { @MainActor in
-                                store.updateState { $0.editingTaskIndex = newValue }
-                            }
-                        }
-                    ),
-                    onTitleChanged: { index, newTitle in
-                        store.send(.taskTitleChanged(index, newTitle))
-                    }
-                )
+                    )
+                    .padding(.top, 24)
+                    
+                    Spacer(minLength: 100)
+                }
                 .background(.white)
             }
-        } else {
-            Spacer()
-                .background(.white)
         }
     }
     
@@ -275,5 +241,22 @@ private extension CalendarView {
         case .showSuccess(let message):
             print("✅ Success: \(message)")
         }
+    }
+}
+
+extension ScrollView {
+    func scrollTrackingModifier(onScrollChanged: @escaping (CGFloat, Bool) -> Void) -> some View {
+        self.background(
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: ScrollOffsetPreferenceKey.self,
+                    value: geometry.frame(in: .named("scroll")).minY
+                )
+            }
+        )
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+            onScrollChanged(value, abs(value) > 1)
+        }
+        .coordinateSpace(name: "scroll")
     }
 }

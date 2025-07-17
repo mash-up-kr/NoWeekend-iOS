@@ -102,7 +102,8 @@ struct MonthCalendarView: View {
             }) {
                 VStack(spacing: 1) {
                     ZStack {
-                        if isToday {
+                        if isSelected {
+                            // 선택된 날짜에만 circle 표시
                             Circle()
                                 .fill(DS.Colors.Toast._100)
                                 .frame(width: 32, height: 32)
@@ -110,7 +111,10 @@ struct MonthCalendarView: View {
                         
                         Text("\(calendar.component(.day, from: date))")
                             .font(.subtitle1)
-                            .foregroundStyle(isToday ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
+                            .foregroundStyle(
+                                isSelected ? DS.Colors.Toast._700 :
+                                (isToday ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
+                            )
                     }
                     .frame(height: 41)
                     

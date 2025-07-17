@@ -20,4 +20,5 @@ public enum DateDetailIntent {
     case hideCategorySelection
     case selectCategory(TaskCategory)
     case navigateToTaskCreate
+    case taskCompletionToggled(Int)
 }
