@@ -14,7 +14,11 @@ struct MonthCalendarView: View {
     let onDateTap: (Date) -> Void
     let calendarCellContent: (Date) -> AnyView
     
-    private let calendar = Calendar.current
+    private var calendar: Calendar {
+        var cal = Calendar.current
+        cal.firstWeekday = 2 
+        return cal
+    }
     
     private var datesInMonth: [Date] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: selectedDate) else {
@@ -83,63 +87,42 @@ struct MonthCalendarView: View {
     }
     
     private var monthGrid: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 8) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 0) {
             ForEach(datesInMonth, id: \.self) { date in
-                monthCell(for: date)
+                Button(action: {
+                    onDateTap(date)
+                }) {
+                    VStack(spacing: 1) {
+                        ZStack {
+                            if calendar.isDate(date, inSameDayAs: selectedDate) {
+                                Circle()
+                                    .fill(DS.Colors.Toast._100)
+                                    .frame(width: 32, height: 32)
+                            }
+                            
+                            Text("\(calendar.component(.day, from: date))")
+                                .font(.subtitle2)
+                                .foregroundColor(textColor(for: date))
+                        }
+                        .frame(height: 41)
+                        
+                        calendarCellContent(date)
+                            .frame(width: 41, height: 41)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 80)
             }
         }
     }
     
-    @ViewBuilder
-    private func monthCell(for date: Date) -> some View {
-        let isCurrentMonth = calendar.isDate(date, equalTo: selectedDate, toGranularity: .month)
-        let isToday = calendar.isDateInToday(date)
-        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
-        
-        if isCurrentMonth {
-            Button(action: {
-                onDateTap(date)
-            }) {
-                VStack(spacing: 1) {
-                    ZStack {
-                        if isSelected {
-                            // 선택된 날짜에만 circle 표시
-                            Circle()
-                                .fill(DS.Colors.Toast._100)
-                                .frame(width: 32, height: 32)
-                        }
-                        
-                        Text("\(calendar.component(.day, from: date))")
-                            .font(.subtitle1)
-                            .foregroundStyle(
-                                isSelected ? DS.Colors.Toast._700 :
-                                (isToday ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
-                            )
-                    }
-                    .frame(height: 41)
-                    
-                    calendarCellContent(date)
-                        .frame(height: 41)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 90)
+    private func textColor(for date: Date) -> Color {
+        if calendar.isDate(date, inSameDayAs: selectedDate) {
+            return .white
+        } else if !calendar.isDate(date, equalTo: selectedDate, toGranularity: .month) {
+            return DS.Colors.Text.disable
         } else {
-            Color.clear
-                .frame(maxWidth: .infinity)
-                .frame(height: 90)
+            return DS.Colors.Text.netural
         }
     }
-}
-
-#Preview {
-    MonthCalendarView(
-        selectedDate: Date(),
-        onDateTap: { _ in },
-        calendarCellContent: { _ in
-            DS.Images.imgToastVacation
-                .resizable()
-                .scaledToFit()
-        }
-    )
 }

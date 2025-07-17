@@ -35,5 +35,4 @@ public protocol CalendarUseCaseProtocol {
     func deleteSchedule(id: String) async throws
     func getRecommendedTags() async throws -> RecommendTagResponse
     func updateScheduleState(id: String, isComplete: Bool) async throws -> Schedule
-
 }

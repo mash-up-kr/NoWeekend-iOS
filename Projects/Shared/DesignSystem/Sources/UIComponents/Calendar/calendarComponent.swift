@@ -14,7 +14,11 @@ public struct WeekCalendarView<Content: View>: View {
     let onDateTap: ((Date) -> Void)?
     let cellContent: (Date) -> Content
     
-    private let calendar = Calendar.koreaCalendar
+    private var calendar: Calendar {
+        var cal = Calendar.current
+        cal.firstWeekday = 2  
+        return cal
+    }
     
     private var datesInWeek: [Date] {
         guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
@@ -30,6 +34,10 @@ public struct WeekCalendarView<Content: View>: View {
         }
         
         return dates
+    }
+    
+    private var weekdaySymbols: [String] {
+        ["월", "화", "수", "목", "금", "토", "일"]
     }
     
     public init(
@@ -72,10 +80,7 @@ public struct WeekCalendarView<Content: View>: View {
                 }) {
                     VStack(spacing: 1) {
                         ZStack {
-                            let isToday = calendar.isDateInToday(date)
-                            let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
-                            
-                            if isSelected {
+                            if calendar.isDate(date, inSameDayAs: selectedDate) {
                                 Circle()
                                     .fill(DS.Colors.Toast._100)
                                     .frame(width: 32, height: 32)
@@ -84,8 +89,8 @@ public struct WeekCalendarView<Content: View>: View {
                             Text("\(calendar.component(.day, from: date))")
                                 .font(.subtitle2)
                                 .foregroundColor(
-                                    isSelected ? DS.Colors.Toast._700 :
-                                    (isToday ? DS.Colors.Toast._700 : DS.Colors.Neutral.gray900)
+                                    calendar.isDate(date, inSameDayAs: selectedDate) ? .white :
+                                    (calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
                                 )
                         }
                         .frame(height: 41)
@@ -95,23 +100,8 @@ public struct WeekCalendarView<Content: View>: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
+                .frame(height: 80)
             }
         }
     }
-    
-    private var weekdaySymbols: [String] {
-        ["월", "화", "수", "목", "금", "토", "일"]
-    }
 }
-
-// MARK: - Calendar Extension (한국 시간대 설정)
-extension Calendar {
-    static let koreaCalendar: Calendar = {
-        var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "Asia/Seoul")!
-        calendar.locale = Locale(identifier: "ko_KR")
-        calendar.firstWeekday = 2
-        return calendar
-    }()
-}
-
