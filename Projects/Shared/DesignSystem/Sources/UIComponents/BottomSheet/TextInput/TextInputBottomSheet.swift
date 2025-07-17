@@ -31,18 +31,18 @@ public struct TextInputBottomSheet: View {
     
     public var body: some View {
         BottomSheetContainer(height: 300) {
-            VStack(spacing: 24) {
+            VStack(spacing: 0) {
                 Text(subtitle)
                     .font(.heading4)
                     .foregroundColor(DS.Colors.Text.netural)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 4)
+                    .padding(.vertical, 24)
                 
                 UnderlineTextField(
                     placeholder: placeholder.isEmpty ? "쓸래말래가 추천한 연차 ✈️" : placeholder,
-                    text: $text
+                    text: $text,
+                    textColor: DS.Colors.Text.netural
                 )
-                .foregroundColor(DS.Colors.Text.netural)
                 
                 NWButton.black(
                     "추가하기",
@@ -52,7 +52,7 @@ public struct TextInputBottomSheet: View {
                         onAddButtonTapped()
                     }
                 )
-                .padding(.bottom, 34)
+                .padding(.top, 48)
             }
         }
     }
