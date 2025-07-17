@@ -14,7 +14,7 @@ public struct WeekCalendarView<Content: View>: View {
     let onDateTap: ((Date) -> Void)?
     let cellContent: (Date) -> Content
     
-    private let calendar = Calendar.current
+    private let calendar = Calendar.koreaCalendar
     
     private var datesInWeek: [Date] {
         guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: baseDate) else {
@@ -104,16 +104,14 @@ public struct WeekCalendarView<Content: View>: View {
     }
 }
 
-struct WeekCalendarExampleView: View {
-    var body: some View {
-        WeekCalendarView { _ in
-            DS.Images.imgToastVacation
-                .resizable()
-                .scaledToFit()
-        }
-    }
+// MARK: - Calendar Extension (한국 시간대 설정)
+extension Calendar {
+    static let koreaCalendar: Calendar = {
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(identifier: "Asia/Seoul")!
+        calendar.locale = Locale(identifier: "ko_KR")
+        calendar.firstWeekday = 2
+        return calendar
+    }()
 }
 
-#Preview {
-    WeekCalendarExampleView()
-}
