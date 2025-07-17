@@ -24,6 +24,12 @@ public final class CalendarStore: ObservableObject {
         effectSubject.eraseToAnyPublisher()
     }
     
+    private var calendar: Calendar {
+        var cal = Calendar.current
+        cal.firstWeekday = 2  
+        return cal
+    }
+    
     public init() {}
     
     public func send(_ intent: CalendarIntent) {
@@ -125,6 +131,10 @@ private extension CalendarStore {
     func handleTaskMoreTapped(_ index: Int) {
         guard index < state.todoItems.count else { return }
         
+        if state.showCategorySelection {
+            state.showCategorySelection = false
+        }
+        
         state.selectedTaskIndex = index
         state.showTaskEditSheet = true
     }
@@ -154,11 +164,11 @@ private extension CalendarStore {
         
         guard todoItem.category?.name != "연차" else { return }
         
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: state.selectedDate) ?? state.selectedDate
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: state.selectedDate) ?? state.selectedDate
         
         do {
-            let tomorrowStartTime = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-            let tomorrowEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: tomorrowStartTime) ?? tomorrowStartTime
+            let tomorrowStartTime = calendar.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+            let tomorrowEndTime = calendar.date(byAdding: .hour, value: 1, to: tomorrowStartTime) ?? tomorrowStartTime
             
             let scheduleCategory = mapCategoryNameToScheduleCategory(todoItem.category?.name ?? "기타")
             
@@ -212,6 +222,10 @@ private extension CalendarStore {
     
     @MainActor
     func handleCategorySelectionToggled() {
+        if state.showTaskEditSheet {
+            return
+        }
+        
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             state.showCategorySelection.toggle()
         }
@@ -295,7 +309,6 @@ private extension CalendarStore {
     }
     
     func calculateWeekRange(for date: Date) -> (Date, Date) {
-        let calendar = Calendar.current
         guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: date) else {
             return (date, date)
         }
@@ -303,7 +316,6 @@ private extension CalendarStore {
     }
     
     func calculateMonthRange(for date: Date) -> (Date, Date) {
-        let calendar = Calendar.current
         guard let monthInterval = calendar.dateInterval(of: .month, for: date) else {
             return (date, date)
         }
@@ -326,7 +338,6 @@ private extension CalendarStore {
     @MainActor
     func createScheduleFromCategory(_ category: TaskCategory) async {
         do {
-            let calendar = Calendar.current
             let selectedDate = state.selectedDate
             
             let startTime = calendar.date(bySettingHour: calendar.component(.hour, from: Date()),
@@ -367,7 +378,7 @@ private extension CalendarStore {
         } else if personalKeywords.contains(where: { categoryName.contains($0) }) {
             return .personal
         } else {
-            return .etc 
+            return .etc
         }
     }
     
@@ -479,34 +490,35 @@ extension CalendarStore {
             return DS.Images.imgToastDefault
         }
     }
+    
     @MainActor
-        func handleTaskCompletionToggled(_ index: Int) async {
-            guard index < state.todoItems.count else { return }
-            
-            let todoItem = state.todoItems[index]
-            
-            guard let scheduleId = todoItem.scheduleId else {
-                state.todoItems[index].isCompleted.toggle()
-                return
-            }
-            
-            let previousState = state.todoItems[index].isCompleted
-            state.todoItems[index].isCompleted = !previousState
-            
-            do {
-                let updatedSchedule = try await calendarUseCase.updateScheduleState(
-                    id: scheduleId,
-                    isComplete: !previousState
-                )
-                
-                state.todoItems[index].isCompleted = updatedSchedule.completed
-                
-                let message = updatedSchedule.completed ? "할일을 완료했습니다" : "할일을 미완료로 변경했습니다"
-                effectSubject.send(.showSuccess(message))
-                
-            } catch {
-                state.todoItems[index].isCompleted = previousState
-                effectSubject.send(.showError("할일 상태 변경에 실패했습니다: \(error.localizedDescription)"))
-            }
+    func handleTaskCompletionToggled(_ index: Int) async {
+        guard index < state.todoItems.count else { return }
+        
+        let todoItem = state.todoItems[index]
+        
+        guard let scheduleId = todoItem.scheduleId else {
+            state.todoItems[index].isCompleted.toggle()
+            return
         }
+        
+        let previousState = state.todoItems[index].isCompleted
+        state.todoItems[index].isCompleted = !previousState
+        
+        do {
+            let updatedSchedule = try await calendarUseCase.updateScheduleState(
+                id: scheduleId,
+                isComplete: !previousState
+            )
+            
+            state.todoItems[index].isCompleted = updatedSchedule.completed
+            
+            let message = updatedSchedule.completed ? "할일을 완료했습니다" : "할일을 미완료로 변경했습니다"
+            effectSubject.send(.showSuccess(message))
+            
+        } catch {
+            state.todoItems[index].isCompleted = previousState
+            effectSubject.send(.showError("할일 상태 변경에 실패했습니다: \(error.localizedDescription)"))
+        }
+    }
 }

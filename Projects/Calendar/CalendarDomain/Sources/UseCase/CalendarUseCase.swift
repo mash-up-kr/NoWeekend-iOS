@@ -6,13 +6,17 @@
 //  Copyright © 2025 com.noweekend. All rights reserved.
 //
 
-import CalendarDomain
 import Foundation
 import Utils
 
 public class CalendarUseCase: CalendarUseCaseProtocol {
     private let calendarRepository: CalendarRepositoryProtocol
-    private let calendar = Calendar.current
+    
+    private var calendar: Calendar {
+        var cal = Calendar.current
+        cal.firstWeekday = 2  // 월요일 시작
+        return cal
+    }
     
     public init(calendarRepository: CalendarRepositoryProtocol) {
         self.calendarRepository = calendarRepository
@@ -92,6 +96,10 @@ public class CalendarUseCase: CalendarUseCaseProtocol {
     public func getRecommendedTags() async throws -> RecommendTagResponse {
         return try await calendarRepository.getRecommendedTags()
     }
+    
+    public func updateScheduleState(id: String, isComplete: Bool) async throws -> Schedule {
+        return try await calendarRepository.updateScheduleState(id: id, isComplete: isComplete)
+    }
 }
 
 // MARK: - Private Helper Methods
@@ -125,9 +133,5 @@ private extension CalendarUseCase {
         }
         
         return (firstWeekStart, lastWeekEnd)
-    }
-    
-    public func updateScheduleState(id: String, isComplete: Bool) async throws -> Schedule {
-        return try await calendarRepository.updateScheduleState(id: id, isComplete: isComplete)
     }
 }

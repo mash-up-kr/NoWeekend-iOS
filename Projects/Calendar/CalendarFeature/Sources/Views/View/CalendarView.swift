@@ -18,7 +18,6 @@ public struct CalendarView: View {
     @StateObject private var store = CalendarStore()
     
     @State private var showDatePickerSheet = false
-    @State private var showTaskEditSheet = false
     @State private var datePickerSelectedDate = Date()
     
     private let initialDate: Date?
@@ -43,28 +42,38 @@ public struct CalendarView: View {
                     }
                 }
         }
-        .sheet(isPresented: $showTaskEditSheet) {
+        .sheet(isPresented: Binding(
+            get: { store.state.showTaskEditSheet },
+            set: { _ in }
+        )) {
             TaskEditBottomSheet(
                 onEditAction: {
                     if let index = store.state.selectedTaskIndex {
                         store.send(.taskEditRequested(index))
                     }
-                    showTaskEditSheet = false
                 },
                 onTomorrowAction: {
                     if let index = store.state.selectedTaskIndex {
                         store.send(.taskTomorrowRequested(index))
                     }
-                    showTaskEditSheet = false
                 },
                 onDeleteAction: {
                     if let index = store.state.selectedTaskIndex {
                         store.send(.taskDeleteRequested(index))
                     }
-                    showTaskEditSheet = false
                 },
                 isVacationTask: isSelectedTaskVacation(),
-                isPresented: $showTaskEditSheet
+                isPresented: Binding(
+                    get: { store.state.showTaskEditSheet },
+                    set: { newValue in
+                        if !newValue {
+                            store.updateState { state in
+                                state.showTaskEditSheet = false
+                                state.selectedTaskIndex = nil
+                            }
+                        }
+                    }
+                )
             )
             .onAppear {
             }
@@ -78,7 +87,6 @@ public struct CalendarView: View {
             }
         }
         .onAppear {
-            // 수정된 부분: 초기 날짜가 있으면 해당 날짜로 설정
             if let initialDate = initialDate {
                 store.send(.dateSelected(initialDate))
             }
@@ -93,7 +101,6 @@ public struct CalendarView: View {
     }
 }
 
-// MARK: - View Components
 private extension CalendarView {
     var mainContent: some View {
         VStack(spacing: 0) {
@@ -204,7 +211,6 @@ private extension CalendarView {
     }
 }
 
-// MARK: - Helper Methods
 private extension CalendarView {
     func isSelectedTaskVacation() -> Bool {
         guard let selectedIndex = store.state.selectedTaskIndex,
@@ -216,7 +222,6 @@ private extension CalendarView {
     }
 }
 
-// MARK: - Effect Handling
 private extension CalendarView {
     func handleEffect(_ effect: CalendarEffect) {
         switch effect {
