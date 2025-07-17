@@ -11,10 +11,14 @@ import Foundation
 public struct SandwichHoliday: Equatable, DateStringConvertible {
     public let startDate: Date
     public let endDate: Date
+    public let useAnnualLeave: Int
+    public let totalVacationDays: Int
     
-    public init(startDate: Date, endDate: Date) {
+    public init(startDate: Date, endDate: Date, useAnnualLeave: Int, totalVacationDays: Int) {
         self.startDate = startDate
         self.endDate = endDate
+        self.useAnnualLeave = useAnnualLeave
+        self.totalVacationDays = totalVacationDays
     }
     
     public var dateString: String {
@@ -27,5 +31,9 @@ public struct SandwichHoliday: Equatable, DateStringConvertible {
         let endString = dateFormatter.string(from: endDate)
         
         return "\(startString) ~ \(endString)"
+    }
+    
+    public var vacationText: String {
+        return "연차 \(useAnnualLeave)일로\n\(totalVacationDays)일 쉴 수 있어요!"
     }
 } 

@@ -332,12 +332,21 @@ final class HomeStore: ObservableObject {
     }
     
     private func updateShortCardsWithSandwichHolidayData() {
-        print("🔥 샌드위치 휴일 카드 업데이트 시작 - 데이터 개수: \(state.sandwichHoliday.count)")
-        updateCard(for: .sandwich, data: state.sandwichHoliday, defaultText: "샌드위치 휴일 없음") { sandwichHolidays in
-            let nextHoliday = getNextUpcomingSandwichHoliday(from: sandwichHolidays)
-            print("🔥 다음 샌드위치 휴일: \(nextHoliday?.dateString ?? "없음")")
-            return nextHoliday
-        }
+        print("🔥 샌드위치 휴일 \(state.sandwichHoliday)")
+        
+        let nextSandwichHoliday = getNextUpcomingSandwichHoliday(from: state.sandwichHoliday)
+        let dateString = nextSandwichHoliday?.dateString ?? "샌드위치 휴일 없음"
+        
+        for index in state.shortCards.indices {
+            if state.shortCards[index].type == .sandwich {
+                state.shortCards[index] = VacationCardItem(
+                    dateString: dateString,
+                    type: .sandwich,
+                    sandwichHoliday: nextSandwichHoliday
+                )
+                break
+            }
+        }        
     }
     
     private func updateCard<T>(
@@ -456,10 +465,12 @@ final class HomeStore: ObservableObject {
     private func registerLocationAndLoadWeather(location: LocationInfo) {
         Task {
             do {
+                print("🌍 위치 등록 시작: \(location.coordinate)")
                 try await homeUseCase.registerLocation(
                     latitude: location.coordinate.latitude,
                     longitude: location.coordinate.longitude
                 )
+                print("✅ 위치 등록 성공")
                 state.isLocationRegistered = true
                 
                 // 주소 정보 업데이트
@@ -469,6 +480,8 @@ final class HomeStore: ObservableObject {
                 // 위치 등록 완료 후 바로 날씨 데이터 로딩
                 loadWeatherData()
             } catch {
+                print("❌ 위치 등록 실패: \(error)")
+                state.isLocationRegistered = false
                 effect.send(.showError("위치 등록에 실패했습니다."))
             }
         }

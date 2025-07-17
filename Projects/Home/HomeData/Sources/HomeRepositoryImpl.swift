@@ -61,12 +61,11 @@ public final class HomeRepositoryImpl: HomeRepositoryProtocol {
             throw NetworkError.serverError(response.error ?? "샌드위치 휴일 조회 실패")
         }
         
-        guard let data = response.data,
-              let sandwichHoliday = data.toDomain() else {
+        guard let data = response.data else {
             return []
         }
         
-        return [sandwichHoliday]
+        return data.toDomain()
     }
     
     public func getHolidays() async throws -> [Holiday] {

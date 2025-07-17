@@ -9,22 +9,30 @@
 import Foundation
 import SwiftUI
 import DesignSystem
+import HomeDomain
 
 struct VacationCardItem: Equatable {
     let dateString: String
     let type: VacationCardType
+    let sandwichHoliday: SandwichHoliday?
+    
+    init(dateString: String, type: VacationCardType, sandwichHoliday: SandwichHoliday? = nil) {
+        self.dateString = dateString
+        self.type = type
+        self.sandwichHoliday = sandwichHoliday
+    }
     
     var attributedText: AttributedString? {
-        type.createAttributedText(dateString: dateString)
+        type.createAttributedText(dateString: dateString, sandwichHoliday: sandwichHoliday)
     }
 }
 
 // MARK: - VacationCardType AttributedText Extension
 extension VacationCardType {
-    func createAttributedText(dateString: String) -> AttributedString? {
+    func createAttributedText(dateString: String, sandwichHoliday: SandwichHoliday? = nil) -> AttributedString? {
         switch self {
         case .sandwich:
-            return createSandwichAttributedText(dateString: dateString)
+            return createSandwichAttributedText(dateString: dateString, sandwichHoliday: sandwichHoliday)
         case .holiday:
             return createHolidayAttributedText()
         case .birthday:
@@ -34,13 +42,27 @@ extension VacationCardType {
         }
     }
     
-    private func createSandwichAttributedText(dateString: String) -> AttributedString {
-        let days = dateString.calculateDaysBetweenDates()
-        var str = AttributedString("샌드위치 연휴로 \(days)일 쉴 수 있어요")
-        if let range = str.range(of: "\(days)일") {
-            str[range].foregroundColor = DS.Colors.Toast._500
+    private func createSandwichAttributedText(dateString: String, sandwichHoliday: SandwichHoliday?) -> AttributedString {
+        if let sandwichHoliday = sandwichHoliday {
+            var str = AttributedString(sandwichHoliday.vacationText)
+            
+            if let range = str.range(of: "\(sandwichHoliday.useAnnualLeave)일") {
+                str[range].foregroundColor = DS.Colors.Toast._500
+            }
+            
+            if let range = str.range(of: "\(sandwichHoliday.totalVacationDays)일") {
+                str[range].foregroundColor = DS.Colors.Toast._500
+            }
+            
+            return str
+        } else {
+            let days = dateString.calculateDaysBetweenDates()
+            var str = AttributedString("샌드위치 연휴로 \(days)일 쉴 수 있어요")
+            if let range = str.range(of: "\(days)일") {
+                str[range].foregroundColor = DS.Colors.Toast._500
+            }
+            return str
         }
-        return str
     }
     
     private func createHolidayAttributedText() -> AttributedString {
