@@ -10,7 +10,7 @@ import SwiftUI
 import DesignSystem
 
 struct ShowToastView: View {
-    @State private var isToastVisible = false
+    @State private var isToastAnimated = false
     @EnvironmentObject private var coordinator: HomeCoordinator
     let toastText: String
     let dateText: String
@@ -26,19 +26,24 @@ struct ShowToastView: View {
                 )
              
                 Spacer()
-
-                // 토스트 뷰
-                Group {
-                    if isToastVisible {
-                        ToastContentView(
-                            toastText: toastText,
-                            dateText: dateText
-                        )
-                    } else {
-                        LoadingContentView()
-                    }
-                }
                 
+                if !isToastAnimated {
+                    LoadingContentView()
+                } else {
+                    BalloonView(dateText: dateText)
+                        .padding(.bottom, 20)
+                }
+
+                // 토스트 뷰 항상 렌더링
+                ToastView(
+                    isAnimated: isToastAnimated,
+                    toastMessage: toastText
+                )
+
+                if isToastAnimated {
+                    showPlanView()
+                        .padding(.top, 20)
+                }
                 
                 Spacer()
                 DS.Images.imgToaster
@@ -51,29 +56,8 @@ struct ShowToastView: View {
         .ignoresSafeArea(edges: .bottom)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                isToastVisible = true
+                isToastAnimated = true
             }
-        }
-    }
-}
-
-struct ToastContentView: View {
-    let toastText: String
-    let dateText: String
-
-    var body: some View {
-        VStack(spacing: 20) {
-            BalloonView(dateText: dateText)
-            ToastView(isVisible: true, toastMessage: toastText)
-                .animation(.easeInOut(duration: 0.5), value: true)
-//            HStack(spacing: 0) {
-//                Text("일정 볼래말래")
-//                    .font(.body1)
-//                    .foregroundColor(DS.Colors.Neutral.gray900)
-//                
-//                DS.Images.icnChevronRight
-//            }
-//            .frame(height: 24)
         }
     }
 }
@@ -88,18 +72,15 @@ struct LoadingContentView: View {
             LottieView(type: JSONFiles.Loading.self)
                 .frame(width: 200, height: 45)
                 .padding(.top, 16)
-            
-            ToastView(isVisible: false, toastMessage: "")
         }
     }
 }
 
 struct ToastView: View {
-    let isVisible: Bool
+    let isAnimated: Bool
     let toastMessage: String
 
-    @State private var offsetY: CGFloat = 360
-    @State private var opacity: Double = 0
+    @State private var offsetY: CGFloat = 197  // 260 - 63 = 197 (토스트 높이에서 보이고 싶은 부분 빼기)
 
     var body: some View {
         ZStack {
@@ -107,43 +88,33 @@ struct ToastView: View {
                 .resizable()
                 .scaledToFit()
             
-            if isVisible {
-                VStack(spacing: 0) {
-                    Spacer(minLength: 86)
-                    Text(toastMessage)
-                        .font(.heading3)
-                        .foregroundColor(DS.Colors.Toast._500)
-                        .multilineTextAlignment(.center)
-                        .truncationMode(.tail)
-                }
+            Text(toastMessage)
+                .font(.heading3)
+                .foregroundColor(DS.Colors.Toast._500)
+                .multilineTextAlignment(.center)
+                .truncationMode(.tail)
+                .padding(.top, 136)
+                .padding(.bottom, 20)
                 .padding(.leading, 48)
                 .padding(.trailing, 62)
-                .padding(.vertical, 20)
-                .transition(.opacity)
-            }
         }
         .offset(y: offsetY)
-        .opacity(opacity)
         .frame(width: 260, height: 260)
         .onAppear {
-            animateToast(visible: isVisible)
+            animateToast(animated: isAnimated)
         }
-        .onChange(of: isVisible) {
-            animateToast(visible: isVisible)
+        .onChange(of: isAnimated) {
+            animateToast(animated: isAnimated)
         }
     }
     
-    private func animateToast(visible: Bool) {
-        if visible {
+    private func animateToast(animated: Bool) {
+        if animated {
             withAnimation(.interpolatingSpring(stiffness: 120, damping: 12)) {
                 offsetY = 0
-                opacity = 1
             }
         } else {
-            withAnimation(.easeIn(duration: 0.2)) {
-                offsetY = 360
-                opacity = 0
-            }
+            offsetY = 197  // 초기 위치: 63만큼만 보이게
         }
     }
 }
@@ -162,9 +133,9 @@ struct BalloonView: View {
                 Text(dateText)
                     .font(.heading6)
                     .foregroundColor(DS.Colors.Text.netural)
-//                DS.Images.icnPlus
-//                    .resizable()
-//                    .frame(width: 24, height: 24)
+                DS.Images.icnPlus
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
             .padding(.top, 16)
             .padding(.bottom, 25)
@@ -172,6 +143,20 @@ struct BalloonView: View {
     }
 }
 
+struct showPlanView: View {
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            Text("일정 볼래말래")
+                .font(.body1)
+                .foregroundColor(DS.Colors.Neutral.gray900)
+            
+            DS.Images.icnChevronRight
+        }
+        .frame(height: 24)
+    }
+}
+
 #Preview {
-    ShowToastView(toastText: "도쿄에 다코야키 먹으러 가요 타키 먹으러가야키 먹으러가야키 먹으러가야키 먹으러가요", dateText: "12/28(수) ~ 12/31(금)")
+    ShowToastView(toastText: "도쿄에다코야키 먹으러 가요도쿄에다코야키 먹으러 가요", dateText: "12/28(수) ~ 12/31(금)")
 }
