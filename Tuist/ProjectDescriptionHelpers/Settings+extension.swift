@@ -37,6 +37,7 @@ public extension Settings {
         teamID: String = Environment.teamID
     ) -> Settings {
         let baseSettings: [String: SettingValue] = [
+            "APP_NAME": .string(Environment.App.displayName),
             "CODE_SIGN_STYLE": "Manual",
             "DEVELOPMENT_TEAM": .string(teamID),
             "MARKETING_VERSION": .string(Environment.App.version),

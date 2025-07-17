@@ -21,8 +21,8 @@ public enum BuildConfiguration: String, CaseIterable {
     
     public var appName: String {
         switch self {
-        case .debug: return "쓸래말래T"
-        case .release: return "쓸래말래"
+        case .debug: return "NoWeekend-Debug"
+        case .release: return "NoWeekend"
         }
     }
     
@@ -51,7 +51,7 @@ public struct Environment {
     
     public struct App {
         public static let baseBundleId = "\(organizationName).app"
-        public static let displayName = "NoWeekend"
+        public static let displayName = "쓸래말래"
         public static let version = "1.0.0"
         public static let buildNumber = "1"
         

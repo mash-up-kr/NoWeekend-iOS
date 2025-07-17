@@ -19,7 +19,7 @@ extension Target {
     ) -> Target {
         .target(
             name: name,
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .framework,
             bundleId: bundleId ?? Environment.bundleId(for: name),
             deploymentTargets: .iOS(Environment.deploymentTarget),
@@ -39,17 +39,19 @@ extension Target {
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements = ["Resources/**"],
         dependencies: [TargetDependency] = [],
-        settings: Settings? = .appSettings()
+        settings: Settings? = .appSettings(),
+        entitlements: Entitlements? = nil
     ) -> Target {
         .target(
             name: name,
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .app,
             bundleId: bundleId ?? Environment.App.baseBundleId,
             deploymentTargets: .iOS(Environment.deploymentTarget),
             infoPlist: infoPlist ?? .app(displayName: Environment.App.displayName),
             sources: sources,
             resources: resources,
+            entitlements: entitlements,
             dependencies: dependencies,
             settings: settings
         )
