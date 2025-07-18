@@ -20,10 +20,8 @@ struct ContentView: View {
     init() {}
     
     var body: some View {
-//        AppCoordinatorView()
-//            .environmentObject(appCoordinator)
-        
-        OnboardingView()
+        AppCoordinatorView()
+            .environmentObject(appCoordinator)
     }
 }
 
