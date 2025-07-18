@@ -23,11 +23,7 @@ platform :ios do
 
   desc "Check Build"
   lane :build do
-    build_app(
-      scheme: "App",
-      workspace: "NoWeekend.xcworkspace",
-      skip_package_ipa: true
-    )
+    sh("xcodebuild -workspace ../NoWeekend.xcworkspace -scheme App -sdk iphonesimulator -configuration Debug build CODE_SIGNING_ALLOWED=NO")
   end
 
   desc "Upload to TestFlight (beta)"

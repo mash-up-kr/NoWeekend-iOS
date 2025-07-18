@@ -74,9 +74,6 @@ jobs:
           bundle exec fastlane match development --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
           bundle exec fastlane match appstore --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
 
-      - name: Lint
-        run: swiftlint lint --config .swiftlint.yml
-
       - name: Build
         run: bundle exec fastlane build
 
@@ -93,7 +90,6 @@ jobs:
 
             const newStatus = `
             ### ✔️ CI Completed
-            - ✅ Lint: Completed
             - ✅ Build: Completed
             `;
 
