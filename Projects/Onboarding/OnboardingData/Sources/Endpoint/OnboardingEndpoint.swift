@@ -12,7 +12,8 @@ public enum OnboardingEndpoint {
     case profile
     case leave
     case tag
-    
+    case status
+
     public var path: String {
         switch self {
         case .profile:
@@ -21,6 +22,8 @@ public enum OnboardingEndpoint {
             return "/user/onboarding/leave"
         case .tag:
             return "/user/onboarding/tag"
+        case .status:
+            return "/user/onboarding/status"
         }
     }
     
@@ -28,6 +31,8 @@ public enum OnboardingEndpoint {
         switch self {
         case .profile, .leave, .tag:
             return "POST"
+        case .status:
+            return "GET"
         }
     }
 }

@@ -13,6 +13,8 @@ import SwiftUI
 import LoginFeature
 import NWNetwork
 import OnboardingFeature
+import OnboardingDomain
+
 
 @MainActor
 public final class AppCoordinator: ObservableObject, Coordinatorable {
@@ -27,7 +29,7 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
     @Published public var path: NavigationPath = NavigationPath()
     @Published public var sheet: SheetScreen?
     @Published public var fullScreenCover: FullScreen?
-
+    
     @Published public var rootScreen: Screen = .login
     @Published public var isLoading: Bool = true
     @Published public var transitionDirection: TransitionDirection = .forward
@@ -42,7 +44,7 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
         
         checkInitialFlow()
     }
-
+    
     public func view(_ screen: Screen) -> AnyView {
         switch screen {
         case .login:
@@ -142,8 +144,6 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
     }
     
     public func completeOnboarding() {
-        UserDefaults.standard.set(true, forKey: "onboarding_completed")
-        
         transitionDirection = .forward
         
         withAnimation(.timingCurve(0.4, 0.0, 0.2, 1.0, duration: 0.5)) {
@@ -154,14 +154,14 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
     
     private func handleLogout() {
         safeResetAllNavigation()
-
+        
         transitionDirection = .backward
-    
+        
         DispatchQueue.main.async {
             withAnimation(.easeInOut(duration: 0.3)) {
                 self.rootScreen = .login
             }
-        
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.safeResetPath()
                 self.isLoading = false
@@ -174,7 +174,7 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
             self.path = NavigationPath()
         }
     }
-
+    
     private func safeAppendToPath(_ screen: Screen) {
         DispatchQueue.main.async {
             self.path.append(screen)
@@ -232,23 +232,36 @@ public final class AppCoordinator: ObservableObject, Coordinatorable {
         let hasValidToken = tokenManager.hasValidAccessToken()
         
         if hasValidToken {
-            let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding_completed")
-            
-            if onboardingCompleted {
-                rootScreen = .main
-            } else {
-                rootScreen = .login
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if self.rootScreen == .login {
-                        self.safeAppendToPath(.onboarding)
+            Task {
+                do {
+                    let onboardingNetworkService: OnboardingNetworkServiceInterface = DIContainer.shared.resolve(OnboardingNetworkServiceInterface.self)
+                    let status = try await onboardingNetworkService.fetchOnboardingStatus()
+                    print("✅ 현재 계정의 온보딩 상태: \(status)")
+                    await MainActor.run {
+                        if status == "DONE" {
+                            rootScreen = .main
+                        } else {
+                            rootScreen = .login
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                if self.rootScreen == .login {
+                                    self.safeAppendToPath(.onboarding)
+                                }
+                            }
+                        }
+                        isLoading = false
+                    }
+                } catch {
+                    await MainActor.run {
+                        print("❌ 온보딩 상태 조회 실패: \(error)")
+                        rootScreen = .login
+                        isLoading = false
                     }
                 }
             }
         } else {
             rootScreen = .login
+            isLoading = false
         }
-        
-        isLoading = false
     }
     
     public func refreshAuthenticationState() {

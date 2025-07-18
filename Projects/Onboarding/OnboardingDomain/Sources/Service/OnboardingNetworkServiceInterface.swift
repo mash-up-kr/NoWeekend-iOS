@@ -12,4 +12,5 @@ public protocol OnboardingNetworkServiceInterface {
     func saveProfile(_ profile: OnboardingProfile) async throws
     func saveLeave(_ leave: OnboardingLeave) async throws
     func saveTags(_ tags: OnboardingTags) async throws
+    func fetchOnboardingStatus() async throws -> String
 }

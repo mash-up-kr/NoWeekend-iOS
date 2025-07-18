@@ -167,7 +167,6 @@ public class OnboardingStore: ObservableObject {
             }
             
         case .saveTagsSucceeded:
-            UserDefaults.standard.set(true, forKey: "onboarding_completed")
             
             NotificationCenter.default.post(
                 name: .init("OnboardingCompleted"),
