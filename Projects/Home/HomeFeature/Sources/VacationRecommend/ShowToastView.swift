@@ -8,13 +8,30 @@
 
 import SwiftUI
 import DesignSystem
+import HomeDomain
 
 struct ShowToastView: View {
     @State private var isToastAnimated = false
+    @State private var showScheduleModal = false
     @EnvironmentObject private var coordinator: HomeCoordinator
-    let toastText: String
-    let dateText: String
-
+    @EnvironmentObject private var homeStore: HomeStore
+    
+    private var vacationRecommend: VacationRecommend? {
+        homeStore.state.vacationRecommendState.recommendation
+    }
+    
+    private var toastText: String {
+        vacationRecommend?.title ?? "휴가 추천을 준비중입니다"
+    }
+    
+    //    private var dateText: String {
+    //
+    //    }
+    
+    private var iconStyle: String {
+        vacationRecommend?.iconStyle ?? "STAR"
+    }
+    
     var body: some View {
         ZStack {
             VStack {
@@ -24,25 +41,32 @@ struct ShowToastView: View {
                         coordinator.popToRoot()
                     }
                 )
-             
+                
                 Spacer()
                 
                 if !isToastAnimated {
                     LoadingContentView()
-                } else {
-                    BalloonView(dateText: dateText)
-                        .padding(.bottom, 20)
                 }
-
+//                else {
+//                    BalloonView(dateText: dateText)
+//                        .padding(.bottom, 20)
+//                }
+                
                 // 토스트 뷰 항상 렌더링
                 ToastView(
                     isAnimated: isToastAnimated,
-                    toastMessage: toastText
+                    toastMessage: toastText,
+                    iconStyle: iconStyle
                 )
-
+                
                 if isToastAnimated {
-                    showPlanView()
-                        .padding(.top, 20)
+                    Button(action: {
+                        showScheduleModal = true
+                    }) {
+                        showPlanView()
+                    }
+                    .padding(.top, 20)
+                    .buttonStyle(PlainButtonStyle())
                 }
                 
                 Spacer()
@@ -57,6 +81,11 @@ struct ShowToastView: View {
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                 isToastAnimated = true
+            }
+        }
+        .sheet(isPresented: $showScheduleModal) {
+            if let recommendation = vacationRecommend {
+                VacationScheduleModalView(vacationRecommend: recommendation)
             }
         }
     }
@@ -79,12 +108,13 @@ struct LoadingContentView: View {
 struct ToastView: View {
     let isAnimated: Bool
     let toastMessage: String
+    let iconStyle: String
 
     @State private var offsetY: CGFloat = 197  // 260 - 63 = 197 (토스트 높이에서 보이고 싶은 부분 빼기)
 
     var body: some View {
         ZStack {
-            DS.Images.imgToasterTrip
+            getToastImage(for: iconStyle)
                 .resizable()
                 .scaledToFit()
             
@@ -115,6 +145,21 @@ struct ToastView: View {
             }
         } else {
             offsetY = 197  // 초기 위치: 63만큼만 보이게
+        }
+    }
+    
+    private func getToastImage(for iconStyle: String) -> Image {
+        switch iconStyle {
+        case "STAR":
+            return DS.Images.imgToasterGood
+        case "TRAIN":
+            return DS.Images.imgToasterTrip
+        case "PLANE":
+            return DS.Images.imgToasterTrip
+        case "HOUSE":
+            return DS.Images.imgToasterHome
+        default:
+            return DS.Images.imgToasterGood  // 기본 이미지
         }
     }
 }
@@ -155,8 +200,4 @@ struct showPlanView: View {
         }
         .frame(height: 24)
     }
-}
-
-#Preview {
-    ShowToastView(toastText: "도쿄에다코야키 먹으러 가요도쿄에다코야키 먹으러 가요", dateText: "12/28(수) ~ 12/31(금)")
 }

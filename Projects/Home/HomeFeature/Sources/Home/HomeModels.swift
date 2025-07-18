@@ -42,7 +42,7 @@ enum LocationRegistrationState: Equatable {
 struct HomeState: Equatable {
     var isLoading: Bool = false
     var errorMessage: String? = nil
-    var vacationBakingStatus: VacationBakingStatus = .notStarted
+    var vacationBakingStatus: VacationBakingStatus = .none
     var remainingAnnualLeave: Int = 10
     
     var currentMonth: String = ""
@@ -53,6 +53,7 @@ struct HomeState: Equatable {
     var currentLocation: LocationInfo? = nil
     var savedLocation: LocationInfo? = nil
     
+    // 위치 등록 상태를 enum으로 관리
     var locationRegistrationState: LocationRegistrationState = .notRegistered
     var isWeatherLoading: Bool = false
     var weatherRecommendations: [Weather] = []
@@ -82,7 +83,13 @@ struct HomeState: Equatable {
     // 사용자 정보
     var averageTemperature: Double = 0.0
     
-    
+    // 휴가 추천 관련 상태
+    var vacationRecommendState: VacationRecommendState = VacationRecommendState(status: .none) {
+        didSet {
+            // 네트워킹 상태에 따라 vacationBakingStatus 업데이트
+            vacationBakingStatus = vacationRecommendState.status.toVacationBakingStatus()
+        }
+    }
     
     var longCards: [VacationCardItem] = [
         VacationCardItem(dateString: "0/00(월) ~ 0/00(월)", type: .trip),
@@ -102,8 +109,7 @@ enum HomeIntent {
     case viewDidLoad
     case vacationCardTapped(VacationCardType)
     case refreshData
-    case vacationBakingCompleted
-    case vacationBakingProcessed
+    case vacationBakingCompleted(VacationBakingResult)
     case remainingAnnualLeaveLoaded(Int)
     case locationIconTapped
     case locationPermissionChanged(LocationPermissionStatus)
@@ -112,6 +118,9 @@ enum HomeIntent {
     case loadSandwichHoliday
     case loadHolidays
     case selectedDateChanged(Date)
+    case createVacationRecommend(VacationRecommendRequest)
+    case startVacationRecommendPolling
+    case stopVacationRecommendPolling
 }
 
 // MARK: - Home Effect
@@ -122,7 +131,23 @@ enum HomeEffect {
     case showLoading
     case hideLoading
     case requestLocationPermission
-    case openAppSettings
     case showLocationPermissionDeniedAlert
     case showLocationSettingsAlert
+}
+
+// MARK: - VacationRecommendStatus to VacationBakingStatus Extension
+
+extension VacationRecommendStatus {
+    func toVacationBakingStatus() -> VacationBakingStatus {
+        switch self {
+        case .none:
+            return .none
+        case .requesting:
+            return .requesting
+        case .ready:
+            return .ready
+        case .failed:
+            return .failed
+        }
+    }
 }

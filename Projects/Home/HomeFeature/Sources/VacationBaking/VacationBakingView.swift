@@ -12,14 +12,8 @@ import DesignSystem
 struct VacationBakingView: View {
     @StateObject private var store = VacationBakingStore()
     @Environment(\.dismiss) private var dismiss
-    
-    let remainingAnnualLeave: Int
-    let onCompleted: (() -> Void)?
-    
-    init(remainingAnnualLeave: Int, onCompleted: (() -> Void)? = nil) {
-        self.remainingAnnualLeave = remainingAnnualLeave
-        self.onCompleted = onCompleted
-    }
+    @EnvironmentObject private var coordinator: HomeCoordinator
+    @EnvironmentObject private var homeStore: HomeStore
     
     var body: some View {
         VStack(spacing: 0) {
@@ -38,7 +32,7 @@ struct VacationBakingView: View {
                         .foregroundColor(DS.Colors.Text.netural)
                         .multilineTextAlignment(.center)
                     
-                    Text(store.state.currentStep.subtitle(remainingDays: remainingAnnualLeave))
+                    Text(store.state.currentStep.subtitle(remainingDays: homeStore.state.remainingAnnualLeave))
                         .font(.body2)
                         .foregroundColor(DS.Colors.Text.body)
                         .multilineTextAlignment(.center)
@@ -52,7 +46,7 @@ struct VacationBakingView: View {
                     case .vacationDaysInput:
                         VacationDaysInputView(
                             vacationDays: store.state.vacationDays,
-                            remainingAnnualLeave: remainingAnnualLeave,
+                            remainingAnnualLeave: homeStore.state.remainingAnnualLeave,
                             errorMessage: store.state.errorMessage,
                             onDaysChanged: { inputText in
                                 store.send(.vacationDaysInputChanged(inputText))
@@ -94,7 +88,11 @@ struct VacationBakingView: View {
         .onReceive(store.effect) { effect in
             switch effect {
             case .navigateToHome:
-                onCompleted?()
+                let result = VacationBakingResult(
+                    days: store.state.vacationDays,
+                    selectedTypes: store.state.selectedVacationTypes
+                )
+                homeStore.send(.vacationBakingCompleted(result))
                 dismiss()
             case .showError(let message):
                 // 에러 처리
@@ -105,5 +103,5 @@ struct VacationBakingView: View {
 }
 
 #Preview {
-    VacationBakingView(remainingAnnualLeave: 10, onCompleted: nil)
+    VacationBakingView()
 }

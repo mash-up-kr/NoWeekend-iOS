@@ -50,4 +50,14 @@ public class HomeUseCase: HomeUseCaseProtocol {
     public func getHolidays() async throws -> [Holiday] {
         return try await homeRepository.getHolidays()
     }
+    
+    // MARK: - 휴가 추천 관련
+    
+    public func createVacationRecommend(_ request: VacationRecommendRequest) async throws -> String {
+        return try await homeRepository.createVacationRecommend(request)
+    }
+    
+    public func getVacationRecommend() async throws -> VacationRecommend? {
+        return try await homeRepository.getVacationRecommend()
+    }
 } 

@@ -12,6 +12,8 @@ import HomeDomain
 public protocol HomeNetworkServiceProtocol {
     func registerLocation(_ location: LocationRegistration) async throws
     func getWeatherRecommendations() async throws -> [WeatherItemDTO]
+    func createVacationRecommend(_ request: VacationRecommendRequestDTO) async throws -> VacationRecommendCreateResponseDTO
+    func getVacationRecommend() async throws -> VacationRecommendResponseDTO
 }
 
 public final class HomeNetworkService: HomeNetworkServiceProtocol {
@@ -39,5 +41,29 @@ public final class HomeNetworkService: HomeNetworkServiceProtocol {
             parameters: nil
         )
         return response.data?.weatherResponses ?? []
+    }
+    
+    public func createVacationRecommend(_ request: VacationRecommendRequestDTO) async throws -> VacationRecommendCreateResponseDTO {
+        let parameters: [String: Any] = [
+            "days": request.days,
+            "travelStyle": request.travelStyle,
+            "activityType": request.activityType,
+            "restPreference": request.restPreference,
+            "leisurePreference": request.leisurePreference
+        ]
+        
+        let response: VacationRecommendCreateResponseDTO = try await networkService.post(
+            endpoint: HomeEndpoint.createVacationRecommend.path,
+            parameters: parameters
+        )
+        return response
+    }
+    
+    public func getVacationRecommend() async throws -> VacationRecommendResponseDTO {
+        let response: VacationRecommendResponseDTO = try await networkService.get(
+            endpoint: HomeEndpoint.getVacationRecommend.path,
+            parameters: nil
+        )
+        return response
     }
 } 

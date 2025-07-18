@@ -32,6 +32,7 @@ final class HomeStore: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     private let locationManager = LocationManager.shared
+    private var vacationRecommendTimer: Timer?
 
     init() {
         self.homeUseCase = DIContainer.shared.resolve(HomeUseCaseProtocol.self)
@@ -53,10 +54,8 @@ final class HomeStore: ObservableObject {
             handleVacationCardTapped(cardType)
         case .refreshData:
             handleRefreshData()
-        case .vacationBakingCompleted:
-            handleVacationBakingCompleted()
-        case .vacationBakingProcessed:
-            handleVacationBakingProcessed()
+        case .vacationBakingCompleted(let result):
+            handleVacationBakingCompleted(result)
         case .remainingAnnualLeaveLoaded(let days):
             handleRemainingAnnualLeaveLoaded(days)
         case .locationIconTapped:
@@ -73,6 +72,12 @@ final class HomeStore: ObservableObject {
             handleLoadHolidays()
         case .selectedDateChanged(let date):
             handleSelectedDateChanged(date)
+        case .createVacationRecommend(let request):
+            handleCreateVacationRecommend(request)
+        case .startVacationRecommendPolling:
+            handleStartVacationRecommendPolling()
+        case .stopVacationRecommendPolling:
+            handleStopVacationRecommendPolling()
         }
     }
     
@@ -129,13 +134,13 @@ final class HomeStore: ObservableObject {
     private func loadWeatherData() async {
         state.isWeatherLoading = true
         
-        do {
+            do {
             let weatherData = try await weatherService.loadWeatherData()
-            state.weatherRecommendations = weatherData
-            state.isWeatherLoading = false
+                state.weatherRecommendations = weatherData
+                state.isWeatherLoading = false
             
-        } catch {
-            state.isWeatherLoading = false
+            } catch {
+                state.isWeatherLoading = false
             print("❌ 날씨 데이터 로딩 실패: \(error)")
             
             // Handle location missing error
@@ -219,19 +224,22 @@ final class HomeStore: ObservableObject {
         effect.send(.navigateToDetail(cardType))
     }
     
-    private func handleVacationBakingCompleted() {
-        state.vacationBakingStatus = .processing
+    private func handleVacationBakingCompleted(_ result: VacationBakingResult) {
+        state.vacationRecommendState = VacationRecommendState(status: .requesting)
         
-        Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await MainActor.run {
-                self.send(.vacationBakingProcessed)
-            }
-        }
-    }
-    
-    private func handleVacationBakingProcessed() {
-        state.vacationBakingStatus = .completed
+        // 사용자가 선택한 실제 데이터로 API 요청
+        let vacationRequest = VacationRecommendRequest(
+            days: result.days,
+            travelStyle: result.travelStyle,
+            activityType: result.activityType,
+            restPreference: result.restPreference,
+            leisurePreference: result.leisurePreference
+        )
+        
+        print("사용자 선택 데이터로 휴가 추천 요청: \(vacationRequest)")
+        
+        // 휴가 추천 API 요청 시작
+        send(.createVacationRecommend(vacationRequest))
     }
     
     private func handleRemainingAnnualLeaveLoaded(_ days: Int) {
@@ -650,5 +658,72 @@ extension HomeStore {
             .first
     }
     
+    // MARK: - Vacation Recommend Handlers
+    
+    private func handleCreateVacationRecommend(_ request: VacationRecommendRequest) {
+        state.vacationRecommendState = VacationRecommendState(status: .requesting)
+        
+        Task {
+            do {
+                let message = try await homeUseCase.createVacationRecommend(request)
+                print("휴가 추천 생성 시작: \(message)")
+                
+                // 폴링 시작
+                send(.startVacationRecommendPolling)
+                
+            } catch {
+                print("❌ 휴가 추천 생성 실패: \(error)")
+                state.vacationRecommendState = VacationRecommendState(
+                    status: .failed,
+                    error: error.localizedDescription
+                )
+            }
+        }
+    }
+    
+    private func handleStartVacationRecommendPolling() {
+        // 기존 타이머 정리
+        vacationRecommendTimer?.invalidate()
+        
+        // 2분(120초)마다 폴링
+        vacationRecommendTimer = Timer.scheduledTimer(withTimeInterval: 120.0, repeats: true) { [weak self] _ in
+            Task {
+                await self?.checkVacationRecommendStatus()
+            }
+        }
+        
+        // 즉시 한 번 체크
+        Task {
+            await checkVacationRecommendStatus()
+        }
+    }
+    
+    private func handleStopVacationRecommendPolling() {
+        vacationRecommendTimer?.invalidate()
+        vacationRecommendTimer = nil
+    }
+    
+    private func checkVacationRecommendStatus() async {
+        do {
+            if let recommendation = try await homeUseCase.getVacationRecommend() {
+                print("휴가 추천 완료: \(recommendation.title)")
+                
+                // 메인 스레드에서 상태 업데이트
+                await MainActor.run {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .ready,
+                        recommendation: recommendation
+                    )
+                    
+                    // 폴링 중지
+                    send(.stopVacationRecommendPolling)
+                }
+            } else {
+                print("휴가 추천 아직 준비 중...")
+            }
+        } catch {
+            print("❌ 휴가 추천 조회 실패: \(error)")
+        }
+    }
 
 }

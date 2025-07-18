@@ -15,6 +15,10 @@ enum HomeEndpoint {
     case getWeatherRecommendations
     case getSandwichHoliday
     case getHolidays
+    /// 휴가 추천 생성 (POST)
+    case createVacationRecommend
+    /// 휴가 추천 조회 (GET)
+    case getVacationRecommend
     
     
     var path: String {
@@ -28,6 +32,10 @@ enum HomeEndpoint {
             return "/recommend/sandwich"
         case .getHolidays:
             return "/holiday/remaining"
+        case .createVacationRecommend:
+            return "/recommend/vacation"
+        case .getVacationRecommend:
+            return "/recommend/vacation"
         }
     }
 } 

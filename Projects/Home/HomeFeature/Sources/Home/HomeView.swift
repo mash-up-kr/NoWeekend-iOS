@@ -14,7 +14,7 @@ import DIContainer
 import HomeDomain
 
 public struct HomeView: View {
-    @StateObject private var store = HomeStore()
+    @EnvironmentObject private var store: HomeStore
     @EnvironmentObject private var coordinator: HomeCoordinator
 
     public init() {}
@@ -41,6 +41,8 @@ public struct HomeView: View {
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
+
+    
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -48,13 +50,16 @@ public struct HomeView: View {
                     vacationBakingStatus: store.state.vacationBakingStatus,
                     averageTemperature: store.state.averageTemperature,
                     remainingAnnualLeave: store.state.remainingAnnualLeave,
+                    vacationRecommendState: store.state.vacationRecommendState,
                     onVacationBakingTapped: {
                         switch store.state.vacationBakingStatus {
-                        case .notStarted:
+                        case .none:
                             coordinator.push(.bakingVacation)
-                        case .completed:
-                            coordinator.push(.recommendVaction)
-                        case .processing:
+                        case .ready:
+                            if store.state.vacationRecommendState.status == .ready {
+                                coordinator.push(.recommendVaction)
+                            }
+                        case .requesting, .failed:
                             break
                         }
                     }
@@ -129,12 +134,6 @@ public struct HomeView: View {
         }
         .onAppear {
             store.send(.viewDidLoad)
-            coordinator.onVacationBakingCompleted = {
-                store.send(.vacationBakingCompleted)
-            }
-        }
-        .onChange(of: store.state.remainingAnnualLeave) { oldValue, newValue in
-            coordinator.remainingAnnualLeave = newValue
         }
         .onChange(of: selectedDate) { oldValue, newValue in
             store.send(.selectedDateChanged(newValue))
@@ -173,6 +172,8 @@ public struct HomeView: View {
                 }
             )
         }
+
+
     }
     
     // MARK: - 캘린더 일정 추가 메서드
@@ -271,10 +272,6 @@ public struct HomeView: View {
         switch effect {
         case .requestLocationPermission:
             LocationManager.shared.requestLocationPermission()
-        case .openAppSettings:
-            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(settingsUrl)
-            }
         case .showLocationPermissionDeniedAlert:
             showLocationPermissionDeniedAlert = true
         case .showLocationSettingsAlert:

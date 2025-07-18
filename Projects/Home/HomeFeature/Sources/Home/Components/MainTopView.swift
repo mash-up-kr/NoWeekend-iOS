@@ -8,11 +8,13 @@
 
 import SwiftUI
 import DesignSystem
+import HomeDomain
 
 struct MainTopView: View {
     let vacationBakingStatus: VacationBakingStatus
     let averageTemperature: Double
     let remainingAnnualLeave: Int
+    let vacationRecommendState: VacationRecommendState
     let onVacationBakingTapped: () -> Void
     
     var body: some View {
@@ -50,7 +52,7 @@ struct MainTopView: View {
                         .font(.heading4)
                         .foregroundColor(DS.Colors.Text.netural)
                     
-                    let mainImage = vacationBakingStatus == .processing ? DS.Images.imgMainToasting : DS.Images.imageMain
+                    let mainImage = vacationBakingStatus == .requesting ? DS.Images.imgMainToasting : DS.Images.imageMain
                     mainImage
                         .resizable()
                         .frame(width: 140, height: 140)
@@ -59,14 +61,14 @@ struct MainTopView: View {
                     Button(action: onVacationBakingTapped) {
                         Text(getButtonText())
                             .font(.body1)
-                            .foregroundColor(vacationBakingStatus.isButtonEnabled ? .white : DS.Colors.Text.body)
+                            .foregroundColor(getButtonTextColor())
                             .frame(width: 200, height: 60)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(vacationBakingStatus.isButtonEnabled ? DS.Colors.Toast._600 : DS.Colors.Neutral.gray700)
+                                    .fill(getButtonBackgroundColor())
                             )
                     }
-                    .disabled(!vacationBakingStatus.isButtonEnabled)
+                    .disabled(!getButtonEnabled())
                     .buttonStyle(PlainButtonStyle())
                 }
             }
@@ -83,12 +85,33 @@ struct MainTopView: View {
     
     private func getButtonText() -> String {
         switch vacationBakingStatus {
-        case .notStarted:
+        case .none:
             return "최대 \(remainingAnnualLeave)일 휴가 굽기"
-        case .processing:
+        case .requesting:
             return "휴가 굽는중"
-        case .completed:
+        case .ready:
             return "휴가 쓸래말래?"
+        case .failed:
+            return "다시 굽기"
         }
+    }
+    
+    private func getButtonEnabled() -> Bool {
+        switch vacationBakingStatus {
+        case .none:
+            return true
+        case .requesting:
+            return false
+        case .ready, .failed:
+            return true
+        }
+    }
+    
+    private func getButtonTextColor() -> Color {
+        return getButtonEnabled() ? .white : DS.Colors.Text.body
+    }
+    
+    private func getButtonBackgroundColor() -> Color {
+        return getButtonEnabled() ? DS.Colors.Toast._600 : DS.Colors.Neutral.gray700
     }
 } 
