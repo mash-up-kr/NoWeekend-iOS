@@ -8,6 +8,7 @@
 
 import Coordinator
 import SwiftUI
+import HomeDomain
 
 final class HomeCoordinator: ObservableObject, Coordinatorable {
     typealias Screen = HomeRouter.Screen
@@ -18,12 +19,6 @@ final class HomeCoordinator: ObservableObject, Coordinatorable {
     @Published var sheet: SheetScreen?
     @Published var fullScreenCover: FullScreen?
     
-    var onVacationBakingCompleted: (() -> Void)?
-    var remainingAnnualLeave: Int = 10
-    
-    var recommendText: String = "도쿄에 타코야키 먹으러 가요!"
-    var recommendDate: String = "7/25(금) ~ 7/27(일)"
-
     init() {}
     
     @ViewBuilder
@@ -32,14 +27,9 @@ final class HomeCoordinator: ObservableObject, Coordinatorable {
         case .main:
             HomeView()
         case .bakingVacation:
-            VacationBakingView(
-                remainingAnnualLeave: remainingAnnualLeave,
-                onCompleted: {
-                    self.onVacationBakingCompleted?()
-                }
-            )
+            VacationBakingView()
         case .recommendVaction:
-            ShowToastView(toastText: recommendText, dateText: recommendDate)
+            ShowToastView()
         }
     }
     

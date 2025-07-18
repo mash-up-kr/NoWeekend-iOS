@@ -11,6 +11,7 @@ let project = Project.make(
             dependencies: [
                 .Home.domain,
                 .Calendar.domain,
+                .Profile.domain,
                 .Core.diContainer,
                 .Core.coordinator,
                 .Shared.designSystem,

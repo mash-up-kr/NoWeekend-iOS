@@ -21,7 +21,8 @@ let project = Project.make(
                 .Shared.designSystem,
                 .Shared.utils
             ],
-            settings: .appSettings(teamID: Environment.teamID)
+            settings: .appSettings(teamID: Environment.teamID),
+            entitlements: .file(path: .relativeToRoot("Projects/App/App.entitlements"))
         )
     ],
     resourceSynthesizers: [

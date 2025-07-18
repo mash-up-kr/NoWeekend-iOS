@@ -9,62 +9,61 @@
 import SwiftUI
 import DesignSystem
 import CalendarDomain
-import DIContainer
 import Combine
+import DIContainer
 import Foundation
-import Utils
 import HomeDomain
 import ProfileDomain
+import Utils
 
 @MainActor
 final class HomeStore: ObservableObject {
-    private let homeUseCase: HomeUseCaseProtocol
-    private let getUserProfileUseCase: GetUserProfileUseCaseProtocol
-    private let calendarUseCase: CalendarUseCaseProtocol
-    
     @Published private(set) var state = HomeState()
     @Published var weeklySchedules: [DailySchedule] = []
         
     let effect = PassthroughSubject<HomeEffect, Never>()
     
+    // Services
+    private let locationService: LocationService
+    private let weatherService: WeatherService
+    private let homeUseCase: HomeUseCaseProtocol
+    private let getUserProfileUseCase: GetUserProfileUseCaseProtocol
+    private let calendarUseCase: CalendarUseCaseProtocol
+    
     private var cancellables = Set<AnyCancellable>()
     private let locationManager = LocationManager.shared
+    private var vacationRecommendTimer: Timer?
 
     init() {
         self.homeUseCase = DIContainer.shared.resolve(HomeUseCaseProtocol.self)
         self.getUserProfileUseCase = DIContainer.shared.resolve(GetUserProfileUseCaseProtocol.self)
         self.calendarUseCase = DIContainer.shared.resolve(CalendarUseCaseProtocol.self)
+        
+        // Initialize services
+        self.locationService = LocationService(homeUseCase: homeUseCase, locationManager: locationManager)
+        self.weatherService = WeatherService(homeUseCase: homeUseCase)
     }
+    
+    // MARK: - Intent Handling
 
     func send(_ intent: HomeIntent) {
         switch intent {
         case .viewDidLoad:
             handleViewDidLoad()
-            
         case .vacationCardTapped(let cardType):
             handleVacationCardTapped(cardType)
-            
         case .refreshData:
             handleRefreshData()
-            
-        case .vacationBakingCompleted:
-            handleVacationBakingCompleted()
-            
-        case .vacationBakingProcessed:
-            handleVacationBakingProcessed()
-            
+        case .vacationBakingCompleted(let result):
+            handleVacationBakingCompleted(result)
         case .remainingAnnualLeaveLoaded(let days):
             handleRemainingAnnualLeaveLoaded(days)
-            
         case .locationIconTapped:
             handleLocationIconTapped()
-            
         case .locationPermissionChanged(let status):
             handleLocationPermissionChanged(status)
-            
         case .registerLocation:
             handleRegisterLocation()
-            
         case .loadWeatherRecommendations:
             handleLoadWeatherRecommendations()
         case .loadSandwichHoliday:
@@ -73,146 +72,103 @@ final class HomeStore: ObservableObject {
             handleLoadHolidays()
         case .selectedDateChanged(let date):
             handleSelectedDateChanged(date)
+        case .createVacationRecommend(let request):
+            handleCreateVacationRecommend(request)
+        case .startVacationRecommendPolling:
+            handleStartVacationRecommendPolling()
+        case .stopVacationRecommendPolling:
+            handleStopVacationRecommendPolling()
+        case .showTextInputBottomSheet(let data):
+            handleShowTextInputBottomSheet(data)
+        case .hideTextInputBottomSheet:
+            handleHideTextInputBottomSheet()
         }
     }
     
-    private func handleViewDidLoad() {
-        // 초기 데이터 로딩 로직
-        // TODO: UseCase를 통해 사용자 정보 로딩
-        updateCurrentDateInfo()
-        setupLocationManager()
-        
-        // 샌드위치 휴일 및 공휴일 데이터 로딩
-        send(.loadSandwichHoliday)
-        send(.loadHolidays)
-        
-        // 생일 데이터 로딩
+    // MARK: - Location & Weather Management
+    
+    private func handleLoadWeatherRecommendations() {
         Task {
-            await loadUserInfoAsync()
-        }
-    }
-    
-    private func updateCurrentDateInfo() {
-        // TimeZone 고정
-        let koreaTimeZone = TimeZone(identifier: "Asia/Seoul") ?? TimeZone.current
-        let now = Date()
-        
-        // 월 계산
-        let monthFormatter = DateFormatter()
-        monthFormatter.locale = Locale(identifier: "ko_KR")
-        monthFormatter.dateFormat = "M"
-        monthFormatter.timeZone = koreaTimeZone
-        state.currentMonth = monthFormatter.string(from: now)
-        
-        // 주차 계산
-        var calendar = Calendar.current
-        calendar.timeZone = koreaTimeZone
-        let weekOfMonth = calendar.component(.weekOfMonth, from: now)
-        
-        let weekNames = ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째"]
-        state.currentWeekOfMonth = weekNames[weekOfMonth - 1]
-    }
-    
-    private func handleVacationCardTapped(_ cardType: VacationCardType) {
-        effect.send(.navigateToDetail(cardType))
-    }
-    
-    private func handleRefreshData() {
-        state.isLoading = true
-        effect.send(.showLoading)
-        
-        Task {
-            // 저장된 위치가 있으면 날씨 데이터 새로고침
-            if state.savedLocation != nil || state.isLocationRegistered {
-                await loadWeatherRecommendationsAsync()
-            }
-            
-            await loadSandwichHolidayAsync()
-            await loadHolidaysAsync()
-            await loadUserInfoAsync()
-            
-            state.isLoading = false
-            effect.send(.hideLoading)
-        }
-    }
-    
-    private func handleVacationBakingCompleted() {
-        state.vacationBakingStatus = .processing
-        
-        // TODO: API 변경
-        Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2초
-            await MainActor.run {
-                self.send(.vacationBakingProcessed)
-            }
-        }
-    }
-    
-    private func handleVacationBakingProcessed() {
-        state.vacationBakingStatus = .completed
-    }
-    
-    private func handleRemainingAnnualLeaveLoaded(_ days: Int) {
-        state.remainingAnnualLeave = days
-    }
-    
-    private func handleLocationIconTapped() {
-        switch locationManager.authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            // 위치 권한이 허용된 경우 - 새로운 위치 받기
-            locationManager.refreshLocation()
-            // 위치 변경 감지에서 자동으로 등록 처리됨
-        case .denied, .restricted:
-            // 위치 권한이 거부된 경우 - 설정 이동 팝업 표시
-            effect.send(.showLocationSettingsAlert)
-        case .notDetermined:
-            // 위치 권한이 결정되지 않은 경우 - 권한 요청
-            effect.send(.requestLocationPermission)
-        default:
-            break
-        }
-    }
-    
-    private func handleLocationPermissionChanged(_ status: LocationPermissionStatus) {
-        let previousStatus = state.locationPermissionStatus
-        state.locationPermissionStatus = status
-        state.hasLocationPermission = (status == .authorizedWhenInUse || status == .authorizedAlways)
-        
-        // 권한이 거부된 경우 알림 표시 (이전 상태가 notDetermined일 때만)
-        if (status == .denied || status == .restricted) && previousStatus == .notDetermined {
-            effect.send(.showLocationPermissionDeniedAlert)
-            // 권한이 거부되면 위치 등록 확인
-            ensureLocationRegistered()
+            await loadWeatherWithLocationCheck()
         }
     }
     
     private func handleRegisterLocation() {
-        // 현재 위치가 있으면 사용, 없으면 디폴트 위치 사용
-        let locationToRegister: LocationInfo
-        if let currentLocation = state.currentLocation {
-            locationToRegister = currentLocation
-        } else {
-            locationToRegister = locationManager.getDefaultLocation()
+        Task {
+            await registerCurrentLocation()
         }
-        
-        registerLocationAndLoadWeather(location: locationToRegister)
-    }
-
-    private func handleLoadWeatherRecommendations() {
-        loadWeatherDataWithLocationCheck()
     }
     
-    private func loadWeatherData() {
+    private func registerCurrentLocation() async {
+        let location = locationService.resolveLocationForRegistration(currentLocation: state.currentLocation)
+        await registerLocationAndLoadWeather(location: location)
+    }
+    
+    private func loadWeatherWithLocationCheck() async {
+        if state.locationRegistrationState.isRegistered {
+            await loadWeatherData()
+        } else {
+            await registerCurrentLocation()
+        }
+    }
+    
+    private func registerLocationAndLoadWeather(location: LocationInfo) async {
+        state.locationRegistrationState = .registering
+        
+        do {
+            try await locationService.registerLocation(location)
+            
+            // Update state and address
+            state.locationRegistrationState = .registered
+            state.currentLocation = location
+            
+            let updatedLocation = await locationService.updateLocationWithAddress(location)
+            state.currentLocationAddress = updatedLocation.address
+            
+            // Load weather data after successful registration
+            await loadWeatherData()
+            
+        } catch {
+            print("❌ 위치 등록 실패: \(error)")
+            state.locationRegistrationState = .failed(error.localizedDescription)
+            effect.send(.showError("위치 등록에 실패했습니다."))
+        }
+    }
+    
+    private func loadWeatherData() async {
         state.isWeatherLoading = true
-        Task {
+        
             do {
-                let weatherData = try await homeUseCase.getWeatherRecommendations()
+            let weatherData = try await weatherService.loadWeatherData()
                 state.weatherRecommendations = weatherData
                 state.isWeatherLoading = false
+            
             } catch {
                 state.isWeatherLoading = false
+            print("❌ 날씨 데이터 로딩 실패: \(error)")
+            
+            // Handle location missing error
+            if weatherService.isLocationMissingError(error) {
+                print("🔄 위치 정보 없음 - 위치 등록 재시도")
+                state.locationRegistrationState = .notRegistered
+                await registerCurrentLocation()
+            } else {
                 effect.send(.showError("날씨 데이터를 가져오는데 실패했습니다."))
             }
+        }
+    }
+    
+    // MARK: - Other Intent Handlers
+    
+    private func handleViewDidLoad() {
+        updateCurrentDateInfo()
+        setupLocationManager()
+        
+        send(.loadSandwichHoliday)
+        send(.loadHolidays)
+        
+        Task {
+            await loadUserInfoAsync()
         }
     }
     
@@ -223,7 +179,6 @@ final class HomeStore: ObservableObject {
                 let sandwichHolidays = try await homeUseCase.getSandwichHoliday()
                 state.sandwichHoliday = sandwichHolidays
                 state.isHolidayLoading = false
-                // 샌드위치 휴일 데이터 로드 후 카드 업데이트
                 updateShortCardsWithSandwichHolidayData()
             } catch {
                 state.isHolidayLoading = false
@@ -247,23 +202,160 @@ final class HomeStore: ObservableObject {
         }
     }
     
-    // MARK: - Async Loading Methods for Pull-to-Refresh
-    
-    private func loadWeatherRecommendationsAsync() async {
-        await loadWeatherDataWithLocationCheckAsync()
+    private func handleSelectedDateChanged(_ date: Date) {
+        updateCardData(for: date)
     }
     
-    private func loadWeatherDataAsync() async {
-        state.isWeatherLoading = true
-        do {
-            let weatherData = try await homeUseCase.getWeatherRecommendations()
-            state.weatherRecommendations = weatherData
-            state.isWeatherLoading = false
-        } catch {
-            state.isWeatherLoading = false
-            effect.send(.showError("날씨 데이터를 가져오는데 실패했습니다."))
+    private func handleRefreshData() {
+        state.isLoading = true
+        effect.send(.showLoading)
+        
+        Task {
+            if state.currentLocation != nil {
+                await loadWeatherData()
+            }
+            
+            await loadSandwichHolidayAsync()
+            await loadHolidaysAsync()
+            await loadUserInfoAsync()
+            
+            state.isLoading = false
+            effect.send(.hideLoading)
         }
     }
+    
+    private func handleVacationCardTapped(_ cardType: VacationCardType) {
+        effect.send(.navigateToDetail(cardType))
+    }
+    
+    private func handleVacationBakingCompleted(_ result: VacationBakingResult) {
+        state.vacationRecommendState = VacationRecommendState(status: .requesting)
+        
+        // 사용자가 선택한 실제 데이터로 API 요청
+        let vacationRequest = VacationRecommendRequest(
+            days: result.days,
+            travelStyle: result.travelStyle,
+            activityType: result.activityType,
+            restPreference: result.restPreference,
+            leisurePreference: result.leisurePreference
+        )
+        
+        print("사용자 선택 데이터로 휴가 추천 요청: \(vacationRequest)")
+        
+        // 휴가 추천 API 요청 시작
+        send(.createVacationRecommend(vacationRequest))
+    }
+    
+    private func handleRemainingAnnualLeaveLoaded(_ days: Int) {
+        state.remainingAnnualLeave = days
+    }
+    
+    private func handleLocationIconTapped() {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.refreshLocation()
+        case .denied, .restricted:
+            effect.send(.showLocationSettingsAlert)
+        case .notDetermined:
+            effect.send(.requestLocationPermission)
+        default:
+            break
+        }
+    }
+    
+    private func handleLocationPermissionChanged(_ status: LocationPermissionStatus) {
+        let previousStatus = state.locationPermissionStatus
+        state.locationPermissionStatus = status
+        state.hasLocationPermission = (status == .authorizedWhenInUse || status == .authorizedAlways)
+        
+        if (status == .denied || status == .restricted) && previousStatus == .notDetermined {
+            effect.send(.showLocationPermissionDeniedAlert)
+            Task {
+                await registerCurrentLocation()
+            }
+        }
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func updateCurrentDateInfo() {
+        let koreaTimeZone = TimeZone(identifier: "Asia/Seoul") ?? TimeZone.current
+        let now = Date()
+        
+        state.currentMonth = now.toMonthString()
+        
+        var calendar = Calendar.current
+        calendar.timeZone = koreaTimeZone
+        let weekOfMonth = calendar.component(.weekOfMonth, from: now)
+        
+        let weekNames = ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째"]
+        state.currentWeekOfMonth = weekNames[weekOfMonth - 1]
+    }
+    
+    private func setupLocationManager() {
+        state.locationPermissionStatus = locationManager.authorizationStatus
+        state.hasLocationPermission = (locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways)
+        
+        state.savedLocation = locationService.getSavedLocation()
+        
+        if let savedLocation = state.savedLocation {
+            state.currentLocation = savedLocation
+            state.currentLocationAddress = savedLocation.address
+            print("💾 저장된 위치 발견: \(savedLocation.coordinate)")
+            
+            Task {
+                await loadWeatherData()
+            }
+        } else {
+            print("💾 저장된 위치 없음")
+        Task {
+                await registerCurrentLocation()
+            }
+        }
+        
+        setupLocationObservers()
+        
+        if locationManager.authorizationStatus == .notDetermined {
+            effect.send(.requestLocationPermission)
+        } else if locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways {
+            if state.savedLocation == nil {
+                locationManager.requestLocationOnce()
+            }
+        }
+    }
+    
+    private func setupLocationObservers() {
+        locationManager.$authorizationStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                self?.send(.locationPermissionChanged(status))
+            }
+            .store(in: &cancellables)
+        
+        locationManager.$currentLocation
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] location in
+                guard let self = self, let location = location else { return }
+                
+                self.state.currentLocation = location
+                self.state.savedLocation = location
+                
+                if !self.state.locationRegistrationState.isRegistered {
+                    Task {
+                        await self.registerLocationAndLoadWeather(location: location)
+                    }
+                } else {
+                    Task {
+                        let updatedLocation = await self.locationService.updateLocationWithAddress(location)
+                        self.state.currentLocationAddress = updatedLocation.address
+                        await self.loadWeatherData()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Async Methods for Refresh
     
     private func loadSandwichHolidayAsync() async {
         state.isHolidayLoading = true
@@ -271,7 +363,6 @@ final class HomeStore: ObservableObject {
             let sandwichHolidays = try await homeUseCase.getSandwichHoliday()
             state.sandwichHoliday = sandwichHolidays
             state.isHolidayLoading = false
-            // 샌드위치 휴일 데이터 로드 후 카드 업데이트
             updateShortCardsWithSandwichHolidayData()
         } catch {
             state.isHolidayLoading = false
@@ -285,7 +376,6 @@ final class HomeStore: ObservableObject {
             let holidays = try await homeUseCase.getHolidays()
             state.holidays = holidays
             state.isHolidayLoading = false
-            // 공휴일 데이터 로드 후 카드 업데이트
             updateShortCardsWithHolidayData()
         } catch {
             state.isHolidayLoading = false
@@ -293,38 +383,65 @@ final class HomeStore: ObservableObject {
         }
     }
     
-    private func handleSelectedDateChanged(_ date: Date) {
-        // 선택된 날짜에 따라 카드 데이터 업데이트
-        updateCardData(for: date)
-    }
-    
     private func updateCardData(for date: Date) {
         let calendar = Calendar.current
         let month = calendar.component(.month, from: date)
+        let monthName = date.toMonthName()
         
-        // 월 이름 가져오기
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        let monthName = dateFormatter.monthSymbols[month - 1]
-        
-        // 선택된 월의 데이터로 카드 업데이트
         state.shortCards = [
             VacationCardItem(dateString: "\(month)/00(\(monthName)) ~ \(month)/00(\(monthName))", type: .sandwich),
             VacationCardItem(dateString: "\(month)/00(\(monthName))", type: .birthday),
             VacationCardItem(dateString: "\(month)/00(\(monthName))", type: .holiday),
         ]
         
-        // 실제 데이터로 카드 업데이트
         updateShortCardsWithHolidayData()
         updateShortCardsWithSandwichHolidayData()
         updateBirthdayCard()
-        
-        // TODO: 실제 API 호출로 해당 월의 데이터 가져오기
-        // send(.loadSandwichHoliday)
-        // send(.loadHolidays)
     }
     
-    // MARK: - 카드 업데이트 공통 메서드
+    // MARK: - User Info
+    
+    private func loadUserInfoAsync() async {
+        state.isBirthdayLoading = true
+        do {
+            let userProfile = try await getUserProfileUseCase.execute()
+            print("🔥 userProfile: \(userProfile)")
+
+            state.averageTemperature = userProfile.averageTemperature
+            state.userBirthday = userProfile.birthDate
+            state.remainingAnnualLeave = Int(userProfile.remainingAnnualLeave)
+            
+            state.isBirthdayLoading = false
+            updateBirthdayCard()
+        } catch {
+            state.isBirthdayLoading = false
+            effect.send(.showError("사용자 정보를 가져오는데 실패했습니다."))
+        }
+    }
+    
+
+    
+    private func updateBirthdayCard() {
+        let birthdayText: String
+        if let userBirthday = state.userBirthday, let birthday = userBirthday.toDate() {
+            birthdayText = birthday.toMonthDayString()
+        } else {
+            birthdayText = "생일 없음"
+        }
+        
+        for index in state.shortCards.indices {
+            if state.shortCards[index].type == .birthday {
+                state.shortCards[index] = VacationCardItem(
+                    dateString: birthdayText,
+                    type: .birthday
+                )
+                break
+            }
+        }
+    }
+    
+    // MARK: - Card Update Methods
+    
     private func updateShortCardsWithHolidayData() {
         updateCard(for: .holiday, data: state.holidays, defaultText: "공휴일 없음") { holidays in
             getNextUpcomingHoliday(from: holidays)
@@ -332,11 +449,18 @@ final class HomeStore: ObservableObject {
     }
     
     private func updateShortCardsWithSandwichHolidayData() {
-        print("🔥 샌드위치 휴일 카드 업데이트 시작 - 데이터 개수: \(state.sandwichHoliday.count)")
-        updateCard(for: .sandwich, data: state.sandwichHoliday, defaultText: "샌드위치 휴일 없음") { sandwichHolidays in
-            let nextHoliday = getNextUpcomingSandwichHoliday(from: sandwichHolidays)
-            print("🔥 다음 샌드위치 휴일: \(nextHoliday?.dateString ?? "없음")")
-            return nextHoliday
+        let nextSandwichHoliday = getNextUpcomingSandwichHoliday(from: state.sandwichHoliday)
+        let dateString = nextSandwichHoliday?.dateString ?? "샌드위치 휴일 없음"
+        
+        for index in state.shortCards.indices {
+            if state.shortCards[index].type == .sandwich {
+                state.shortCards[index] = VacationCardItem(
+                    dateString: dateString,
+                    type: .sandwich,
+                    sandwichHoliday: nextSandwichHoliday
+                )
+                break
+            }
         }
     }
     
@@ -360,7 +484,6 @@ final class HomeStore: ObservableObject {
         }
     }
     
-    // MARK: - 다음 공휴일 찾기 메서드
     private func getNextUpcomingHoliday(from holidays: [Holiday]) -> Holiday? {
         let today = Date()
         let calendar = Calendar.current
@@ -374,7 +497,6 @@ final class HomeStore: ObservableObject {
         return upcomingHolidays.first
     }
     
-    // MARK: - 다음 샌드위치 휴일 찾기 메서드
     private func getNextUpcomingSandwichHoliday(from sandwichHolidays: [SandwichHoliday]) -> SandwichHoliday? {
         let today = Date()
         let calendar = Calendar.current
@@ -388,247 +510,66 @@ final class HomeStore: ObservableObject {
         return upcomingSandwichHolidays.first
     }
     
-    private func setupLocationManager() {
-        // 위치 권한 상태 초기화
-        state.locationPermissionStatus = locationManager.authorizationStatus
-        state.hasLocationPermission = (locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways)
-        
-        // 저장된 위치 정보 불러오기
-        state.savedLocation = locationManager.getSavedLocation()
-        
-        // 저장된 위치가 있으면 위치 등록 상태 설정 및 날씨 데이터 요청
-        if let savedLocation = state.savedLocation {
-            state.currentLocation = savedLocation
-            state.isLocationRegistered = true
-            state.currentLocationAddress = savedLocation.address
-            // 저장된 위치가 있으면 바로 날씨 데이터 요청
-            loadWeatherData()
-        } else {
-            // 저장된 위치가 없으면 위치 등록 확인
-            ensureLocationRegistered()
-        }
-        
-        // 위치 권한 상태 변경 감지
-        locationManager.$authorizationStatus
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                self?.send(.locationPermissionChanged(status))
-            }
-            .store(in: &cancellables)
-        
-        // 현재 위치 변경 감지 (사용자가 위치 아이콘을 탭했을 때만)
-        locationManager.$currentLocation
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] location in
-                if let location = location {
-                    self?.state.currentLocation = location
-                    self?.state.savedLocation = location
-                    
-                    // 위치가 등록되어 있지 않을 때만 등록
-                    if !(self?.state.isLocationRegistered ?? false) {
-                        self?.registerLocationAndLoadWeather(location: location)
-                    } else {
-                        // 위치가 이미 등록되어 있으면 주소만 업데이트하고 날씨 데이터 새로고침
-                        Task {
-                            let updatedLocation = await self?.locationManager.updateLocationWithAddress(location)
-                            self?.state.currentLocationAddress = updatedLocation?.address
-                            self?.loadWeatherData()
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
-        
-        // 앱 시작 시 위치 권한 요청 (notDetermined 상태인 경우)
-        if locationManager.authorizationStatus == .notDetermined {
-            // 권한 요청
-            effect.send(.requestLocationPermission)
-        } else if locationManager.authorizationStatus == .authorizedWhenInUse || locationManager.authorizationStatus == .authorizedAlways {
-            // 권한이 있지만 저장된 위치가 없으면 한 번만 받기
-            if state.savedLocation == nil {
-                locationManager.requestLocationOnce()
-            }
-        }
-    }
-
-    // MARK: - 위치 등록 및 날씨 데이터 로딩 통합 메서드
+    // MARK: - Calendar & Weather Methods
     
-    private func registerLocationAndLoadWeather(location: LocationInfo) {
-        Task {
-            do {
-                try await homeUseCase.registerLocation(
-                    latitude: location.coordinate.latitude,
-                    longitude: location.coordinate.longitude
-                )
-                state.isLocationRegistered = true
-                
-                // 주소 정보 업데이트
-                let updatedLocation = await locationManager.updateLocationWithAddress(location)
-                state.currentLocationAddress = updatedLocation.address
-                
-                // 위치 등록 완료 후 바로 날씨 데이터 로딩
-                loadWeatherData()
-            } catch {
-                effect.send(.showError("위치 등록에 실패했습니다."))
-            }
-        }
-    }
-    
-    // MARK: - 위치 및 날씨 데이터 통합 관리
-    
-    /// 위치 등록이 필요한지 확인하고 필요시 디폴트 위치로 등록
-    private func ensureLocationRegistered() {
-        guard !state.isLocationRegistered else { return }
-        
-        let locationToRegister = state.currentLocation ?? locationManager.getDefaultLocation()
-        state.currentLocation = locationToRegister
-        state.currentLocationAddress = locationToRegister.address
-        registerLocationAndLoadWeather(location: locationToRegister)
-    }
-    
-    /// 날씨 데이터 로딩 (위치 등록 상태 확인 포함)
-    private func loadWeatherDataWithLocationCheck() {
-        if state.isLocationRegistered {
-            loadWeatherData()
-        } else {
-            ensureLocationRegistered()
-        }
-    }
-    
-    /// 날씨 데이터 로딩 (Async 버전)
-    private func loadWeatherDataWithLocationCheckAsync() async {
-        if state.isLocationRegistered {
-            await loadWeatherDataAsync()
-        } else {
-            ensureLocationRegistered()
-        }
-    }
-}
-
-// MARK: - 생일 관련 기능 (Extension)
-extension HomeStore {
-    
-    private func loadUserInfoAsync() async {
-        state.isBirthdayLoading = true
-        do {
-            let userProfile = try await getUserProfileUseCase.execute()
-            print("🔥 userProfile: \(userProfile)")
-
-            // 생일 정보 저장
-            state.userBirthday = userProfile.birthDate
-            
-            // 평균 열정온도 저장
-            state.averageTemperature = userProfile.averageTemperature
-            
-            // 남은 연차 저장
-            state.remainingAnnualLeave = Int(userProfile.remainingAnnualLeave)
-            
-            state.isBirthdayLoading = false
-            
-            updateBirthdayCard()
-        } catch {
-            state.isBirthdayLoading = false
-            effect.send(.showError("사용자 정보를 가져오는데 실패했습니다."))
-        }
-    }
-    
-    private func updateBirthdayCard() {
-        guard let birthday = state.userBirthday, !birthday.isEmpty else {
-            updateCard(for: .birthday, data: [], defaultText: "생일 정보 없음") { _ in nil }
-            return
-        }
-        
-        if let nextBirthday = calculateNextBirthday(from: birthday) {
-            let birthdayDateString = formatBirthdayDate(nextBirthday)
-            state.nextBirthday = nextBirthday
-            
-            updateCard(for: .birthday, data: [nextBirthday], defaultText: "생일 정보 없음") { _ in
-                BirthdayItem(date: nextBirthday, dateString: birthdayDateString)
-            }
-        } else {
-            updateCard(for: .birthday, data: [], defaultText: "생일 정보 없음") { _ in nil }
-        }
-    }
-    
-    private func calculateNextBirthday(from birthDateString: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        
-        if birthDateString.contains("-") {
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-        } else {
-            dateFormatter.dateFormat = "yyyyMMdd"
-        }
-        
-        guard let birthDate = dateFormatter.date(from: birthDateString) else {
-            print("❌ 생년월일 파싱 실패: \(birthDateString)")
-            return nil
-        }
-        
-        let calendar = Calendar.current
-        let koreaTimeZone = TimeZone(identifier: "Asia/Seoul") ?? TimeZone.current
-        var calendarWithTimezone = calendar
-        calendarWithTimezone.timeZone = koreaTimeZone
-        
-        let today = Date()
-        let currentYear = calendarWithTimezone.component(.year, from: today)
-        let birthMonth = calendarWithTimezone.component(.month, from: birthDate)
-        let birthDay = calendarWithTimezone.component(.day, from: birthDate)
-        
-        var thisYearBirthday = DateComponents()
-        thisYearBirthday.year = currentYear
-        thisYearBirthday.month = birthMonth
-        thisYearBirthday.day = birthDay
-        thisYearBirthday.timeZone = koreaTimeZone
-        
-        guard let thisYearBirthdayDate = calendarWithTimezone.date(from: thisYearBirthday) else {
-            return nil
-        }
-        
-        let comparison = calendarWithTimezone.compare(thisYearBirthdayDate, to: today, toGranularity: .day)
-        
-        if comparison == .orderedAscending {
-            var nextYearBirthday = DateComponents()
-            nextYearBirthday.year = currentYear + 1
-            nextYearBirthday.month = birthMonth
-            nextYearBirthday.day = birthDay
-            nextYearBirthday.timeZone = koreaTimeZone
-            
-            return calendarWithTimezone.date(from: nextYearBirthday)
-        } else {
-            return thisYearBirthdayDate
-        }
-    }
-    
-    private func formatBirthdayDate(_ date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "M/dd(E)"
-        dateFormatter.timeZone = TimeZone(identifier: "Asia/Seoul")
-        
-        return dateFormatter.string(from: date)
-    }
-    
-    // MARK: - BirthdayItem (DateStringConvertible)
-    private struct BirthdayItem: DateStringConvertible {
-        let date: Date
-        let dateString: String
-    }
-    
-    // MARK: - 날씨 날짜 포맷팅
     func formatWeatherDate(_ dateString: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        guard let date = dateFormatter.date(from: dateString) else {
+        guard let date = dateString.toDate() else {
             return dateString
         }
         
-        let outputFormatter = DateFormatter()
-        outputFormatter.locale = Locale(identifier: "ko_KR")
-        outputFormatter.dateFormat = "M/dd(E)"
-        return outputFormatter.string(from: date)
+        return date.toMonthDayWeekString()
+    }
+    
+    // MARK: - Date Helper Methods
+    
+    func getBirthdayDate() -> Date? {
+        guard let userBirthday = state.userBirthday else { return nil }
+        return userBirthday.toDate()
+    }
+    
+    func getWeatherDate(from dateString: String) -> Date? {
+        return dateString.toDate()
+    }
+    
+    func determineTargetDate(
+        selectedHoliday: Holiday?,
+        selectedWeatherDate: String?,
+        selectedCardType: VacationCardType?
+    ) -> Date {
+        if let holiday = selectedHoliday {
+            return holiday.date
+        }
+        
+        if let weatherDateString = selectedWeatherDate {
+            if let date = getWeatherDate(from: weatherDateString) {
+                return date
+            }
+        }
+        
+        if let cardType = selectedCardType {
+            switch cardType {
+            case .sandwich:
+                if let sandwichHoliday = state.sandwichHoliday.first {
+                    return sandwichHoliday.startDate
+                }
+            case .birthday:
+                if let birthday = getBirthdayDate() {
+                    return birthday
+                }
+            case .holiday:
+                if let holiday = state.holidays.first {
+                    return holiday.date
+                }
+            default:
+                break
+            }
+        }
+        
+        return Date()
     }
 }
+
+// MARK: - Extensions
 
 extension HomeStore {
     func loadWeeklySchedules() async {
@@ -696,9 +637,6 @@ extension HomeStore {
         let totalTemperature = schedules.reduce(0) { $0 + $1.temperature }
         return totalTemperature / schedules.count
     }
-}
-
-extension HomeStore {
     
     func getNextUpcomingHoliday() -> Holiday? {
         let today = Date()
@@ -724,7 +662,167 @@ extension HomeStore {
             .first
     }
     
-    var nextBirthday: Date? {
-        return state.nextBirthday
+    // MARK: - Vacation Recommend Handlers
+    
+    private func handleCreateVacationRecommend(_ request: VacationRecommendRequest) {
+        state.vacationRecommendState = VacationRecommendState(status: .requesting)
+        
+        Task {
+            do {
+                let message = try await homeUseCase.createVacationRecommend(request)
+                print("휴가 추천 생성 시작: \(message)")
+                
+                // 폴링 시작
+                send(.startVacationRecommendPolling)
+                
+            } catch {
+                print("❌ 휴가 추천 생성 실패: \(error)")
+                state.vacationRecommendState = VacationRecommendState(
+                    status: .failed,
+                    error: error.localizedDescription
+                )
+            }
+        }
     }
+    
+    private func handleStartVacationRecommendPolling() {
+        // 기존 타이머 정리
+        vacationRecommendTimer?.invalidate()
+        
+        // 2분(120초)마다 폴링
+        vacationRecommendTimer = Timer.scheduledTimer(withTimeInterval: 120.0, repeats: true) { [weak self] _ in
+            Task {
+                await self?.checkVacationRecommendStatus()
+            }
+        }
+        
+        // 즉시 한 번 체크
+        Task {
+            await checkVacationRecommendStatus()
+        }
+    }
+    
+    private func handleStopVacationRecommendPolling() {
+        vacationRecommendTimer?.invalidate()
+        vacationRecommendTimer = nil
+    }
+    
+    private func checkVacationRecommendStatus() async {
+        do {
+            if let recommendation = try await homeUseCase.getVacationRecommend() {
+                print("휴가 추천 완료: \(recommendation.title)")
+                
+                // 메인 스레드에서 상태 업데이트
+                await MainActor.run {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .ready,
+                        recommendation: recommendation
+                    )
+                    
+                    // 폴링 중지
+                    send(.stopVacationRecommendPolling)
+                }
+            } else {
+                print("휴가 추천 아직 준비 중...")
+            }
+        } catch {
+            print("❌ 휴가 추천 조회 실패: \(error)")
+        }
+    }
+    
+    // MARK: - Bottom Sheet Management
+    
+    private func handleShowTextInputBottomSheet(_ data: TextInputBottomSheetData) {
+        state.textInputBottomSheetData = data
+        state.showTextInputBottomSheet = true
+    }
+    
+    private func handleHideTextInputBottomSheet() {
+        state.showTextInputBottomSheet = false
+        state.textInputBottomSheetData = nil
+    }
+    
+    // MARK: - VacationRecommend Date Management
+    
+    func formatVacationRecommendDate(_ vacationRecommend: VacationRecommend) -> String {
+        // 서버에서 내려주는 날짜 데이터 사용
+        if let startDate = vacationRecommend.startDate, let endDate = vacationRecommend.endDate {
+            // startDate와 endDate가 같으면 단일 날짜
+            if startDate == endDate {
+                return formatSingleVacationDate(startDate)
+            } else {
+                // 다르면 기간 표시
+                return "\(formatSingleVacationDate(startDate)) ~ \(formatSingleVacationDate(endDate))"
+            }
+        } else if let startDate = vacationRecommend.startDate {
+            return formatSingleVacationDate(startDate)
+        } else {
+            return "날짜 정보 없음"
+        }
+    }
+    
+    private func formatSingleVacationDate(_ dateString: String) -> String {
+        // shared의 Date+ 확장 사용
+        guard let date = dateString.toDate(format: "yyyy-MM-dd") else {
+            return dateString
+        }
+        return date.toMonthDayString()
+    }
+    
+    func getTargetDateForTextInput() -> Date {
+        guard let data = state.textInputBottomSheetData else {
+            return Date()
+        }
+        
+        // VacationRecommend가 선택된 경우 실제 추천 날짜 사용
+        if let vacationRecommend = data.selectedVacationRecommend {
+            // 서버에서 내려주는 startDate 사용
+            if let startDateString = vacationRecommend.startDate,
+               let date = startDateString.toDate(format: "yyyy-MM-dd") {
+                return date
+            }
+            
+            // 날짜 정보가 없으면 내일 날짜를 기본으로 사용
+            return Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        }
+        
+        return determineTargetDate(
+            selectedHoliday: data.selectedHoliday,
+            selectedWeatherDate: data.selectedWeatherDate,
+            selectedCardType: data.selectedCardType
+        )
+    }
+    
+    func getScheduleCategoryForTextInput() -> ScheduleCategory {
+        guard let data = state.textInputBottomSheetData else {
+            return .personal
+        }
+        
+        // VacationRecommend의 경우 휴가로 분류
+        if data.selectedVacationRecommend != nil {
+            return .leave
+        }
+        
+        if let cardType = data.selectedCardType {
+            switch cardType {
+            case .birthday:
+                return .personal
+            case .holiday, .sandwich:
+                return .leave
+            default:
+                return .personal
+            }
+        }
+        
+        if data.selectedHoliday != nil {
+            return .leave
+        }
+        
+        if data.selectedWeatherDate != nil {
+            return .personal
+        }
+        
+        return .personal
+    }
+
 }

@@ -61,12 +61,11 @@ public final class HomeRepositoryImpl: HomeRepositoryProtocol {
             throw NetworkError.serverError(response.error ?? "샌드위치 휴일 조회 실패")
         }
         
-        guard let data = response.data,
-              let sandwichHoliday = data.toDomain() else {
+        guard let data = response.data else {
             return []
         }
         
-        return [sandwichHoliday]
+        return data.toDomain()
     }
     
     public func getHolidays() async throws -> [Holiday] {
@@ -80,5 +79,41 @@ public final class HomeRepositoryImpl: HomeRepositoryProtocol {
         }
         
         return response.data?.holidays.compactMap { $0.toDomain() } ?? []
+    }
+    
+    public func createVacationRecommend(_ request: VacationRecommendRequest) async throws -> String {
+        let dto = request.toDTO()
+        let parameters: [String: Any] = [
+            "days": dto.days,
+            "travelStyle": dto.travelStyle,
+            "activityType": dto.activityType,
+            "restPreference": dto.restPreference,
+            "leisurePreference": dto.leisurePreference
+        ]
+        
+        let response: VacationRecommendCreateResponseDTO = try await networkService.post(
+            endpoint: HomeEndpoint.createVacationRecommend.path,
+            parameters: parameters
+        )
+        
+        guard response.result == "SUCCESS" else {
+            throw NetworkError.serverError(response.error ?? "휴가 추천 생성 실패")
+        }
+        
+        return response.data
+    }
+    
+    public func getVacationRecommend() async throws -> VacationRecommend? {
+        let response: VacationRecommendResponseDTO = try await networkService.get(
+            endpoint: HomeEndpoint.getVacationRecommend.path,
+            parameters: nil
+        )
+        
+        guard response.result == "SUCCESS" else {
+            // 아직 완성되지 않은 경우 nil 반환
+            return nil
+        }
+        
+        return response.data?.toDomain()
     }
 } 

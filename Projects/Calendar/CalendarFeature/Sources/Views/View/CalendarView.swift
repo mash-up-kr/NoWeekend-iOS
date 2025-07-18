@@ -90,6 +90,12 @@ public struct CalendarView: View {
             }
             store.send(.viewDidAppear)
         }
+        .onChange(of: initialDate) { oldValue, newValue in
+            // initialDate가 변경될 때마다 날짜 선택 처리
+            if let newDate = newValue {
+                store.send(.dateSelected(newDate))
+            }
+        }
         .onReceive(store.effect) { effect in
             handleEffect(effect)
         }

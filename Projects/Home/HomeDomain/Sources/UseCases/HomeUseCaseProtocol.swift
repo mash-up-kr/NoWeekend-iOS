@@ -21,4 +21,8 @@ public protocol HomeUseCaseProtocol {
     // 샌드위치 휴일 및 공휴일 관련
     func getSandwichHoliday() async throws -> [SandwichHoliday]
     func getHolidays() async throws -> [Holiday]
+    
+    // 휴가 추천 관련
+    func createVacationRecommend(_ request: VacationRecommendRequest) async throws -> String
+    func getVacationRecommend() async throws -> VacationRecommend?
 } 

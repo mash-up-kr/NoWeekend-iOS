@@ -77,40 +77,89 @@ enum VacationType: String, CaseIterable {
     }
 }
 
+// MARK: - VacationBaking Result
+
+struct VacationBakingResult {
+    let days: Int
+    let selectedTypes: Set<VacationType>
+    
+    // API 요청을 위한 매핑
+    var travelStyle: String {
+        if selectedTypes.contains(.planning) {
+            return "PLANNER"
+        } else if selectedTypes.contains(.activeVacation) {
+            return "SPONTANEOUS"
+        }
+        return "PLANNER" // 기본값
+    }
+    
+    var activityType: String {
+        if selectedTypes.contains(.housework) {
+            return "OUTDOOR"
+        } else if selectedTypes.contains(.eating) {
+            return "AT_HOME"
+        }
+        return "OUTDOOR" // 기본값
+    }
+    
+    var restPreference: String {
+        if selectedTypes.contains(.rest) {
+            return "REST"
+        } else if selectedTypes.contains(.selfImprovement) {
+            return "SELF_DEVELOPMENT"
+        }
+        return "REST" // 기본값
+    }
+    
+    var leisurePreference: String {
+        if selectedTypes.contains(.meal) {
+            return "FOOD"
+        } else if selectedTypes.contains(.watching) {
+            return "TOURISM"
+        }
+        return "TOURISM" // 기본값
+    }
+}
+
 // MARK: - VacationBaking Status
 
 enum VacationBakingStatus: Equatable {
-    case notStarted
-    case processing
-    case completed
+    case none           // 휴가 추천 없음
+    case requesting     // 휴가 추천 요청 중
+    case ready          // 휴가 추천 완료
+    case failed         // 휴가 추천 실패
     
     var titleText: String {
         switch self {
-        case .notStarted:
+        case .none:
             "온도를 식히는 휴식 어떠세요?"
-        case .processing:
+        case .requesting:
             "최대 2분 이내 확인할 수 있어요"
-        case .completed:
+        case .ready:
             "토스트가 노릇하게 구워졌어요"
+        case .failed:
+            "휴가 굽기에 실패했어요"
         }
     }
     
     var buttonText: String {
         switch self {
-        case .notStarted:
+        case .none:
             return "최대 7일 휴가 굽기"
-        case .processing:
+        case .requesting:
             return "휴가 굽는중"
-        case .completed:
+        case .ready:
             return "휴가 쓸래말래?"
+        case .failed:
+            return "다시 굽기"
         }
     }
     
     var isButtonEnabled: Bool {
         switch self {
-        case .notStarted, .completed:
+        case .none, .ready, .failed:
             return true
-        case .processing:
+        case .requesting:
             return false
         }
     }

@@ -16,6 +16,7 @@ struct VacationDaysInputView: View {
     let onDaysChanged: (String) -> Void
     
     @State private var inputText: String = ""
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack(spacing: 24) {
@@ -27,6 +28,7 @@ struct VacationDaysInputView: View {
                     errorMessage: .constant(errorMessage),
                     keyboardType: .numberPad
                 )
+                .focused($isFocused)
                 .onChange(of: inputText) { oldValue, newValue in
                     onDaysChanged(newValue)
                 }

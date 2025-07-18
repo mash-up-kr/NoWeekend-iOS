@@ -22,12 +22,28 @@ public struct SandwichHolidayResponseDTO: Codable {
 }
 
 public struct SandwichHolidayDataDTO: Codable {
+    public let responses: [SandwichHolidayItemDTO]
+    
+    public init(responses: [SandwichHolidayItemDTO]) {
+        self.responses = responses
+    }
+    
+    public func toDomain() -> [SandwichHoliday] {
+        return responses.compactMap { $0.toDomain() }
+    }
+}
+
+public struct SandwichHolidayItemDTO: Codable {
     public let startDate: String
     public let endDate: String
+    public let useAnnualLeave: Int
+    public let totalVacationDays: Int
     
-    public init(startDate: String, endDate: String) {
+    public init(startDate: String, endDate: String, useAnnualLeave: Int, totalVacationDays: Int) {
         self.startDate = startDate
         self.endDate = endDate
+        self.useAnnualLeave = useAnnualLeave
+        self.totalVacationDays = totalVacationDays
     }
     
     public func toDomain() -> SandwichHoliday? {
@@ -39,6 +55,11 @@ public struct SandwichHolidayDataDTO: Codable {
             return nil
         }
         
-        return SandwichHoliday(startDate: startDate, endDate: endDate)
+        return SandwichHoliday(
+            startDate: startDate,
+            endDate: endDate,
+            useAnnualLeave: useAnnualLeave,
+            totalVacationDays: totalVacationDays
+        )
     }
 } 

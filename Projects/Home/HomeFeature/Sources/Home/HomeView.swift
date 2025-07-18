@@ -14,10 +14,18 @@ import DIContainer
 import HomeDomain
 
 public struct HomeView: View {
-    @StateObject private var store = HomeStore()
+    @EnvironmentObject private var store: HomeStore
     @EnvironmentObject private var coordinator: HomeCoordinator
 
     public init() {}
+    
+    // Store state binding helper
+    private var showTextInputBottomSheetBinding: Binding<Bool> {
+        Binding(
+            get: { store.state.showTextInputBottomSheet },
+            set: { _ in store.send(.hideTextInputBottomSheet) }
+        )
+    }
     
     @State private var currentLongCardPage: Int = 0
     @State private var currentShortCardPage: Int = 0
@@ -29,120 +37,112 @@ public struct HomeView: View {
     @State private var showDatePickerBottomSheet = false
     
     // 바텀시트 상태 추가
-    @State private var showTextInputBottomSheet = false
     @State private var inputText = ""
-    
-    // 선택된 항목 정보 저장
-    @State private var selectedHoliday: Holiday?
-    @State private var selectedWeatherDate: String?
-    @State private var selectedCardType: VacationCardType?
     
     // 에러 상태 추가
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
-    public var body: some View {
-        ZStack(alignment: .top) {
-            DS.Images.imgGradient
-                .resizable()
-                .frame(height: 260)
-                .ignoresSafeArea(edges: .top)
-                .zIndex(0)
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    MainTopView(
-                        vacationBakingStatus: store.state.vacationBakingStatus,
-                        averageTemperature: store.state.averageTemperature,
-                        remainingAnnualLeave: store.state.remainingAnnualLeave,
-                        onVacationBakingTapped: {
-                            switch store.state.vacationBakingStatus {
-                            case .notStarted:
-                                coordinator.push(.bakingVacation)
-                            case .completed:
+    
+    public var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                MainTopView(
+                    vacationBakingStatus: store.state.vacationBakingStatus,
+                    averageTemperature: store.state.averageTemperature,
+                    remainingAnnualLeave: store.state.remainingAnnualLeave,
+                    vacationRecommendState: store.state.vacationRecommendState,
+                    onVacationBakingTapped: {
+                        switch store.state.vacationBakingStatus {
+                        case .none:
+                            coordinator.push(.bakingVacation)
+                        case .ready:
+                            if store.state.vacationRecommendState.status == .ready {
                                 coordinator.push(.recommendVaction)
-                            case .processing:
-                                break
                             }
+                        case .requesting, .failed:
+                            break
+                        }
+                    }
+                )
+                
+                VStack {
+                    Spacer(minLength: 48)
+                    if !store.state.holidays.isEmpty {
+                        HolidayCardSection(
+                            holidays: store.state.holidays,
+                            onAddTapped: { holiday in
+                                let data = TextInputBottomSheetData(
+                                    title: "",
+                                    selectedHoliday: holiday
+                                )
+                                store.send(.showTextInputBottomSheet(data))
+                            }
+                        )
+                        .background(DS.Colors.Background.alternative01)
+                    }
+                    
+                    Spacer(minLength: 48)
+                    WeekVacation(
+                        currentMonth: store.state.currentMonth,
+                        currentWeekOfMonth: store.state.currentWeekOfMonth,
+                        weatherData: store.state.weatherRecommendations,
+                        isWeatherLoading: store.state.isWeatherLoading,
+                        onLocationIconTapped: {
+                            store.send(.locationIconTapped)
+                        },
+                        onWeatherRefresh: {
+                            store.send(.loadWeatherRecommendations)
+                        },
+                        onWeatherPlusTapped: { weather in
+                            let data = TextInputBottomSheetData(
+                                title: "",
+                                selectedWeatherDate: weather.localDate
+                            )
+                            store.send(.showTextInputBottomSheet(data))
+                        },
+                        locationAddress: store.state.currentLocationAddress,
+                        store: store
+                    )
+                    
+                    Spacer(minLength: 48)
+                    ShortCardSection(
+                        currentPage: $currentShortCardPage,
+                        selectedDate: $selectedDate,
+                        cards: store.state.shortCards,
+                        onCardTapped: { cardType in
+                            store.send(.vacationCardTapped(cardType))
+                        },
+                        onDateButtonTapped: {
+                            showDatePickerBottomSheet = true
+                        },
+                        onAddTapped: { cardType in
+                            let data = TextInputBottomSheetData(
+                                title: "",
+                                selectedCardType: cardType
+                            )
+                            store.send(.showTextInputBottomSheet(data))
                         }
                     )
-                    .zIndex(1)
-                    
-                    VStack {
-                        Spacer(minLength: 48)
-                        if !store.state.holidays.isEmpty {
-                            HolidayCardSection(
-                                holidays: store.state.holidays,
-                                onAddTapped: { holiday in
-                                    selectedHoliday = holiday
-                                    selectedWeatherDate = nil
-                                    selectedCardType = nil
-                                    inputText = ""
-                                    showTextInputBottomSheet = true
-                                }
-                            )
-                            .background(DS.Colors.Background.alternative01)
-                        }
-                        
-                        Spacer(minLength: 48)
-                        WeekVacation(
-                            currentMonth: store.state.currentMonth,
-                            currentWeekOfMonth: store.state.currentWeekOfMonth,
-                            weatherData: store.state.weatherRecommendations,
-                            isWeatherLoading: store.state.isWeatherLoading,
-                            onLocationIconTapped: {
-                                store.send(.locationIconTapped)
-                            },
-                            onWeatherRefresh: {
-                                store.send(.loadWeatherRecommendations)
-                            },
-                            onWeatherPlusTapped: { weather in
-                                selectedHoliday = nil
-                                selectedWeatherDate = weather.localDate
-                                selectedCardType = nil
-                                inputText = ""
-                                showTextInputBottomSheet = true
-                            },
-                            locationAddress: store.state.currentLocationAddress,
-                            store: store
-                        )
-                        
-                        Spacer(minLength: 48)
-                        ShortCardSection(
-                            currentPage: $currentShortCardPage,
-                            selectedDate: $selectedDate,
-                            cards: store.state.shortCards,
-                            onCardTapped: { cardType in
-                                store.send(.vacationCardTapped(cardType))
-                            },
-                            onDateButtonTapped: {
-                                showDatePickerBottomSheet = true
-                            },
-                            onAddTapped: { cardType in
-                                selectedHoliday = nil
-                                selectedWeatherDate = nil
-                                selectedCardType = cardType
-                                inputText = ""
-                                showTextInputBottomSheet = true
-                            }
-                        )
-                        Spacer()
-                    }
-                    .background(DS.Colors.Background.normal)
+                    Spacer()
                 }
+                .background(DS.Colors.Background.normal)
             }
-            .refreshable {
-                await refreshData()
-            }
+        }
+        .ignoresSafeArea(edges: .top)
+        .refreshable {
+            await refreshData()
         }
         .onAppear {
             store.send(.viewDidLoad)
-            coordinator.onVacationBakingCompleted = {
-                store.send(.vacationBakingCompleted)
-            }
         }
-        .onChange(of: store.state.remainingAnnualLeave) { oldValue, newValue in
-            coordinator.remainingAnnualLeave = newValue
+        .onChange(of: store.state.textInputBottomSheetData) { oldValue, newValue in
+            if let data = newValue {
+                inputText = data.title
+            } else {
+                inputText = ""
+            }
         }
         .onChange(of: selectedDate) { oldValue, newValue in
             store.send(.selectedDateChanged(newValue))
@@ -150,6 +150,7 @@ public struct HomeView: View {
         .onReceive(store.effect) { effect in
             handleEffect(effect)
         }
+
         .alert("", isPresented: $showLocationPermissionDeniedAlert) {
             Button("확인", role: .cancel) { }
         } message: {
@@ -168,12 +169,12 @@ public struct HomeView: View {
         .sheet(isPresented: $showDatePickerBottomSheet) {
             DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
-        .sheet(isPresented: $showTextInputBottomSheet) {
+        .sheet(isPresented: showTextInputBottomSheetBinding) {
             TextInputBottomSheet(
                 subtitle: "연차 제목을 작성하면\n할 일에 추가돼요",
                 placeholder: "쓸래말래가 추천한 연차 ✈️",
                 text: $inputText,
-                isPresented: $showTextInputBottomSheet,
+                isPresented: showTextInputBottomSheetBinding,
                 onAddButtonTapped: {
                     Task {
                         await addScheduleToCalendar()
@@ -181,6 +182,8 @@ public struct HomeView: View {
                 }
             )
         }
+
+
     }
     
     // MARK: - 캘린더 일정 추가 메서드
@@ -218,11 +221,8 @@ public struct HomeView: View {
             )
             
             await MainActor.run {
-                
-                showTextInputBottomSheet = false
+                store.send(.hideTextInputBottomSheet)
                 inputText = ""
-                resetSelectedItems()
-                
                 switchToCalendarTab(with: targetDate)
             }
             
@@ -235,84 +235,23 @@ public struct HomeView: View {
     }
     
     private func determineTargetDate() -> Date {
-        let calendar = Calendar.current
-        
-        if let holiday = selectedHoliday {
-            return holiday.date
-        }
-        
-        if let weatherDateString = selectedWeatherDate {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            if let date = dateFormatter.date(from: weatherDateString) {
-                return date
-            }
-        }
-        
-        if let cardType = selectedCardType {
-            switch cardType {
-            case .sandwich:
-                if let sandwichHoliday = store.state.sandwichHoliday.first {
-                    return sandwichHoliday.startDate
-                }
-            case .birthday:
-                if let nextBirthday = store.state.nextBirthday {
-                    return nextBirthday
-                }
-            case .holiday:
-                if let holiday = store.state.holidays.first {
-                    return holiday.date
-                }
-            default:
-                break
-            }
-        }
-        
-        let today = Date()
-        return today
+        return store.getTargetDateForTextInput()
     }
     
     private func determineScheduleCategory() -> ScheduleCategory {
-        if let cardType = selectedCardType {
-            switch cardType {
-            case .birthday:
-                return .personal
-            case .holiday, .sandwich:
-                return .leave
-            default:
-                return .personal
-            }
-        }
-        
-        if selectedHoliday != nil {
-            return .leave
-        }
-        
-        if selectedWeatherDate != nil {
-            return .personal
-        }
-        
-        return .personal
+        return store.getScheduleCategoryForTextInput()
     }
     
     private func getDefaultTitleForCardType(_ cardType: VacationCardType) -> String {
         return ""
     }
     
-    private func resetSelectedItems() {
-        selectedHoliday = nil
-        selectedWeatherDate = nil
-        selectedCardType = nil
-    }
+
     
     private func handleEffect(_ effect: HomeEffect) {
         switch effect {
         case .requestLocationPermission:
             LocationManager.shared.requestLocationPermission()
-        case .openAppSettings:
-            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(settingsUrl)
-            }
         case .showLocationPermissionDeniedAlert:
             showLocationPermissionDeniedAlert = true
         case .showLocationSettingsAlert:
@@ -320,9 +259,11 @@ public struct HomeView: View {
         case .showError(let message):
             print("Error: \(message)")
         case .navigateToDetail(let cardType):
-            selectedCardType = cardType
-            inputText = ""
-            showTextInputBottomSheet = true
+            let data = TextInputBottomSheetData(
+                title: "",
+                selectedCardType: cardType
+            )
+            store.send(.showTextInputBottomSheet(data))
         case .showLoading:
             break
         case .hideLoading:
