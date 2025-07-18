@@ -1,7 +1,10 @@
-name: Deploy
+name: CD (Deploy)
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI (Lint + Test)"]
+    types:
+      - completed
     branches:
       - main
       - 'release/**'
@@ -19,11 +22,14 @@ on:
 jobs:
   deploy:
     runs-on: macos-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     permissions:
       contents: write  # Git tag 푸시용
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -33,21 +39,69 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
+      - name: Install mise
+        run: brew install mise
+
+      - name: Enable idiomatic version files for ruby
+        run: mise settings add idiomatic_version_file_enable_tools ruby
+
+      - name: Install tools with mise
+        run: mise install
+
+      - name: Create Config.swift for Network
+        run: |
+          cat <<EOF > Projects/Core/NWNetwork/Sources/Config.swift
+          import Foundation
+
+          public enum Config {
+              public static let baseURL = "${{ secrets.BASE_URL }}"
+              public static let googleClientID = "${{ secrets.GOOGLE_CLIENT_KEY }}"
+              public static let googleServerClientID = "${{ secrets.GOOGLE_SERVICE_CLIENT_ID }}"
+              public static let tempAccessToken = "${{ secrets.TEMP_ACCESS_TOKEN }}"
+          }
+          EOF
+
+      - name: Tuist tasks (install + generate)
+        run: |
+          eval "$(mise activate bash)"
+          tuist install
+          tuist generate
+
+      - name: Create & Unlock Keychain
+        run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security default-keychain -s ci.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
+          security set-keychain-settings -lut 21600 ci.keychain
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Install certificates & profiles
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          bundle exec fastlane match development --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
+          bundle exec fastlane match appstore --readonly --keychain-name "ci.keychain" --keychain-password "$KEYCHAIN_PASSWORD"
+
       - name: Decode App Store API Key
         run: |
           mkdir -p fastlane
           echo "${{ secrets.APP_STORE_CONNECT_API_KEY_JSON }}" | base64 --decode > fastlane/key.json
 
       - name: Run fastlane (브랜치 기반 자동)
-        if: github.event_name == 'push'
+        if: github.event_name == 'workflow_run'
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         run: |
-          BRANCH="${GITHUB_REF#refs/heads/}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
           if [[ "$BRANCH" =~ ^release/ ]]; then
-            bundle exec fastlane beta
+            echo "🚀 Release 브랜치에서 App Store 배포 시작..."
+            bundle exec fastlane prod
           elif [[ "$BRANCH" == "main" ]]; then
+            echo "🚀 Main 브랜치에서 App Store 배포 시작..."
             bundle exec fastlane prod
           fi
 
