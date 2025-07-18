@@ -12,6 +12,7 @@ import HomeDomain
 struct VacationScheduleModalView: View {
     @StateObject private var store = VacationScheduleModalStore()
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var homeStore: HomeStore
     let vacationRecommend: VacationRecommend
     
     var body: some View {
@@ -100,7 +101,13 @@ struct VacationScheduleModalView: View {
                 .padding(.vertical, 8)
                 
                 Button(action: {
-                    store.send(.acceptButtonTapped)
+                    let data = TextInputBottomSheetData(
+                        title: vacationRecommend.title,
+                        selectedVacationRecommend: vacationRecommend
+                    )
+                    homeStore.send(.showTextInputBottomSheet(data))
+                    // 모달 닫기
+                    dismiss()
                 }) {
                     Text("쓸래")
                         .font(.body1)
@@ -136,7 +143,9 @@ struct VacationScheduleModalView: View {
         vacationRecommend: VacationRecommend(
             title: "도쿄 2박 3일 추천코스",
             content: "• Day 1 (07/07 월) - Day 3 of 5\n\n1. Morning: 집→세종문화회관, 지하철 5호선, 08:30 출발\n2. Morning activity: 세종문화회관 뮤지컬 '팬텀' 관람, 도보 이동·10분\n3. Lunch: 세븐스도어(컨템포러리 요리 전문점, 창의적 코스 요리), 종로",
-            iconStyle: "STAR"
+            iconStyle: "STAR",
+            startDate: "2025-07-07",
+            endDate: "2025-07-09"
         )
     )
 } 

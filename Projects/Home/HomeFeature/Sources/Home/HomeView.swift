@@ -19,6 +19,14 @@ public struct HomeView: View {
 
     public init() {}
     
+    // Store state binding helper
+    private var showTextInputBottomSheetBinding: Binding<Bool> {
+        Binding(
+            get: { store.state.showTextInputBottomSheet },
+            set: { _ in store.send(.hideTextInputBottomSheet) }
+        )
+    }
+    
     @State private var currentLongCardPage: Int = 0
     @State private var currentShortCardPage: Int = 0
     @State private var selectedDate: Date = Date()
@@ -29,13 +37,7 @@ public struct HomeView: View {
     @State private var showDatePickerBottomSheet = false
     
     // 바텀시트 상태 추가
-    @State private var showTextInputBottomSheet = false
     @State private var inputText = ""
-    
-    // 선택된 항목 정보 저장
-    @State private var selectedHoliday: Holiday?
-    @State private var selectedWeatherDate: String?
-    @State private var selectedCardType: VacationCardType?
     
     // 에러 상태 추가
     @State private var showErrorAlert = false
@@ -71,11 +73,11 @@ public struct HomeView: View {
                         HolidayCardSection(
                             holidays: store.state.holidays,
                             onAddTapped: { holiday in
-                                selectedHoliday = holiday
-                                selectedWeatherDate = nil
-                                selectedCardType = nil
-                                inputText = ""
-                                showTextInputBottomSheet = true
+                                let data = TextInputBottomSheetData(
+                                    title: "",
+                                    selectedHoliday: holiday
+                                )
+                                store.send(.showTextInputBottomSheet(data))
                             }
                         )
                         .background(DS.Colors.Background.alternative01)
@@ -94,11 +96,11 @@ public struct HomeView: View {
                             store.send(.loadWeatherRecommendations)
                         },
                         onWeatherPlusTapped: { weather in
-                            selectedHoliday = nil
-                            selectedWeatherDate = weather.localDate
-                            selectedCardType = nil
-                            inputText = ""
-                            showTextInputBottomSheet = true
+                            let data = TextInputBottomSheetData(
+                                title: "",
+                                selectedWeatherDate: weather.localDate
+                            )
+                            store.send(.showTextInputBottomSheet(data))
                         },
                         locationAddress: store.state.currentLocationAddress,
                         store: store
@@ -116,11 +118,11 @@ public struct HomeView: View {
                             showDatePickerBottomSheet = true
                         },
                         onAddTapped: { cardType in
-                            selectedHoliday = nil
-                            selectedWeatherDate = nil
-                            selectedCardType = cardType
-                            inputText = ""
-                            showTextInputBottomSheet = true
+                            let data = TextInputBottomSheetData(
+                                title: "",
+                                selectedCardType: cardType
+                            )
+                            store.send(.showTextInputBottomSheet(data))
                         }
                     )
                     Spacer()
@@ -135,12 +137,20 @@ public struct HomeView: View {
         .onAppear {
             store.send(.viewDidLoad)
         }
+        .onChange(of: store.state.textInputBottomSheetData) { oldValue, newValue in
+            if let data = newValue {
+                inputText = data.title
+            } else {
+                inputText = ""
+            }
+        }
         .onChange(of: selectedDate) { oldValue, newValue in
             store.send(.selectedDateChanged(newValue))
         }
         .onReceive(store.effect) { effect in
             handleEffect(effect)
         }
+
         .alert("", isPresented: $showLocationPermissionDeniedAlert) {
             Button("확인", role: .cancel) { }
         } message: {
@@ -159,12 +169,12 @@ public struct HomeView: View {
         .sheet(isPresented: $showDatePickerBottomSheet) {
             DatePickerWithLabelBottomSheet(selectedDate: $selectedDate)
         }
-        .sheet(isPresented: $showTextInputBottomSheet) {
+        .sheet(isPresented: showTextInputBottomSheetBinding) {
             TextInputBottomSheet(
                 subtitle: "연차 제목을 작성하면\n할 일에 추가돼요",
                 placeholder: "쓸래말래가 추천한 연차 ✈️",
                 text: $inputText,
-                isPresented: $showTextInputBottomSheet,
+                isPresented: showTextInputBottomSheetBinding,
                 onAddButtonTapped: {
                     Task {
                         await addScheduleToCalendar()
@@ -211,11 +221,8 @@ public struct HomeView: View {
             )
             
             await MainActor.run {
-                
-                showTextInputBottomSheet = false
+                store.send(.hideTextInputBottomSheet)
                 inputText = ""
-                resetSelectedItems()
-                
                 switchToCalendarTab(with: targetDate)
             }
             
@@ -228,45 +235,18 @@ public struct HomeView: View {
     }
     
     private func determineTargetDate() -> Date {
-        return store.determineTargetDate(
-            selectedHoliday: selectedHoliday,
-            selectedWeatherDate: selectedWeatherDate,
-            selectedCardType: selectedCardType
-        )
+        return store.getTargetDateForTextInput()
     }
     
     private func determineScheduleCategory() -> ScheduleCategory {
-        if let cardType = selectedCardType {
-            switch cardType {
-            case .birthday:
-                return .personal
-            case .holiday, .sandwich:
-                return .leave
-            default:
-                return .personal
-            }
-        }
-        
-        if selectedHoliday != nil {
-            return .leave
-        }
-        
-        if selectedWeatherDate != nil {
-            return .personal
-        }
-        
-        return .personal
+        return store.getScheduleCategoryForTextInput()
     }
     
     private func getDefaultTitleForCardType(_ cardType: VacationCardType) -> String {
         return ""
     }
     
-    private func resetSelectedItems() {
-        selectedHoliday = nil
-        selectedWeatherDate = nil
-        selectedCardType = nil
-    }
+
     
     private func handleEffect(_ effect: HomeEffect) {
         switch effect {
@@ -279,9 +259,11 @@ public struct HomeView: View {
         case .showError(let message):
             print("Error: \(message)")
         case .navigateToDetail(let cardType):
-            selectedCardType = cardType
-            inputText = ""
-            showTextInputBottomSheet = true
+            let data = TextInputBottomSheetData(
+                title: "",
+                selectedCardType: cardType
+            )
+            store.send(.showTextInputBottomSheet(data))
         case .showLoading:
             break
         case .hideLoading:

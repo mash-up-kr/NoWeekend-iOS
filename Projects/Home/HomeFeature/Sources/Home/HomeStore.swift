@@ -78,6 +78,10 @@ final class HomeStore: ObservableObject {
             handleStartVacationRecommendPolling()
         case .stopVacationRecommendPolling:
             handleStopVacationRecommendPolling()
+        case .showTextInputBottomSheet(let data):
+            handleShowTextInputBottomSheet(data)
+        case .hideTextInputBottomSheet:
+            handleHideTextInputBottomSheet()
         }
     }
     
@@ -724,6 +728,101 @@ extension HomeStore {
         } catch {
             print("❌ 휴가 추천 조회 실패: \(error)")
         }
+    }
+    
+    // MARK: - Bottom Sheet Management
+    
+    private func handleShowTextInputBottomSheet(_ data: TextInputBottomSheetData) {
+        state.textInputBottomSheetData = data
+        state.showTextInputBottomSheet = true
+    }
+    
+    private func handleHideTextInputBottomSheet() {
+        state.showTextInputBottomSheet = false
+        state.textInputBottomSheetData = nil
+    }
+    
+    // MARK: - VacationRecommend Date Management
+    
+    func formatVacationRecommendDate(_ vacationRecommend: VacationRecommend) -> String {
+        // 서버에서 내려주는 날짜 데이터 사용
+        if let startDate = vacationRecommend.startDate, let endDate = vacationRecommend.endDate {
+            // startDate와 endDate가 같으면 단일 날짜
+            if startDate == endDate {
+                return formatSingleVacationDate(startDate)
+            } else {
+                // 다르면 기간 표시
+                return "\(formatSingleVacationDate(startDate)) ~ \(formatSingleVacationDate(endDate))"
+            }
+        } else if let startDate = vacationRecommend.startDate {
+            return formatSingleVacationDate(startDate)
+        } else {
+            return "날짜 정보 없음"
+        }
+    }
+    
+    private func formatSingleVacationDate(_ dateString: String) -> String {
+        // shared의 Date+ 확장 사용
+        guard let date = dateString.toDate(format: "yyyy-MM-dd") else {
+            return dateString
+        }
+        return date.toMonthDayString()
+    }
+    
+    func getTargetDateForTextInput() -> Date {
+        guard let data = state.textInputBottomSheetData else {
+            return Date()
+        }
+        
+        // VacationRecommend가 선택된 경우 실제 추천 날짜 사용
+        if let vacationRecommend = data.selectedVacationRecommend {
+            // 서버에서 내려주는 startDate 사용
+            if let startDateString = vacationRecommend.startDate,
+               let date = startDateString.toDate(format: "yyyy-MM-dd") {
+                return date
+            }
+            
+            // 날짜 정보가 없으면 내일 날짜를 기본으로 사용
+            return Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        }
+        
+        return determineTargetDate(
+            selectedHoliday: data.selectedHoliday,
+            selectedWeatherDate: data.selectedWeatherDate,
+            selectedCardType: data.selectedCardType
+        )
+    }
+    
+    func getScheduleCategoryForTextInput() -> ScheduleCategory {
+        guard let data = state.textInputBottomSheetData else {
+            return .personal
+        }
+        
+        // VacationRecommend의 경우 휴가로 분류
+        if data.selectedVacationRecommend != nil {
+            return .leave
+        }
+        
+        if let cardType = data.selectedCardType {
+            switch cardType {
+            case .birthday:
+                return .personal
+            case .holiday, .sandwich:
+                return .leave
+            default:
+                return .personal
+            }
+        }
+        
+        if data.selectedHoliday != nil {
+            return .leave
+        }
+        
+        if data.selectedWeatherDate != nil {
+            return .personal
+        }
+        
+        return .personal
     }
 
 }

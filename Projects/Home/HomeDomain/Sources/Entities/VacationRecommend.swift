@@ -36,11 +36,15 @@ public struct VacationRecommend: Equatable {
     public let title: String
     public let content: String
     public let iconStyle: String
+    public let startDate: String?
+    public let endDate: String?
     
-    public init(title: String, content: String, iconStyle: String) {
+    public init(title: String, content: String, iconStyle: String, startDate: String? = nil, endDate: String? = nil) {
         self.title = title
         self.content = content
         self.iconStyle = iconStyle
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
 

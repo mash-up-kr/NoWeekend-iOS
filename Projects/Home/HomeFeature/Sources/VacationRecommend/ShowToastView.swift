@@ -24,14 +24,15 @@ struct ShowToastView: View {
         vacationRecommend?.title ?? "휴가 추천을 준비중입니다"
     }
     
-    //    private var dateText: String {
-    //
-    //    }
-    
+    private var dateText: String {
+        guard let recommendation = vacationRecommend else { return "날짜 정보 없음" }
+        return homeStore.formatVacationRecommendDate(recommendation)
+    }
+
     private var iconStyle: String {
         vacationRecommend?.iconStyle ?? "STAR"
     }
-    
+
     var body: some View {
         ZStack {
             VStack {
@@ -46,11 +47,19 @@ struct ShowToastView: View {
                 
                 if !isToastAnimated {
                     LoadingContentView()
+                } else {
+                    BalloonView(
+                        dateText: dateText,
+                        onPlusTapped: {
+                            let data = TextInputBottomSheetData(
+                                title: vacationRecommend?.title ?? "",
+                                selectedVacationRecommend: vacationRecommend
+                            )
+                            homeStore.send(.showTextInputBottomSheet(data))
+                        }
+                    )
+                    .padding(.top, 20)
                 }
-//                else {
-//                    BalloonView(dateText: dateText)
-//                        .padding(.bottom, 20)
-//                }
                 
                 // 토스트 뷰 항상 렌더링
                 ToastView(
@@ -68,6 +77,7 @@ struct ShowToastView: View {
                     .padding(.top, 20)
                     .buttonStyle(PlainButtonStyle())
                 }
+            
                 
                 Spacer()
                 DS.Images.imgToaster
@@ -166,6 +176,7 @@ struct ToastView: View {
 
 struct BalloonView: View {
     let dateText: String
+    let onPlusTapped: () -> Void
     
     var body: some View {
         ZStack {
@@ -178,9 +189,12 @@ struct BalloonView: View {
                 Text(dateText)
                     .font(.heading6)
                     .foregroundColor(DS.Colors.Text.netural)
-                DS.Images.icnPlus
-                    .resizable()
-                    .frame(width: 24, height: 24)
+                Button(action: onPlusTapped) {
+                    DS.Images.icnPlus
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
             .padding(.top, 16)
             .padding(.bottom, 25)

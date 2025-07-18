@@ -101,6 +101,34 @@ struct HomeState: Equatable {
         VacationCardItem(dateString: "0/00(월)", type: .birthday),
         VacationCardItem(dateString: "0/00(월)", type: .holiday),
     ]
+    
+    // 바텀시트 상태
+    var showTextInputBottomSheet: Bool = false
+    var textInputBottomSheetData: TextInputBottomSheetData?
+}
+
+// MARK: - Text Input Bottom Sheet Data
+
+struct TextInputBottomSheetData: Equatable {
+    let title: String
+    let selectedHoliday: Holiday?
+    let selectedWeatherDate: String?
+    let selectedCardType: VacationCardType?
+    let selectedVacationRecommend: VacationRecommend?
+    
+    init(
+        title: String = "",
+        selectedHoliday: Holiday? = nil,
+        selectedWeatherDate: String? = nil,
+        selectedCardType: VacationCardType? = nil,
+        selectedVacationRecommend: VacationRecommend? = nil
+    ) {
+        self.title = title
+        self.selectedHoliday = selectedHoliday
+        self.selectedWeatherDate = selectedWeatherDate
+        self.selectedCardType = selectedCardType
+        self.selectedVacationRecommend = selectedVacationRecommend
+    }
 }
 
 // MARK: - Home Intent
@@ -121,6 +149,8 @@ enum HomeIntent {
     case createVacationRecommend(VacationRecommendRequest)
     case startVacationRecommendPolling
     case stopVacationRecommendPolling
+    case showTextInputBottomSheet(TextInputBottomSheetData)
+    case hideTextInputBottomSheet
 }
 
 // MARK: - Home Effect

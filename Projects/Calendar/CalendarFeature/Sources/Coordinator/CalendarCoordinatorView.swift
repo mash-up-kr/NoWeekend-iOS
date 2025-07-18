@@ -10,17 +10,21 @@ import SwiftUI
 
 public struct CalendarCoordinatorView: View {
     @StateObject private var coordinator = CalendarCoordinator()
-    
-    private let initialDate: Date?
+    @State private var targetDate: Date?
 
     public init(initialDate: Date? = nil) {
-        self.initialDate = initialDate
+        self._targetDate = State(initialValue: initialDate)
         print("📅 CalendarCoordinatorView 초기화 - initialDate: \(initialDate?.description ?? "nil")")
+    }
+    
+    public init() {
+        self._targetDate = State(initialValue: nil)
+        print("📅 CalendarCoordinatorView 초기화 - initialDate: nil")
     }
     
     public var body: some View {
         NavigationStack(path: $coordinator.path) {
-            coordinator.view(.main(initialDate: initialDate))
+            coordinator.view(.main(initialDate: targetDate))
                 .navigationDestination(for: CalendarRouter.Screen.self) { screen in
                     coordinator.view(screen)
                         .environmentObject(coordinator)
@@ -45,5 +49,13 @@ public struct CalendarCoordinatorView: View {
                 }
         }
         .environmentObject(coordinator)
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToCalendarTab"))) { notification in
+            if let userInfo = notification.userInfo,
+               let selectedDate = userInfo["selectedDate"] as? Date {
+                targetDate = selectedDate
+            } else {
+                targetDate = nil
+            }
+        }
     }
 }

@@ -51,7 +51,6 @@ public struct TabBarView: View {
     
     @State private var selectedTab: Tab = .home
     @EnvironmentObject var appCoordinator: AppCoordinator
-    @State private var calendarTargetDate: Date?
     
     public init() {}
     
@@ -66,7 +65,7 @@ public struct TabBarView: View {
                 .tag(Tab.home)
             
             // 캘린더 탭
-            CalendarCoordinatorView(initialDate: calendarTargetDate)
+            CalendarCoordinatorView()
                 .tabItem {
                     (selectedTab == .calendar ? Tab.calendar.iconOn : Tab.calendar.iconOff)
                     Text(Tab.calendar.title)
@@ -82,14 +81,8 @@ public struct TabBarView: View {
                 .tag(Tab.profile)
         }
         .accentColor(DS.Colors.Neutral.gray900)
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToCalendarTab"))) { notification in
-                    selectedTab = .calendar
-            if let userInfo = notification.userInfo,
-                           let selectedDate = userInfo["selectedDate"] as? Date {
-                            calendarTargetDate = selectedDate
-                        } else {
-                            calendarTargetDate = nil
-                        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToCalendarTab"))) { _ in
+            selectedTab = .calendar
         }
     }
 }
