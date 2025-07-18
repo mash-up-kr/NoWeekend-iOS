@@ -20,7 +20,6 @@ public class OnboardingNetworkService: OnboardingNetworkServiceInterface {
     // MARK: - Profile 저장 (Domain Model → DTO 변환)
     
     public func saveProfile(_ profile: OnboardingProfile) async throws {
-        // Domain Model → DTO 변환
         let dto = ProfileRequestDTO(
             nickname: profile.nickname,
             birthDate: profile.birthDate
@@ -43,8 +42,6 @@ public class OnboardingNetworkService: OnboardingNetworkServiceInterface {
         
         print("✅ Profile API call successful")
     }
-    
-    // MARK: - Leave 저장 (Domain Model → DTO 변환)
     
     public func saveLeave(_ leave: OnboardingLeave) async throws {
         let dto = LeaveRequestDTO(
@@ -94,4 +91,18 @@ public class OnboardingNetworkService: OnboardingNetworkServiceInterface {
         
         print("✅ Tags API call successful")
     }
+    
+    public func fetchOnboardingStatus() async throws -> String {
+        let endpoint = OnboardingEndpoint.status
+        let response: OnboardingStatusResponseDTO = try await networkService.get(
+            endpoint: endpoint.path,
+            parameters: nil
+        )
+        let status = response.data.status
+        if status.isEmpty {
+            throw OnboardingError.networkError("온보딩 상태값이 없습니다")
+        }
+        return status
+    }
 }
+

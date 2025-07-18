@@ -6,6 +6,8 @@ import SwiftUI
 public struct ProfileView: View {
     @EnvironmentObject var coordinator: ProfileCoordinator
     @StateObject private var store: ProfileStore
+    @State private var isCategoryBottomSheetPresented = false
+    @State private var selectedCategory: TaskCreateCategory = .personal
     
     public init() {
         _store = StateObject(wrappedValue: DIContainer.shared.resolve(ProfileStore.self))
@@ -19,12 +21,12 @@ public struct ProfileView: View {
             } else if let _ = store.state.userProfile {
                 ProfileHeaderSection(store: store)
                 ProfileVacationSection(store: store)
-                ProfileSettingSection(store: store)
+                ProfileSettingSection(store: store, isCategoryBottomSheetPresented: $isCategoryBottomSheetPresented, selectedCategory: $selectedCategory)
                 Spacer()
             } else {
                 ProfileHeaderSection(store: store)
                 ProfileVacationSection(store: store)
-                ProfileSettingSection(store: store)
+                ProfileSettingSection(store: store, isCategoryBottomSheetPresented: $isCategoryBottomSheetPresented, selectedCategory: $selectedCategory)
                 Spacer()
             }
         }
@@ -33,8 +35,19 @@ public struct ProfileView: View {
                 store.loadInitialData()
             }
         }
-        
-        
+        .sheet(isPresented: $isCategoryBottomSheetPresented) {
+            TaskCategoryBottomSheet(
+                selectedCategory: $selectedCategory,
+                onCategorySelected: { category in
+                    selectedCategory = category
+                },
+                onSelectTapped: {
+                    // TODO: 선택된 카테고리를 저장하는 로직 추가
+                    print("선택된 카테고리: \(selectedCategory.displayName)")
+                },
+                isPresented: $isCategoryBottomSheetPresented
+            )
+        }
     }
     
     private struct ProfileHeaderSection: View {
@@ -119,6 +132,8 @@ public struct ProfileView: View {
     private struct ProfileSettingSection: View {
         @EnvironmentObject var coordinator: ProfileCoordinator
         let store: ProfileStore
+        @Binding var isCategoryBottomSheetPresented: Bool
+        @Binding var selectedCategory: TaskCreateCategory
         
         var body: some View {
             VStack(spacing: 32) {
@@ -134,9 +149,11 @@ public struct ProfileView: View {
                         SettingRow.withRightTextOnly(
                             title: "기본 카테고리",
                             titleFont: .body1,
-                            rightText: "개인",
-                            color: DS.Colors.TaskItem.orange
-                        )
+                            rightText: selectedCategory.displayName,
+                            color: selectedCategory.color
+                        ) {
+                            isCategoryBottomSheetPresented = true
+                        }
                     }
                 
                 SettingSection(
