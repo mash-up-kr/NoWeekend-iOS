@@ -46,12 +46,7 @@ struct TodoListSection: View {
             
             if todoItems.isEmpty {
                 VStack(spacing: 16) {
-                    DS.Images.imgFlour
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                    
-                    Text("이 날의 할 일이 없습니다")
+                    Text("아직 할 일이 없어요.")
                         .font(.body1)
                         .foregroundColor(DS.Colors.Text.disable)
                 }

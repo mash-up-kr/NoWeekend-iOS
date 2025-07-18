@@ -82,10 +82,18 @@ public final class CalendarStore: ObservableObject {
 private extension CalendarStore {
     @MainActor
     func handleViewDidAppear() async {
+        print("📅 handleViewDidAppear 시작")
         state.scrollOffset = 0
-        await loadRecommendedCategories()
-        await loadSchedules()
+        
+        async let recommendedCategoriesTask = loadRecommendedCategories()
+        async let schedulesTask = loadSchedules()
+        
+        await recommendedCategoriesTask
+        await schedulesTask
+        
         updateTodoItemsForSelectedDate()
+        print("📅 handleViewDidAppear 완료")
+    
     }
     
     @MainActor
@@ -257,8 +265,11 @@ private extension CalendarStore {
     
     @MainActor
     func loadRecommendedCategories() async {
+        print("📅 loadRecommendedCategories 시작")
         do {
+            print("📅 getRecommendedTags API 호출 중...")
             let response = try await calendarUseCase.getRecommendedTags()
+            print("📅 getRecommendedTags API 응답 받음: \(response)")
             
             if response.result == "SUCCESS", let data = response.data {
                 state.recommendedCategories = [
@@ -266,13 +277,16 @@ private extension CalendarStore {
                     TaskCategory(name: data.secondRecommendTag.content, color: DS.Colors.TaskItem.orange),
                     TaskCategory(name: data.thirdRecommendTag.content, color: DS.Colors.Neutral.gray700)
                 ]
+                print("📅 추천 카테고리 로드 성공")
             } else {
                 state.recommendedCategories = getDefaultCategories()
+                print("📅 API 응답 실패, 기본 카테고리 사용")
             }
         } catch {
             state.recommendedCategories = getDefaultCategories()
-            print("추천 카테고리 로딩 실패: \(error)")
+            print("❌ 추천 카테고리 로딩 실패: \(error)")
         }
+        print("📅 loadRecommendedCategories 완료")
     }
     
     func getDefaultCategories() -> [TaskCategory] {

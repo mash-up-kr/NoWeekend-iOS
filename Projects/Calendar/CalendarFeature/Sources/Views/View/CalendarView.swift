@@ -75,8 +75,6 @@ public struct CalendarView: View {
                     }
                 )
             )
-            .onAppear {
-            }
             .onDisappear {
                 Task { @MainActor in
                     store.updateState { state in
@@ -94,9 +92,6 @@ public struct CalendarView: View {
         }
         .onReceive(store.effect) { effect in
             handleEffect(effect)
-        }
-        .task {
-            store.send(.viewDidAppear)
         }
     }
 }
