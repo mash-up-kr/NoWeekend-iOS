@@ -61,8 +61,11 @@ public struct HomeView: View {
                             if store.state.vacationRecommendState.status == .ready {
                                 coordinator.push(.recommendVaction)
                             }
-                        case .requesting, .failed:
+                        case .requesting:
                             break
+                        case .failed:
+                            // 다시 굽기 버튼 클릭 시 재시도
+                            store.send(.retryVacationRecommend)
                         }
                     }
                 )

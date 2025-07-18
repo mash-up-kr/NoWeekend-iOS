@@ -147,6 +147,7 @@ enum HomeIntent {
     case loadHolidays
     case selectedDateChanged(Date)
     case createVacationRecommend(VacationRecommendRequest)
+    case retryVacationRecommend // 재시도 Intent 추가
     case startVacationRecommendPolling
     case stopVacationRecommendPolling
     case showTextInputBottomSheet(TextInputBottomSheetData)

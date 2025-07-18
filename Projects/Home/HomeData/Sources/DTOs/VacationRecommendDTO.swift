@@ -31,13 +31,26 @@ public struct VacationRecommendRequestDTO: Codable {
     }
 }
 
+// MARK: - 에러 응답 DTO
+public struct ErrorDTO: Codable {
+    public let code: String
+    public let message: String
+    public let data: String?
+    
+    public init(code: String, message: String, data: String?) {
+        self.code = code
+        self.message = message
+        self.data = data
+    }
+}
+
 // MARK: - 휴가 추천 생성 응답 DTO
 public struct VacationRecommendCreateResponseDTO: Codable {
     public let result: String
     public let data: String
-    public let error: String?
+    public let error: ErrorDTO?
     
-    public init(result: String, data: String, error: String?) {
+    public init(result: String, data: String, error: ErrorDTO?) {
         self.result = result
         self.data = data
         self.error = error
@@ -48,9 +61,9 @@ public struct VacationRecommendCreateResponseDTO: Codable {
 public struct VacationRecommendResponseDTO: Codable {
     public let result: String
     public let data: VacationRecommendDataDTO?
-    public let error: String?
+    public let error: ErrorDTO?
     
-    public init(result: String, data: VacationRecommendDataDTO?, error: String?) {
+    public init(result: String, data: VacationRecommendDataDTO?, error: ErrorDTO?) {
         self.result = result
         self.data = data
         self.error = error
@@ -61,11 +74,15 @@ public struct VacationRecommendDataDTO: Codable {
     public let title: String
     public let content: String
     public let iconStyle: String
+    public let startDate: String?
+    public let endDate: String?
     
-    public init(title: String, content: String, iconStyle: String) {
+    public init(title: String, content: String, iconStyle: String, startDate: String? = nil, endDate: String? = nil) {
         self.title = title
         self.content = content
         self.iconStyle = iconStyle
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
 
@@ -101,7 +118,9 @@ extension VacationRecommendDataDTO {
         return VacationRecommend(
             title: title,
             content: content,
-            iconStyle: iconStyle
+            iconStyle: iconStyle,
+            startDate: startDate,
+            endDate: endDate
         )
     }
 } 
