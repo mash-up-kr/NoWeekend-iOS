@@ -10,6 +10,33 @@ import Utils
 import HomeDomain
 import Foundation
 
+// MARK: - Location Registration State
+
+enum LocationRegistrationState: Equatable {
+    case notRegistered
+    case registering
+    case registered
+    case failed(String)
+    
+    var isRegistered: Bool {
+        switch self {
+        case .registered:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isLoading: Bool {
+        switch self {
+        case .registering:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 // MARK: - Home State
 
 struct HomeState: Equatable {
@@ -26,11 +53,22 @@ struct HomeState: Equatable {
     var currentLocation: LocationInfo? = nil
     var savedLocation: LocationInfo? = nil
     
-    // 위치 및 날씨 관련 상태
-    var isLocationRegistered: Bool = false
+    var locationRegistrationState: LocationRegistrationState = .notRegistered
     var isWeatherLoading: Bool = false
     var weatherRecommendations: [Weather] = []
     var currentLocationAddress: String? = nil
+    
+    // 기존 boolean 값들과의 호환성을 위한 computed property
+    var isLocationRegistered: Bool {
+        get { locationRegistrationState.isRegistered }
+        set { 
+            if newValue {
+                locationRegistrationState = .registered
+            } else {
+                locationRegistrationState = .notRegistered
+            }
+        }
+    }
     
     // 샌드위치 휴일 및 공휴일 관련 상태
     var sandwichHoliday: [SandwichHoliday] = []
@@ -39,7 +77,6 @@ struct HomeState: Equatable {
     
     //생일축하합니다~
     var userBirthday: String? = nil
-    var nextBirthday: Date? = nil
     var isBirthdayLoading: Bool = false
     
     // 사용자 정보

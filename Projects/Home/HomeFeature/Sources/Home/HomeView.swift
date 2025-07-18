@@ -227,41 +227,11 @@ public struct HomeView: View {
     }
     
     private func determineTargetDate() -> Date {
-        let calendar = Calendar.current
-        
-        if let holiday = selectedHoliday {
-            return holiday.date
-        }
-        
-        if let weatherDateString = selectedWeatherDate {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            if let date = dateFormatter.date(from: weatherDateString) {
-                return date
-            }
-        }
-        
-        if let cardType = selectedCardType {
-            switch cardType {
-            case .sandwich:
-                if let sandwichHoliday = store.state.sandwichHoliday.first {
-                    return sandwichHoliday.startDate
-                }
-            case .birthday:
-                if let nextBirthday = store.state.nextBirthday {
-                    return nextBirthday
-                }
-            case .holiday:
-                if let holiday = store.state.holidays.first {
-                    return holiday.date
-                }
-            default:
-                break
-            }
-        }
-        
-        let today = Date()
-        return today
+        return store.determineTargetDate(
+            selectedHoliday: selectedHoliday,
+            selectedWeatherDate: selectedWeatherDate,
+            selectedCardType: selectedCardType
+        )
     }
     
     private func determineScheduleCategory() -> ScheduleCategory {
