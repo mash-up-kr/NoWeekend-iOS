@@ -17,3 +17,4 @@ public protocol ProfileNetworkServiceInterface {
     func updateVacationLeave(_ request: VacationLeaveDTO) async throws -> VacationLeaveDTO
     func getAITagRecommendation(selectedTags: [String]) async throws -> AIRecommendationResponse
 }
+
