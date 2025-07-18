@@ -16,7 +16,7 @@ struct MonthCalendarView: View {
     
     private var calendar: Calendar {
         var cal = Calendar.current
-        cal.firstWeekday = 2 
+        cal.firstWeekday = 2
         return cal
     }
     
@@ -89,40 +89,75 @@ struct MonthCalendarView: View {
     private var monthGrid: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 0) {
             ForEach(datesInMonth, id: \.self) { date in
-                Button(action: {
-                    onDateTap(date)
-                }) {
-                    VStack(spacing: 1) {
-                        ZStack {
-                            if calendar.isDate(date, inSameDayAs: selectedDate) {
-                                Circle()
-                                    .fill(DS.Colors.Toast._100)
-                                    .frame(width: 32, height: 32)
-                            }
-                            
-                            Text("\(calendar.component(.day, from: date))")
-                                .font(.subtitle2)
-                                .foregroundColor(textColor(for: date))
-                        }
-                        .frame(height: 41)
-                        
-                        calendarCellContent(date)
-                            .frame(width: 41, height: 41)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 80)
+                monthCell(for: date)
             }
         }
     }
     
+    @ViewBuilder
+    private func monthCell(for date: Date) -> some View {
+        let isCurrentMonth = calendar.isDate(date, equalTo: selectedDate, toGranularity: .month)
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+        
+        if isCurrentMonth {
+            Button(action: {
+                onDateTap(date)
+            }) {
+                VStack(spacing: 1) {
+                    ZStack {
+                        // 서클은 오직 선택된 날짜에만 표시
+                        if isSelected {
+                            Circle()
+                                .fill(DS.Colors.Toast._100)
+                                .frame(width: 32, height: 32)
+                        }
+                        
+                        Text("\(calendar.component(.day, from: date))")
+                            .font(.subtitle2)
+                            .foregroundColor(textColor(for: date))
+                    }
+                    .frame(height: 41)
+                    
+                    calendarCellContent(date)
+                        .frame(width: 41, height: 41)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 90)
+        } else {
+            Color.clear
+                .frame(maxWidth: .infinity)
+                .frame(height: 90)
+        }
+    }
+    
     private func textColor(for date: Date) -> Color {
-        if calendar.isDate(date, inSameDayAs: selectedDate) {
-            return .white
-        } else if !calendar.isDate(date, equalTo: selectedDate, toGranularity: .month) {
+        let isToday = calendar.isDateInToday(date)
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+        let isCurrentMonth = calendar.isDate(date, equalTo: selectedDate, toGranularity: .month)
+        
+        if isSelected && isToday {
+            return DS.Colors.Toast._700
+        } else if isSelected {
+            return .black
+        } else if isToday {
+            return DS.Colors.Toast._700
+        } else if !isCurrentMonth {
             return DS.Colors.Text.disable
         } else {
             return DS.Colors.Text.netural
         }
     }
+}
+
+#Preview {
+    MonthCalendarView(
+        selectedDate: Date(),
+        onDateTap: { _ in },
+        calendarCellContent: { _ in
+            DS.Images.imgToastVacation
+                .resizable()
+                .scaledToFit()
+        }
+    )
 }

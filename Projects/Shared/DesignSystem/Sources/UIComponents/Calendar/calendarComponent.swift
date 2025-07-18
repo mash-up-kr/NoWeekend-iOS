@@ -16,7 +16,7 @@ public struct WeekCalendarView<Content: View>: View {
     
     private var calendar: Calendar {
         var cal = Calendar.current
-        cal.firstWeekday = 2  
+        cal.firstWeekday = 2
         return cal
     }
     
@@ -80,6 +80,7 @@ public struct WeekCalendarView<Content: View>: View {
                 }) {
                     VStack(spacing: 1) {
                         ZStack {
+                            // 서클: 선택된 날짜에만 표시
                             if calendar.isDate(date, inSameDayAs: selectedDate) {
                                 Circle()
                                     .fill(DS.Colors.Toast._100)
@@ -88,10 +89,7 @@ public struct WeekCalendarView<Content: View>: View {
                             
                             Text("\(calendar.component(.day, from: date))")
                                 .font(.subtitle2)
-                                .foregroundColor(
-                                    calendar.isDate(date, inSameDayAs: selectedDate) ? .white :
-                                    (calendar.isDateInToday(date) ? DS.Colors.Toast._700 : DS.Colors.Text.netural)
-                                )
+                                .foregroundColor(textColor(for: date))  // textColor 함수 사용
                         }
                         .frame(height: 41)
                         
@@ -100,8 +98,36 @@ public struct WeekCalendarView<Content: View>: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 80)
             }
         }
     }
+    
+    private func textColor(for date: Date) -> Color {
+        let isToday = calendar.isDateInToday(date)
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+        
+        if isSelected && isToday {
+            return DS.Colors.Toast._700
+        } else if isSelected {
+            return DS.Colors.Neutral.gray900
+        } else if isToday {
+            return DS.Colors.Toast._700
+        } else {
+            return DS.Colors.Neutral.gray900
+        }
+    }
+}
+
+struct WeekCalendarExampleView: View {
+    var body: some View {
+        WeekCalendarView { _ in
+            DS.Images.imgToastVacation
+                .resizable()
+                .scaledToFit()
+        }
+    }
+}
+
+#Preview {
+    WeekCalendarExampleView()
 }

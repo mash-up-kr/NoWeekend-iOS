@@ -48,7 +48,7 @@ struct FloatingAddButton: View {
         }) {
             HStack(spacing: 8) {
                 ZStack {
-                    DS.Images.icnPlus
+                    DS.Images.icnPlusWhite
                         .resizable()
                         .frame(width: 24, height: 24)
                     
