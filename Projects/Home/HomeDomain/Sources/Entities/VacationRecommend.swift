@@ -48,6 +48,27 @@ public struct VacationRecommend: Equatable {
     }
 }
 
+// MARK: - 휴가 추천 에러 타입
+public enum VacationRecommendError: Error, Equatable {
+    case notReady // E404 - 아직 휴가가 생성되지 않았음
+    case serverError(String) // 기타 서버 에러
+    case networkError(String) // 네트워크 에러
+    case unknown(String) // 알 수 없는 에러
+    
+    public var localizedDescription: String {
+        switch self {
+        case .notReady:
+            return "아직 휴가가 생성되지 않았습니다."
+        case .serverError(let message):
+            return "서버 에러: \(message)"
+        case .networkError(let message):
+            return "네트워크 에러: \(message)"
+        case .unknown(let message):
+            return "알 수 없는 에러: \(message)"
+        }
+    }
+}
+
 // MARK: - 휴가 추천 상태
 public enum VacationRecommendStatus: Equatable {
     case none           // 휴가 추천 없음
@@ -56,16 +77,13 @@ public enum VacationRecommendStatus: Equatable {
     case failed         // 휴가 추천 실패
 }
 
+// MARK: - 휴가 추천 상태 모델
 public struct VacationRecommendState: Equatable {
     public let status: VacationRecommendStatus
     public let recommendation: VacationRecommend?
     public let error: String?
     
-    public init(
-        status: VacationRecommendStatus,
-        recommendation: VacationRecommend? = nil,
-        error: String? = nil
-    ) {
+    public init(status: VacationRecommendStatus, recommendation: VacationRecommend? = nil, error: String? = nil) {
         self.status = status
         self.recommendation = recommendation
         self.error = error

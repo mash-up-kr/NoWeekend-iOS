@@ -82,38 +82,121 @@ public final class HomeRepositoryImpl: HomeRepositoryProtocol {
     }
     
     public func createVacationRecommend(_ request: VacationRecommendRequest) async throws -> String {
-        let dto = request.toDTO()
-        let parameters: [String: Any] = [
-            "days": dto.days,
-            "travelStyle": dto.travelStyle,
-            "activityType": dto.activityType,
-            "restPreference": dto.restPreference,
-            "leisurePreference": dto.leisurePreference
-        ]
-        
-        let response: VacationRecommendCreateResponseDTO = try await networkService.post(
-            endpoint: HomeEndpoint.createVacationRecommend.path,
-            parameters: parameters
-        )
-        
-        guard response.result == "SUCCESS" else {
-            throw NetworkError.serverError(response.error ?? "휴가 추천 생성 실패")
+        do {
+            let dto = request.toDTO()
+            let parameters: [String: Any] = [
+                "days": dto.days,
+                "travelStyle": dto.travelStyle,
+                "activityType": dto.activityType,
+                "restPreference": dto.restPreference,
+                "leisurePreference": dto.leisurePreference
+            ]
+            
+            let response: VacationRecommendCreateResponseDTO = try await networkService.post(
+                endpoint: HomeEndpoint.createVacationRecommend.path,
+                parameters: parameters
+            )
+            
+            guard response.result == "SUCCESS" else {
+                let errorMessage = response.error?.message ?? "휴가 추천 생성 실패"
+                throw VacationRecommendError.serverError(errorMessage)
+            }
+            
+            return response.data
+        } catch {
+            // 이미 VacationRecommendError인 경우 그대로 throw
+            if error is VacationRecommendError {
+                throw error
+            }
+            
+            // 네트워크 에러를 VacationRecommendError로 변환
+            if let networkError = error as? NetworkError {
+                switch networkError {
+                case .serverError(let message):
+                    throw VacationRecommendError.serverError(message)
+                case .decodingError:
+                    throw VacationRecommendError.serverError("응답 데이터 해석 실패")
+                case .notImplemented(let message):
+                    throw VacationRecommendError.serverError(message)
+                case .unknown(let underlyingError):
+                    // URLError인지 확인하여 네트워크 에러로 분류
+                    if let urlError = underlyingError as? URLError {
+                        switch urlError.code {
+                        case .notConnectedToInternet:
+                            throw VacationRecommendError.networkError("인터넷 연결을 확인해주세요")
+                        case .timedOut:
+                            throw VacationRecommendError.networkError("요청 시간이 초과되었습니다")
+                        case .cannotFindHost:
+                            throw VacationRecommendError.networkError("서버를 찾을 수 없습니다")
+                        default:
+                            throw VacationRecommendError.networkError("네트워크 오류: \(urlError.localizedDescription)")
+                        }
+                    } else {
+                        throw VacationRecommendError.unknown(underlyingError.localizedDescription)
+                    }
+                }
+            }
+            
+            // 기타 에러
+            throw VacationRecommendError.unknown(error.localizedDescription)
         }
-        
-        return response.data
     }
     
     public func getVacationRecommend() async throws -> VacationRecommend? {
-        let response: VacationRecommendResponseDTO = try await networkService.get(
-            endpoint: HomeEndpoint.getVacationRecommend.path,
-            parameters: nil
-        )
-        
-        guard response.result == "SUCCESS" else {
-            // 아직 완성되지 않은 경우 nil 반환
-            return nil
+        do {
+            let response: VacationRecommendResponseDTO = try await networkService.get(
+                endpoint: HomeEndpoint.getVacationRecommend.path,
+                parameters: nil
+            )
+            
+            guard response.result == "SUCCESS" else {
+                // E404 에러 확인
+                if let error = response.error, error.code == "E404" {
+                    throw VacationRecommendError.notReady
+                }
+                
+                // 기타 에러 처리
+                let errorMessage = response.error?.message ?? "휴가 추천 조회 실패"
+                throw VacationRecommendError.serverError(errorMessage)
+            }
+            
+            return response.data?.toDomain()
+        } catch {
+            // 이미 VacationRecommendError인 경우 그대로 throw
+            if error is VacationRecommendError {
+                throw error
+            }
+            
+            // 네트워크 에러를 VacationRecommendError로 변환
+            if let networkError = error as? NetworkError {
+                switch networkError {
+                case .serverError(let message):
+                    throw VacationRecommendError.serverError(message)
+                case .decodingError:
+                    throw VacationRecommendError.serverError("응답 데이터 해석 실패")
+                case .notImplemented(let message):
+                    throw VacationRecommendError.serverError(message)
+                case .unknown(let underlyingError):
+                    // URLError인지 확인하여 네트워크 에러로 분류
+                    if let urlError = underlyingError as? URLError {
+                        switch urlError.code {
+                        case .notConnectedToInternet:
+                            throw VacationRecommendError.networkError("인터넷 연결을 확인해주세요")
+                        case .timedOut:
+                            throw VacationRecommendError.networkError("요청 시간이 초과되었습니다")
+                        case .cannotFindHost:
+                            throw VacationRecommendError.networkError("서버를 찾을 수 없습니다")
+                        default:
+                            throw VacationRecommendError.networkError("네트워크 오류: \(urlError.localizedDescription)")
+                        }
+                    } else {
+                        throw VacationRecommendError.unknown(underlyingError.localizedDescription)
+                    }
+                }
+            }
+            
+            // 기타 에러
+            throw VacationRecommendError.unknown(error.localizedDescription)
         }
-        
-        return response.data?.toDomain()
     }
 } 

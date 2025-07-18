@@ -32,8 +32,14 @@ final class HomeStore: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     private let locationManager = LocationManager.shared
+    
+    // MARK: - Vacation Recommend Polling Properties
+    
     private var vacationRecommendTimer: Timer?
-
+    private var vacationRecommendPollingStartTime: Date?
+    private let maxPollingDuration: TimeInterval = 10 * 60 // 10분
+    private var lastVacationRecommendRequest: VacationRecommendRequest? // 마지막 요청 저장
+    
     init() {
         self.homeUseCase = DIContainer.shared.resolve(HomeUseCaseProtocol.self)
         self.getUserProfileUseCase = DIContainer.shared.resolve(GetUserProfileUseCaseProtocol.self)
@@ -74,6 +80,8 @@ final class HomeStore: ObservableObject {
             handleSelectedDateChanged(date)
         case .createVacationRecommend(let request):
             handleCreateVacationRecommend(request)
+        case .retryVacationRecommend:
+            handleRetryVacationRecommend()
         case .startVacationRecommendPolling:
             handleStartVacationRecommendPolling()
         case .stopVacationRecommendPolling:
@@ -665,6 +673,9 @@ extension HomeStore {
     // MARK: - Vacation Recommend Handlers
     
     private func handleCreateVacationRecommend(_ request: VacationRecommendRequest) {
+        // 마지막 요청 저장
+        lastVacationRecommendRequest = request
+        
         state.vacationRecommendState = VacationRecommendState(status: .requesting)
         
         Task {
@@ -677,20 +688,43 @@ extension HomeStore {
                 
             } catch {
                 print("❌ 휴가 추천 생성 실패: \(error)")
-                state.vacationRecommendState = VacationRecommendState(
-                    status: .failed,
-                    error: error.localizedDescription
-                )
+                if let vacationError = error as? VacationRecommendError {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .failed,
+                        error: vacationError.localizedDescription
+                    )
+                } else {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .failed,
+                        error: error.localizedDescription
+                    )
+                }
             }
         }
+    }
+    
+    private func handleRetryVacationRecommend() {
+        // 저장된 마지막 요청이 있는지 확인
+        guard let lastRequest = lastVacationRecommendRequest else {
+            print("❌ 재시도할 요청이 없습니다. lastVacationRecommendRequest = nil")
+            return
+        }
+        
+        print("🔄 휴가 추천 재시도 시작 - 저장된 요청: \(lastRequest)")
+        
+        // 다시 생성 요청 실행
+        handleCreateVacationRecommend(lastRequest)
     }
     
     private func handleStartVacationRecommendPolling() {
         // 기존 타이머 정리
         vacationRecommendTimer?.invalidate()
         
-        // 2분(120초)마다 폴링
-        vacationRecommendTimer = Timer.scheduledTimer(withTimeInterval: 120.0, repeats: true) { [weak self] _ in
+        // 폴링 시작 시간 기록
+        vacationRecommendPollingStartTime = Date()
+        
+        // 30초마다 폴링 (기존 120초에서 단축)
+        vacationRecommendTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
             Task {
                 await self?.checkVacationRecommendStatus()
             }
@@ -705,9 +739,25 @@ extension HomeStore {
     private func handleStopVacationRecommendPolling() {
         vacationRecommendTimer?.invalidate()
         vacationRecommendTimer = nil
+        vacationRecommendPollingStartTime = nil
     }
     
     private func checkVacationRecommendStatus() async {
+        // 최대 폴링 시간 확인
+        if let startTime = vacationRecommendPollingStartTime {
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            if elapsedTime > maxPollingDuration {
+                await MainActor.run {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .failed,
+                        error: "휴가 추천 생성 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
+                    )
+                    send(.stopVacationRecommendPolling)
+                }
+                return
+            }
+        }
+        
         do {
             if let recommendation = try await homeUseCase.getVacationRecommend() {
                 print("휴가 추천 완료: \(recommendation.title)")
@@ -726,7 +776,56 @@ extension HomeStore {
                 print("휴가 추천 아직 준비 중...")
             }
         } catch {
-            print("❌ 휴가 추천 조회 실패: \(error)")
+            if let vacationError = error as? VacationRecommendError {
+                switch vacationError {
+                case .notReady:
+                    // E404 - 아직 준비되지 않음, 계속 폴링
+                    print("⏳ 휴가 추천 아직 준비 중... (계속 폴링)")
+                    
+                case .serverError(let message):
+                    // 서버 에러 - 폴링 중단
+                    print("❌ 휴가 추천 서버 에러: \(message)")
+                    await MainActor.run {
+                        state.vacationRecommendState = VacationRecommendState(
+                            status: .failed,
+                            error: message
+                        )
+                        send(.stopVacationRecommendPolling)
+                    }
+                    
+                case .networkError(let message):
+                    // 네트워크 에러 - 폴링 중단
+                    print("❌ 휴가 추천 네트워크 에러: \(message)")
+                    await MainActor.run {
+                        state.vacationRecommendState = VacationRecommendState(
+                            status: .failed,
+                            error: message
+                        )
+                        send(.stopVacationRecommendPolling)
+                    }
+                    
+                case .unknown(let message):
+                    // 알 수 없는 에러 - 폴링 중단
+                    print("❌ 휴가 추천 알 수 없는 에러: \(message)")
+                    await MainActor.run {
+                        state.vacationRecommendState = VacationRecommendState(
+                            status: .failed,
+                            error: message
+                        )
+                        send(.stopVacationRecommendPolling)
+                    }
+                }
+            } else {
+                // 기타 에러 - 폴링 중단
+                print("❌ 휴가 추천 조회 실패: \(error.localizedDescription)")
+                await MainActor.run {
+                    state.vacationRecommendState = VacationRecommendState(
+                        status: .failed,
+                        error: error.localizedDescription
+                    )
+                    send(.stopVacationRecommendPolling)
+                }
+            }
         }
     }
     
@@ -825,4 +924,13 @@ extension HomeStore {
         return .personal
     }
 
+}
+
+// MARK: - Vacation Recommend Retry Helper
+
+extension HomeStore {
+    var canRetryVacationRecommend: Bool {
+        return lastVacationRecommendRequest != nil && 
+               state.vacationRecommendState.status == .failed
+    }
 }
