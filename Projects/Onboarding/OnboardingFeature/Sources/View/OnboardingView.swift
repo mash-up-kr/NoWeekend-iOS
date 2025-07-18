@@ -170,3 +170,7 @@ public struct OnboardingView: View {
         }
     }
 }
+
+#Preview {
+    OnboardingView()
+}

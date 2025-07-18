@@ -68,6 +68,10 @@ public struct NWBirthDateInputSection: View {
                     set: { _ in }
                 )
             )
+            
+            Text("생일 맞춤 일정을 위해 생년월일이 필요합니다.")
+                .font(.body3)
+                .foregroundColor(DS.Colors.Text.disable)
         }
     }
 }
