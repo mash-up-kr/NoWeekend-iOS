@@ -25,7 +25,7 @@ let project = Project.make(
                 "UILaunchStoryboardName": "LaunchScreen"
             ]),
             sources: ["Example/Sources/**"],
-            resources: ["Example/Resources/**"],
+            resources: [], 
             dependencies: [
                 .target(name: "CalendarFeature"),
                 .Calendar.domain,
