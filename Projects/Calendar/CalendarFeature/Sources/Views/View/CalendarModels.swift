@@ -32,11 +32,11 @@ public enum CalendarIntent {
 
 // MARK: - State (UI 상태)
 public struct CalendarState: Equatable {
-    var selectedDate = Date()
-    var selectedToggle: CalendarNavigationBar.ToggleOption = .week
-    var dailySchedules: [DailySchedule] = []
-    var todoItems: [DesignSystem.TodoItem] = []
-    var recommendedCategories: [TaskCategory] = [] 
+    public var selectedDate = Date()
+    public var selectedToggle: CalendarNavigationBar.ToggleOption = .week
+    public var dailySchedules: [DailySchedule] = []
+    public var todoItems: [DesignSystem.TodoItem] = []
+    public var recommendedCategories: [TaskCategory] = []
     
     var showDatePicker = false
     var showTaskEditSheet = false
@@ -55,6 +55,8 @@ public struct CalendarState: Equatable {
     var currentDateString: String {
         selectedDate.toString(format: "yyyy년 M월")
     }
+    
+    public init() {} 
     
     public static func == (lhs: CalendarState, rhs: CalendarState) -> Bool {
         lhs.selectedDate == rhs.selectedDate &&
