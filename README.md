@@ -15,10 +15,13 @@
 
 ## App Download
 
-<a href="https://www.naver.com">
-<img src="https://github.com/user-attachments/assets/e7e0253d-26bc-4fd3-9f4d-1ff8c24f00fe" width="100" />
+<!-- App Store Badge or Custom Image -->
+<a href="https://apps.apple.com/kr/app/%EC%93%B8%EB%9E%98%EB%A7%90%EB%9E%98/id6746895814" target="_blank">
+  <img src="https://github.com/user-attachments/assets/e7e0253d-26bc-4fd3-9f4d-1ff8c24f00fe" alt="App Store Download" width="150" />
 </a>
-https://apps.apple.com/kr/app/%EC%93%B8%EB%9E%98%EB%A7%90%EB%9E%98/id6746895814
+
+<p><a href="https://apps.apple.com/kr/app/%EC%93%B8%EB%9E%98%EB%A7%90%EB%9E%98/id6746895814" target="_blank">
+앱스토어에서 다운로드</a></p>
 
 
 
