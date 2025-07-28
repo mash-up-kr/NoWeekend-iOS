@@ -107,7 +107,7 @@
       <a href="https://github.com/SijongKim93"><i>SijongKim93</i></a>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/9a4627ee-b30a-474c-958b-7d3c3a942d0b" width="100" height="100"><br>
+      <img src="https://github.com/user-attachments/assets/9a4627ee-b30a-474c-958b-7d3c3a942d0b" width="100" height="200"><br>
       <a href="https://github.com/k-nh"><i>Nahee</i></a>
     </td>
     <td>
