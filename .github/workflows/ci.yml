@@ -4,27 +4,70 @@ on:
   pull_request:
     branches: [main, develop, release/**]
 
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  BUNDLE_JOBS: 4
+  BUNDLE_RETRY: 3
+
 jobs:
   ci:
     runs-on: macos-latest
+    timeout-minutes: 30
     permissions:
       pull-requests: write
     steps:
       - uses: actions/checkout@v3
+
+      - name: Cache Ruby gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Cache mise tools
+        uses: actions/cache@v3
+        with:
+          path: ~/.local/share/mise
+          key: ${{ runner.os }}-mise-${{ hashFiles('.mise.toml', 'Tuist/Dependencies.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-mise-
+
+      - name: Cache Tuist dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            Tuist/Dependencies
+            ~/.tuist/Cache
+          key: ${{ runner.os }}-tuist-${{ hashFiles('Tuist/Dependencies.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-tuist-
+
+      - name: Cache Homebrew packages
+        uses: actions/cache@v3
+        with:
+          path: /opt/homebrew/Cellar
+          key: ${{ runner.os }}-brew-swiftlint-mise
+          restore-keys: |
+            ${{ runner.os }}-brew-
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1'
 
-      - name: Install dependencies
-        run: bundle install
-
-      - name: Install SwiftLint
-        run: brew install swiftlint
-
-      - name: Install mise
-        run: brew install mise
+      - name: Install dependencies in parallel
+        run: |
+          bundle config set --local path 'vendor/bundle'
+          bundle config set --local jobs 4
+          
+          (brew install swiftlint mise) &
+          BREW_PID=$!
+          
+          bundle install --jobs 4 --retry 3
+          
+          wait $BREW_PID
 
       - name: Enable idiomatic version files for ruby
         run: mise settings add idiomatic_version_file_enable_tools ruby
@@ -39,7 +82,7 @@ jobs:
 
       - name: Create Config.swift for Network
         run: |
-          cat <<EOF > Projects/Core/NWNetwork/Sources/Config.swift
+          cat <<CONFIGEOF > Projects/Core/NWNetwork/Sources/Config.swift
           import Foundation
 
           public enum Config {
@@ -48,7 +91,7 @@ jobs:
               public static let googleServerClientID = "${{ secrets.GOOGLE_SERVICE_CLIENT_ID }}"
               public static let tempAccessToken = "${{ secrets.TEMP_ACCESS_TOKEN }}"
           }
-          EOF
+          CONFIGEOF
 
       - name: Tuist tasks (install + generate)
         run: |
@@ -58,6 +101,7 @@ jobs:
 
       - name: Create & Unlock Keychain
         run: |
+          security delete-keychain ci.keychain 2>/dev/null || true
           security create-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
           security default-keychain -s ci.keychain
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" ci.keychain
@@ -100,4 +144,4 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
               body: updated
-            }); 
+            });
