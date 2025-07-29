@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, develop, release/**]
   push:
-    branches: [feat/**]  # 테스트용 추가
+    branches: [feat/**]
 
 env:
   HOMEBREW_NO_AUTO_UPDATE: 1
@@ -46,14 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-tuist-
 
-      - name: Cache Homebrew packages
-        uses: actions/cache@v3
-        with:
-          path: /opt/homebrew/Cellar
-          key: ${{ runner.os }}-brew-swiftlint-mise
-          restore-keys: |
-            ${{ runner.os }}-brew-
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -64,21 +56,35 @@ jobs:
           bundle config set --local path 'vendor/bundle'
           bundle config set --local jobs 4
           
+          # Homebrew 설치를 백그라운드에서 실행
           (brew install swiftlint mise) &
           BREW_PID=$!
           
+          # Bundle install 동시 실행
           bundle install --jobs 4 --retry 3
           
+          # Brew 설치 완료 대기
           wait $BREW_PID
 
+      - name: Verify mise installation
+        run: |
+          which mise || echo "mise not found in PATH"
+          echo "PATH: $PATH"
+          ls -la /opt/homebrew/bin/ | grep mise || echo "mise not in homebrew bin"
+
       - name: Enable idiomatic version files for ruby
-        run: mise settings add idiomatic_version_file_enable_tools ruby
+        run: |
+          export PATH="/opt/homebrew/bin:$PATH"
+          mise settings add idiomatic_version_file_enable_tools ruby
 
       - name: Install tools with mise
-        run: mise install
+        run: |
+          export PATH="/opt/homebrew/bin:$PATH"
+          mise install
 
       - name: Check tuist version
         run: |
+          export PATH="/opt/homebrew/bin:$PATH"
           eval "$(mise activate bash)"
           tuist version
 
@@ -97,6 +103,7 @@ jobs:
 
       - name: Tuist tasks (install + generate)
         run: |
+          export PATH="/opt/homebrew/bin:$PATH"
           eval "$(mise activate bash)"
           tuist install
           tuist generate
