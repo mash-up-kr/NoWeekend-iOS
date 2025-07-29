@@ -3,6 +3,8 @@ name: CI (Lint + Test)
 on:
   pull_request:
     branches: [main, develop, release/**]
+  push:
+    branches: [feat/**]  # 테스트용 추가
 
 env:
   HOMEBREW_NO_AUTO_UPDATE: 1
@@ -122,6 +124,7 @@ jobs:
         run: bundle exec fastlane build
 
       - name: Update PR Description
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
