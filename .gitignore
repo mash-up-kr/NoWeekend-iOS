@@ -75,3 +75,8 @@ fastlane/report.xml
 # Network configuration containing sensitive data
 **/Config.swift
 Projects/Core/NWNetwork/Sources/NetworkService/Config.swift
+
+### Claude Code ###
+# Claude Code configuration and generated files
+.claude/
+CLAUDE.md
