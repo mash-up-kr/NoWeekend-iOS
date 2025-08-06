@@ -9,7 +9,7 @@
 import CalendarDomain
 import Foundation
 
-public struct CreateScheduleRequestDTO: Encodable {
+public struct CreateScheduleRequestDTO: Encodable, Sendable {
     public let title: String
     public let date: String
     public let startTime: String
@@ -21,7 +21,7 @@ public struct CreateScheduleRequestDTO: Encodable {
 }
 
 // 응답 데이터 DTO - Decodable만 필요
-public struct CreateScheduleDataDTO: Decodable {
+public struct CreateScheduleDataDTO: Decodable, Sendable {
     public let id: String
     public let title: String
     public let startTime: String  
@@ -64,7 +64,7 @@ public struct CreateScheduleDataDTO: Decodable {
 }
 
 // 전체 응답 DTO - Decodable만 필요
-public struct CreateScheduleResponseDTO: Decodable {
+public struct CreateScheduleResponseDTO: Decodable, Sendable {
     public let result: String
     public let data: CreateScheduleDataDTO?
     public let error: APIError?

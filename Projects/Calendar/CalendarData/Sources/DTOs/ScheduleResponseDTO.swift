@@ -8,13 +8,13 @@
 
 import Foundation
 
-public struct ScheduleResponseDTO: Decodable {
+public struct ScheduleResponseDTO: Decodable, Sendable {
     public let result: String
     public let data: [DailyScheduleDTO]
     public let error: APIError?
 }
 
-public struct APIError: Decodable {
+public struct APIError: Decodable, Sendable {
     public let code: String
     public let message: String
     public let data: [String: String]?
