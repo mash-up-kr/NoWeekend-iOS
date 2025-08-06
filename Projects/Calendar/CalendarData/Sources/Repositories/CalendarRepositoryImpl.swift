@@ -17,7 +17,7 @@ public enum NetworkError: Error {
     case unknown
 }
 
-public final class CalendarRepositoryImpl: CalendarRepositoryProtocol {
+public final class CalendarRepositoryImpl: CalendarRepositoryProtocol, @unchecked Sendable {
     private let networkService: NWNetworkServiceProtocol
     
     public init(networkService: NWNetworkServiceProtocol) {

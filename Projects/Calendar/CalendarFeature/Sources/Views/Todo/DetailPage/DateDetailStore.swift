@@ -124,7 +124,7 @@ private extension DateDetailStore {
             
             let scheduleCategory = mapTaskCategoryToScheduleCategory(category.name)
             
-            let createdSchedule = try await useCase.createSchedule(
+            _ = try await useCase.createSchedule(
                 title: category.name,
                 date: selectedDate,
                 startTime: startTime,
