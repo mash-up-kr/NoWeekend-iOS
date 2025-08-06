@@ -9,7 +9,7 @@
 import Foundation
 import Utils
 
-public class CalendarUseCase: CalendarUseCaseProtocol {
+public final class CalendarUseCase: CalendarUseCaseProtocol, @unchecked Sendable {
     private let calendarRepository: CalendarRepositoryProtocol
     
     private var calendar: Calendar {

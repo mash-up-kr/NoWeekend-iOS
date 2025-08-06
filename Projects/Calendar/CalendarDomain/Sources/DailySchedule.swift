@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct DailySchedule: Equatable {
+public struct DailySchedule: Equatable, Sendable {
     public let date: String
     public let dailyTemperature: Int
     public let schedules: [Schedule]

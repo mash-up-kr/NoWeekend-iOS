@@ -52,3 +52,4 @@ public struct APIError: Codable {
         self.data = data
     }
 }
+

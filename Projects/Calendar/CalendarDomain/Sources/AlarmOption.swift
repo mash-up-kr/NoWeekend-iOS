@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum AlarmOption: String, CaseIterable {
+public enum AlarmOption: String, CaseIterable, Sendable {
     case none = "NONE"
     case fiveMinutesBefore = "FIVE_MINUTES_BEFORE"
     case fifteenMinutesBefore = "FIFTEEN_MINUTES_BEFORE"

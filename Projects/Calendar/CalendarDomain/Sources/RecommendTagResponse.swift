@@ -9,7 +9,7 @@
 import Foundation
 
 // MARK: - API Response Models
-public struct RecommendTagResponse: Codable {
+public struct RecommendTagResponse: Codable, Sendable {
     public let result: String
     public let data: RecommendTagData?
     public let error: APIError?
@@ -21,7 +21,7 @@ public struct RecommendTagResponse: Codable {
     }
 }
 
-public struct RecommendTagData: Codable {
+public struct RecommendTagData: Codable, Sendable {
     public let firstRecommendTag: RecommendTag
     public let secondRecommendTag: RecommendTag
     public let thirdRecommendTag: RecommendTag
@@ -33,7 +33,7 @@ public struct RecommendTagData: Codable {
     }
 }
 
-public struct RecommendTag: Codable {
+public struct RecommendTag: Codable, Sendable {
     public let content: String
     
     public init(content: String) {
@@ -41,7 +41,7 @@ public struct RecommendTag: Codable {
     }
 }
 
-public struct APIError: Codable {
+public struct APIError: Codable, Sendable {
     public let code: String
     public let message: String
     public let data: [String: String]

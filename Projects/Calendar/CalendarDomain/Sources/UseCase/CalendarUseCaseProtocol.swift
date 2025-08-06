@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol CalendarUseCaseProtocol {
+public protocol CalendarUseCaseProtocol: Sendable {
     func getWeeklySchedules(for date: Date) async throws -> [DailySchedule]
     func getMonthlySchedules(for date: Date) async throws -> [DailySchedule]
     func getSchedulesForDateRange(startDate: Date, endDate: Date) async throws -> [DailySchedule]
