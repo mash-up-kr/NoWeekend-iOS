@@ -80,3 +80,22 @@ Projects/Core/NWNetwork/Sources/NetworkService/Config.swift
 # Claude Code configuration and generated files
 .claude/
 CLAUDE.md
+
+### Node.js ###
+node_modules/
+package-lock.json
+package.json
+*.js
+
+### Python ###
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+### Temporary Files ###
+.claude.json
+wwdc_sessions_analysis.md
+/tmp/notion_content.json
