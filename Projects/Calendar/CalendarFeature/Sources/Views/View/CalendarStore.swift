@@ -14,6 +14,7 @@ import Foundation
 import SwiftUI
 import Utils
 
+@MainActor
 public final class CalendarStore: ObservableObject {
     @Dependency private var calendarUseCase: CalendarUseCaseProtocol
     
@@ -33,17 +34,15 @@ public final class CalendarStore: ObservableObject {
     public init() {}
     
     public func send(_ intent: CalendarIntent) {
-        Task { @MainActor in
+        Task {
             await handle(intent)
         }
     }
     
-    @MainActor
     internal func updateState(_ update: (inout CalendarState) -> Void) {
         update(&state)
     }
     
-    @MainActor
     private func handle(_ intent: CalendarIntent) async {
         switch intent {
         case .viewDidAppear:
@@ -80,13 +79,12 @@ public final class CalendarStore: ObservableObject {
 
 // MARK: - Intent Handlers
 private extension CalendarStore {
-    @MainActor
     func handleViewDidAppear() async {
         print("📅 handleViewDidAppear 시작")
         state.scrollOffset = 0
         
-        async let recommendedCategoriesTask = loadRecommendedCategories()
-        async let schedulesTask = loadSchedules()
+        async let recommendedCategoriesTask: () = loadRecommendedCategories()
+        async let schedulesTask: () = loadSchedules()
         
         await recommendedCategoriesTask
         await schedulesTask
@@ -96,14 +94,12 @@ private extension CalendarStore {
     
     }
     
-    @MainActor
     func handleToggleChanged(_ toggle: CalendarNavigationBar.ToggleOption) async {
         state.selectedToggle = toggle
         await loadSchedules()
         updateTodoItemsForSelectedDate()
     }
     
-    @MainActor
     func handleDateSelected(_ date: Date) async {
         state.selectedDate = date
         
@@ -115,12 +111,10 @@ private extension CalendarStore {
         }
     }
     
-    @MainActor
     func handleDateDetailRequested(_ date: Date) {
         effectSubject.send(.navigateToDateDetail(date))
     }
     
-    @MainActor
     func handleCategorySelected(_ category: TaskCategory) {
         Task {
             await createScheduleFromCategory(category)
@@ -129,13 +123,11 @@ private extension CalendarStore {
         state.showCategorySelection = false
     }
     
-    @MainActor
     func handleDirectInputTapped() {
         state.showCategorySelection = false
         effectSubject.send(.navigateToTaskCreate(state.selectedDate))
     }
     
-    @MainActor
     func handleTaskMoreTapped(_ index: Int) {
         guard index < state.todoItems.count else { return }
         
@@ -147,7 +139,6 @@ private extension CalendarStore {
         state.showTaskEditSheet = true
     }
     
-    @MainActor
     func handleTaskEditRequested(_ index: Int) {
         state.showTaskEditSheet = false
         
@@ -163,7 +154,6 @@ private extension CalendarStore {
         ))
     }
     
-    @MainActor
     func handleTaskTomorrowRequested(_ index: Int) async {
         state.showTaskEditSheet = false
         
@@ -198,7 +188,6 @@ private extension CalendarStore {
         }
     }
     
-    @MainActor
     func handleTaskDeleteRequested(_ index: Int) async {
         state.showTaskEditSheet = false
         
@@ -222,13 +211,11 @@ private extension CalendarStore {
         }
     }
     
-    @MainActor
     func handleTaskTitleChanged(index: Int, newTitle: String) async {
         guard index < state.todoItems.count else { return }
         state.todoItems[index].title = newTitle
     }
     
-    @MainActor
     func handleCategorySelectionToggled() {
         if state.showTaskEditSheet {
             return
@@ -239,7 +226,6 @@ private extension CalendarStore {
         }
     }
     
-    @MainActor
     func handleScrollOffsetChanged(offset: CGFloat, isScrolling: Bool) {
         state.scrollOffset = offset
         state.isScrolling = isScrolling
@@ -248,7 +234,6 @@ private extension CalendarStore {
 
 // MARK: - Business Logic
 private extension CalendarStore {
-    @MainActor
     func loadSchedules() async {
         state.isLoading = true
         
@@ -263,7 +248,6 @@ private extension CalendarStore {
         }
     }
     
-    @MainActor
     func loadRecommendedCategories() async {
         print("📅 loadRecommendedCategories 시작")
         do {
@@ -305,10 +289,12 @@ private extension CalendarStore {
         case .month:
             let (startDate, endDate) = calculateMonthRange(for: state.selectedDate)
             return try await calendarUseCase.getSchedulesForDateRange(startDate: startDate, endDate: endDate)
+        @unknown default:
+            let (startDate, endDate) = calculateWeekRange(for: state.selectedDate)
+            return try await calendarUseCase.getSchedulesForDateRange(startDate: startDate, endDate: endDate)
         }
     }
     
-    @MainActor
     func updateTodoItemsForSelectedDate() {
         let selectedDateString = state.selectedDate.toString(format: "yyyy-MM-dd")
         
@@ -349,7 +335,6 @@ private extension CalendarStore {
         return (firstWeekStart, lastWeekEnd)
     }
     
-    @MainActor
     func createScheduleFromCategory(_ category: TaskCategory) async {
         do {
             let selectedDate = state.selectedDate
@@ -363,7 +348,7 @@ private extension CalendarStore {
             
             let scheduleCategory = mapTaskCategoryToScheduleCategory(category.name)
             
-            let createdSchedule = try await calendarUseCase.createSchedule(
+            _ = try await calendarUseCase.createSchedule(
                 title: category.name,
                 date: selectedDate,
                 startTime: startTime,
@@ -505,7 +490,6 @@ extension CalendarStore {
         }
     }
     
-    @MainActor
     func handleTaskCompletionToggled(_ index: Int) async {
         guard index < state.todoItems.count else { return }
         

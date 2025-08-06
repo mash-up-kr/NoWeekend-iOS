@@ -96,6 +96,10 @@ extension ScheduleCategory {
         case .personal: return DS.Colors.TaskItem.orange
         case .leave: return DS.Colors.TaskItem.purple
         case .etc: return DS.Colors.TaskItem.etc
+        
+        @unknown default:
+            // Fallback to etc color for any new schedule categories
+            return DS.Colors.TaskItem.etc
         }
     }
 }
