@@ -76,11 +76,9 @@ public struct CalendarView: View {
                 )
             )
             .onDisappear {
-                Task { @MainActor in
-                    store.updateState { state in
-                        state.showTaskEditSheet = false
-                        state.selectedTaskIndex = nil
-                    }
+                store.updateState { state in
+                    state.showTaskEditSheet = false
+                    state.selectedTaskIndex = nil
                 }
             }
         }

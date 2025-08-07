@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Schedule: Identifiable, Equatable {
+public struct Schedule: Identifiable, Equatable, Sendable {
     public let id: String
     public let title: String
     public let startTime: Date

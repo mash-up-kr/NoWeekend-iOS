@@ -9,7 +9,7 @@
 import CalendarDomain
 import Foundation
 
-public struct ScheduleDTO: Decodable {
+public struct ScheduleDTO: Decodable, Sendable {
     public let id: String
     public let title: String
     public let startTime: String

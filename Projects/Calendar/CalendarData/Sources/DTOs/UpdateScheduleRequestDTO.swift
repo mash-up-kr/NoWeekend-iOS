@@ -9,7 +9,7 @@
 import CalendarDomain
 import Foundation
 
-public struct UpdateScheduleRequestDTO: Encodable {
+public struct UpdateScheduleRequestDTO: Encodable, Sendable {
     public let title: String
     public let startTime: String
     public let endTime: String
@@ -37,7 +37,7 @@ public struct UpdateScheduleRequestDTO: Encodable {
     }
 }
 
-public struct UpdateScheduleResponseDTO: Decodable {
+public struct UpdateScheduleResponseDTO: Decodable, Sendable {
     public let id: String
     public let title: String
     public let startTime: String
@@ -78,7 +78,7 @@ public struct UpdateScheduleResponseDTO: Decodable {
     }
 }
 
-public struct UpdateScheduleAPIResponseDTO: Decodable {
+public struct UpdateScheduleAPIResponseDTO: Decodable, Sendable {
     public let result: String
     public let data: UpdateScheduleResponseDTO?
     public let error: APIError?

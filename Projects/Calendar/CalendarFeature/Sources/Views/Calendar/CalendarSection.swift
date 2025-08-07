@@ -45,6 +45,15 @@ struct CalendarSection: View {
                     onDateTap: onDateTap,
                     calendarCellContent: { date in calendarCellContent(date) }
                 )
+                
+            @unknown default:
+                WeekCalendarView(
+                    baseDate: selectedDate,
+                    selectedDate: selectedDate,
+                    onDateTap: onDateTap
+                ) { date in
+                    calendarCellContent(date)
+                }
             }
             
             if selectedToggle == .week {

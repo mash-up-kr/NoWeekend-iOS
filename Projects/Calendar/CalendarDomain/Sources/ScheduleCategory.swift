@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ScheduleCategory: String, Codable, CaseIterable {
+public enum ScheduleCategory: String, Codable, CaseIterable, Sendable {
     case company = "COMPANY"
     case personal = "PERSONAL"
     case etc = "ETC"

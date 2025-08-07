@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UpdateScheduleStateResponseDTO: Decodable {
+public struct UpdateScheduleStateResponseDTO: Decodable, Sendable {
     public let result: String
     public let data: UpdateScheduleResponseDTO?
     public let error: APIError?
